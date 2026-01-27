@@ -1,0 +1,5133 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/dropZoneTransactions_CD031')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string",
+                        "defaultValue": "fileName"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Fiserv/CD031",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "CD031ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RoutingTransit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SYS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PRN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AGT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BinNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "KSCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationResponse",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ActionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationLine",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ElectronicAuthorizationSource",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InternalStatusCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExternalStatusCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountCrossReference",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExpirationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SICCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ZipCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreditLimit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PCPIND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PCCIND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CFCIND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CFFIND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TERMCD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TPCODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OPCODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TCCODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "WBCODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReasonCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationFileCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantTerminalLocation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSDeviceModel",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSEntryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountTypeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSEntryCodeCapability",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderZipCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddress",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PACMCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationMethod",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BehaviorScoringCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreditBureauScore",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ACSAuthorizationLineNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DataCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TranslatedMerchant",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationCharacteristicsCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionIdentifierValidator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudulentRiskCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CounterfeitCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentKitingStrategyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LostStolenStrategyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FalconStrategyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "QueuedAuthorizationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BehaviorScoreVariance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TotalAuthorizations",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TotalOutstandingTransactions",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DebitCardholderBalance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationAdviceFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationLocatorCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDRAuthorizationFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MarketSpecificAuthorizationData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CashbackAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailTelephoneTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MCAuthorizationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVCErrorCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DurationNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PPICode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CashAdvanceCreditLimit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CashAdvancePercentage",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDRTraceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MCVisaSETCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SRSCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SRRCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationCashAdvanceCreditLimit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationCashAdvanceCreditLine",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SpendableAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TotalCreditLinePercentage",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CRIND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CDIND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRCODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RiskCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReferralMemoryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DiversionAccount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ECommerceTransactionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FamilyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExtendedServiceCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReferAuthorizationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TemproraryCreditLineCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CAFLCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RecurringPaymentMerchantAdviceCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ForeignCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TraceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateProcessed",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IRCCDE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VRSNCDE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CREDUN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NonreceiptStrategyType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthTime12",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DAT_PRTL_AUTH_PRCS_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DAT_TRAN_CTGR_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DAT_TIME_PRTH_LIMIT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DAT_PYMT_TRAN_TYPE_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CNTL_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DAT_WLLT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NETWORK_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AMT_TRAN_FEE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FIN_ATH",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DEV_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TR_TAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AvailableCredit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PI_TYPE_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRIT_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TAF_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SQI_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SERV_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PROMO_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PROD_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AUTHEN_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MRP",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TKREQID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ACSAuthorizationStrategy",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PosTransCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TMGReportDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ATHTYP",
+                        "type": "String"
+                    },
+                    {
+                        "name": "WLLTID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVM1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVM2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "StiprcCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PosenvCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PoiCode",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FIS_MerchantType')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw/Reference/MerchantType"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "MechantType.csv",
+                        "folderPath": "Reference/MerchantType",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "MerchantTypeID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCategoryGroup",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCategoryCodeName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantGroup",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RecordCreated",
+                        "type": "String"
+                    },
+                    {
+                        "name": "meta_batch_key",
+                        "type": "String"
+                    },
+                    {
+                        "name": "meta_insert_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RecordUpdated",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_raw')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_COOP_Terminals_OnPremise')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This list of terminals are for First Data Terminals, it has a flag to determine if the ATM is on prem or not. The list was provided by Roger.",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw/Reference/ATM"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "ATMTerminals_Coop_OnPremise.csv",
+                        "folderPath": "Reference/ATM",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Term Id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FI Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Line",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Make",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Model",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Street",
+                        "type": "String"
+                    },
+                    {
+                        "name": "City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OFF_PREMISE_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DEPOSIT_WITH_ENVELOPE_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DEPOSIT_WITH_CASH_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DEPOSIT_WITH_CHECK_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APPLICATION_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Last Trans",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_CardholderAnalysis_Daily')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "cardholder_analysis_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_outcome_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "cardholder_analysis_daily"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_TransactionAnalysis_Monthly_NoAccount')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "transaction_analysis_monthly_no_account_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "settlement_year",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "settlement_month",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "transaction_analysis_monthly_no_account"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/drpToRawFiles_account')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic Raw"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('FIS/Demographics/',substring(dataset().outputdirectorypath,20,4),'/',substring(dataset().outputdirectorypath,24,2),'/',substring(dataset().outputdirectorypath,26,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "raw",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FISDebitTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransmissionDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransmissionTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountCardholderBillingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConversionRateSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConversionRateCardholderBill",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TimeLocalTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateLocalTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateExpiration",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateConversion",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateCapture",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquiringInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumberExtendedCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ForwardingInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardSequenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NetworkInternationalID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServicePINCaptureCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionProcessingFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionProcessingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementProcessingFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementProcessingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquiringInstitutionIDCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ForwardingInstitutionIDCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumberExtended",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackTwoData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RetrievalReferenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationIDResponseID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ServiceRestrictionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorTerminalIdentificationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorIdentificationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameLocation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameStateProvince",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalResponseData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackOneData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalPrivateData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesFeeType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesFeeFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesDecimalization",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesFeeType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesFeeFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesDecimalization",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationLifeCycle",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataCounty",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataZip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeByteMap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeReversal",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeAdvice",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerTransportData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerTransportData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataByteMap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataTermNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataIssuerNetworkID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataAcquirerNetworkID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataProc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataAuthorizationTimeout",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExtendedPaymentCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReceivingInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NetworkManagementInformationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MessageNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MessageNumberLast",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateAction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataMessageID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTraceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTransmissionMMDD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTransmissionHHMMSS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataAcquirerInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataForwardingInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FileUpdateCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FileSecurityCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ResponseIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ServiceIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionFeeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementFeeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Payee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReceivingInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIDOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIDTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionDescriptionReimbursementAttribute",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingAgentInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CountryCodeAuthorizingAgentCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountQualifiersOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountQualifiersTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SponsorBankID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSCheckAuthorizationFormat",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSCheckAuthorizationData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDNameOfUserFile",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ISOMessageType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneZeroMMDD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneZeroHHMMSS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneFive",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneSix",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerIssuerIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreditDebitIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDSITransactionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDISResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDSINationalPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerReconciliationTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerReconciliationTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerConversionRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerConversionRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCurrencyCodeReconciliation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyCodeReconciliation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerAmountReconciliationFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerAmountReconciliationFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerAmountReconciliationFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerAmountReconciliationFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TicketNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CompletionAmountCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCompletionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyCompletionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdjustmentTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BatchDebitIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BanknetReferenceDataTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ChargeIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyConversionFeeInCardbillCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyConversionFeeInSettlementCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyConversionFeeInCardbillCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCrossborderTransactionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCrossborderCurrencyIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCrossborderTransactionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCrossborderCurrencyIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthCharacteristicIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VISAAVSResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalHotelExtraCharge",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalNoShowIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalHotelStartDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaChargebackRightsIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaFeeProgramIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaMOTOEcomm",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaMultiClearingSeq",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPurchaseIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRequestedPaymentService",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRestrictedTicketIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaSpecialConditionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaUnattendedAccTermIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarrierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaDepartureDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaDestinationCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaOriginationCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPassengerName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaAcquiringBusinessID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceEnvironment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceTerminalCapability",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaReasonCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCardholderIDMethod",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRetrievalRefNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaSystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaAcquiringInstitutionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPINCaptureCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCATTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardElectronicCommerceIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPINInvalidIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceAttendedTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceCardholderPresentIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceCardPresentIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceDataCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFunctionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardAcquirerReferenceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionLifeCycleID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardMessageNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionDestinationInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTerminalType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardReversalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCurrencyExponent",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTicketNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCarrierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTotalFare",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCityOfOriginAirportCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCityOfDestinationAirportCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRenterName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCheckInArrivalDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFolioNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalAgreementNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRoomRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTotalRoomTax",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRestrictedTicketIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProgramRegistrationID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardSettlementDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardSettlementIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCardAcceptorPhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardUsageCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPassengerName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalIndicatorRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardNoShowIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPaypassIndicatorAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFileTransmissionDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionDescription",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCustomerCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTravelDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFlightNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCustomerServicePhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardDepartureDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPropertyPhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardBillingAdjustment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProgramCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardMessageTypeIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardAcquirerInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINExists",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdjustmentComment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingSystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingLocalTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingRetrievalReferenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingCardAcceptorID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingCardAcceptorTerminalID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardBusActivity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ContactlessDoneIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ATCValidationResultCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POICurrencyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POIAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementCurrencyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementAmountSign",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AFTFeeAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AFTFeeIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RetailIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProgramIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EncryptionKeyID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAssuranceLevel",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenRequestorID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAccountNumberAccountRange",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenExpirationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardDataInputCap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardDataInputMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RouteTransitAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RouteTransitIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumberIssuer",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Interchange_BIN')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw/Reference/Interchange"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "Interchange_BIN.CSV",
+                        "folderPath": "Interchange",
+                        "fileSystem": "source-coop"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "InterchangeID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InterchangeBINNumberID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumberOperator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dropZoneTransactions_DD031')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Fiserv/DD031",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "DD031ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RoutingTransit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SYS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PRN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AGT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthDate_old",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Currency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdjustmentAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BinNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantAcctNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantStoreNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCurrencyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCurrencyCodeNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Duration",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationSource",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExternalStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PinIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationAdviceFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PositiveAutCapacityMgmt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "StrategyARNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FalconFraudScore",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FalconNonreceiptSubNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CrossReferenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "GRAmountAvailable",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantState_old",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantZip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaTranID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OperatorCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSDeviceModel",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BalanceSource",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ICODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "METHOD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PPILimit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVVCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BRNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FalconStrategyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDRTraceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TranCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OutstandingAuthorizations",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginationID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSEntryNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReasonNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LOCNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExpirationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthActivityID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthApprovalCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "StandInProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailPhoneCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LRCODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudDetectionWorkCenterCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentKitingStrategyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthResponse",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthIDNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OutstandingTransactions",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSEntryCapabililty",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ATMTerminalID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "XFERCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CCVErrorCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MCBanknetDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConsumerAccountStatusID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthCharacteristicCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TranClass",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TranResearchCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FalconTranLine",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TranIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TranDeclinedReasonCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OutstandingCheckCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AddressVerify",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PreAuthTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ElectronicCommerceCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthPlusLinkFeatureCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CPUCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientAuthStrategyID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OutstandingDepositAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TotalPINAuth",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LedgerBalanceAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TotalOutstandingDepositAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NetTransferAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OutstandingDepositCount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransferToAccount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AvailableFundAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ATMAvailableFundAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AvailableDepositAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DepositLimitAmountCountRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AddAvailDepositToLedgerBalance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DepositAccount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthoirizationAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationLimit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CalculatedFailedValues",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TranAccountTypeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LimitReason",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TranDescription",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransferFromAccountType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransferToAccountType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateImported",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APPR_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CREDIT_UNION_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PI",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ODFEE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DAT_TRAN_CTGR_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CASH_BACK_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HC_IIAS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DAT_PYMT_TRAN_TYPE_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DAT_TIME_PRTH_LIMIT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AGGR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CNTL_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DAT_WLLT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NETWORK_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHK_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CSH_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AMT_TRAN_FEE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FIN_ATH",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DEV_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TR_TAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SERV_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SID_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EMV_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CARD_SEQ",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SQI_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PI_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SRV_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SP_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AUTHN_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FalconCounterfeitStrategyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MRP",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TKREQID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TMGReportDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OVRDAMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CRTSAMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVLBAMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OVRDCHGAM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CRTSCHGAM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OVRDTYP",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TFC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRNFEEAM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MINISTMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TOKNPAN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SYSTRAC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MRCHLOC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "WLLT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVM_1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVM_2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSENV_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "STIPRC_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POI_CODE",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_rawReferenceInterchange')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic Stage"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Reference/InterchangeLegacy/current",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "InterchangeID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InterchangeRateName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InterchangeRateNameStartDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InterchangeRateNameEndDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FixedAmt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RequestedAmtPcnt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CompletedAmtPcnt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExceptionAmtPcnt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MinAmt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MaxAmt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RateStartDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RateEndDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Network",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IsOurTerminal",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IsInternational",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OnPremise",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardEntryOperator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardEntry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettledOperator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettled",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumberOperator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchTypeOperator1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchType1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchTypeOperator2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchType2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchTypeOperator3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchType3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProcessingOrder",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Number",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_AuditInvalidInterchange')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Audit"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "ROWID",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "PAN",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SWITCH DATE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "LOCAL DATE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "DEBIT AMOUNT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CREDIT AMOUNT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MEMO AMOUNT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TERMINAL INTERCHANGE FEE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SIGN7",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CARDHOLDER INTERCHANGE FEE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SIGN9",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACQ",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ISS",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TERM INST",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CARD INST",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TRAN TYPE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TRAN ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RRN",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SEQ NO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACQ/ISS",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACTION CODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TRANSACTION DESCRIPTION",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "REV REASON",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "REJ REASON",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TRACE DATA",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Prop_24",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Prop_25",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "file_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Audit",
+                    "table": "invalid_interchange"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_TransactionsAnalysis_Monthly_NoAccount')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "account_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "settlement_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "settlement_year",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "settlement_month",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_transaction_analysis_monthly_no_account"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dropZoneTransactions_FD')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Fiserv/Transactions",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Transactions_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreditUnion",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CHD_ACCOUNT_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ENTRY_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ENTRY_SYS_4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ENTRY_SYS_2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ENTRY_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ENTRY_2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ENTRY_LAST_6",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_RUN_SEQ_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTI_REG_INDUSTRY_TRAN_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TRANSACTION_AMOUNT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TRANSACTION_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SQLDLOG_JobID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_REC_CODE_KEY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_REC_TYPE_CONTROL",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_NO_POST_REASON",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SC_1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SC_2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SC_3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SC_4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SC_5",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SC_6",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SC_7",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SC_8",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CHD_SYSTEM_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CHD_PRIN_BANK",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CHD_AGENT_BANK",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TRANSACTION_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MRCH_SYSTEM_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MRCH_PRIN_BANK",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MRCH_AGENT_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MRCH_ACCOUNT_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CHD_EXT_STATUS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CHD_INT_STATUS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TANI",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TRANSFER_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ITEM_ASSES_CODE_NUM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MRCH_SIC_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_BATCH_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_JULIAN_POST_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_BKDT_ADDITIONAL_INT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_BACKDATED_TRAN_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CBRN_TRAN_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_AUDIT_TRAIL_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_AUTHORIZATION_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MERCHANT_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MERCHANT_CITY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MERCHANT_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_COFF_PRIN_PAID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_COFF_INT_PAID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SSR_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ITEM_ADDITIONAL_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_BACK_PMT_ITEM_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ADDTL_DESCRIPTION_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ENTERED_CHD_ACCT_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_FLOAT_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_REBATE_ADDITIONAL_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_REVERSAL_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_FRGN_CURR_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_FGN_TRAN_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_VIC_PROC_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ATM_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CARD_ACTV_TERM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_AUTH_SOURCE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_PREPAID_CARD_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_BATCH_TYPE_FOR_SORT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_AUTH_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DEBIT_CARD_SWITCH",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_LOYALTY_MRCH_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_BKDT_CTD_INT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_RIS_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MRCH_RIS_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MAIL_PHONE_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_FLOOR_LIMIT_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CWB_CRB_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_LCS_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_OVLMT_FEE_NET",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_NET_ITEM_CHG_CHNG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_COFF_REASON",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MEMBER_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DEBIT_PRODUCT_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_PROD_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SEQ_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_PLUS_ADJ_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TYPE_TRANS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_RETAIL_SW",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CARD_ACCEPTOR_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_YYMM_EXPIRE_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_RETAIL_FLAP_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_AIRLINE_DATA_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TERM_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_OPER_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_BATCH_TYPE2_FOR_SORT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MATCHING_AUTH_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_BACKDATED_PYMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_USED_OTHR_RCRD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_EMPL_ACCT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_USAV_OFFR_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TRMN_OWNR_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TRNS_PRCS_DATA_TX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TRN_286_SPCL_MRCH_DSCR_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_RWRD_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_HKBK_FMLY_CARD_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ANN_FEE_TRAN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TOTL_DFP_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TRAN_GROUP_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_IVA_TAX_AMOUNT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_US_EQUIV_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CURR_MARKUP_FEE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DETAIL_FLAP_DSPLY_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_FLAP_DETAIL_DSPLY_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_FLAP_PROMOTION_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TERMS_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DEPT_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_BTCH_MTCH_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ACCT_MRKT_STRT_NM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_SUB_ACCT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ORGN_ACCT_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CONTROL_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ADDL_SEGS_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ACCT_CARD_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MRCH_SPEC_FLAG_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MRCH_DPST_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MULT_PURS_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TAX_EXMP_TOTL_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TDA_TRAN_CPTR_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_PRCN_STGY_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CLNT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_LANG_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TRAN_ENTR_DT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TRAN_THRS_DT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CLNT_DFND_CARD_TYPE_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ITEM_FEE_TEXT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_PRMT_ITEM_FEE_MTHD_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MTP_DCRM_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CENTURY_JULIAN_POST_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_LS_IVA_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TLF_MTHD_NM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ADJ_ORGN_TRAN_DT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "REG_SEGMENT_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTI_REG_TRAN_ID_SOURCE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTI_REG_MISC_AMOUNT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTI_REG_TICKET_AUTH_AMOUNT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTI_REG_BNK_RFRN_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTI_REG_ORIG_TRAN_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTI_REG_CARD_INPUT_MODE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OTI_SEGMENT_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OTI_ORIGINAL_REF_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OTI_ORIGINAL_POST_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OTI_ORIGINAL_ADJ_TRAN_DT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR_SEGMENT_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR_EAPR_CASH_INT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR_EAPR_MRCH_INT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR_EAPR_CASH_ITEM_CHG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR_EAPR_MRCH_ITEM_CHG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR_EAPR_LATE_CHG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR_EAPR_OVLM_CHG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR2_SEGMENT_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR2_EAPR_MIN_CHG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR2_EAPR_STMT_CHG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR2_EAPR_CR_LIFE_CHG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR2_EAPR_REBATE_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR2_EAPR_MIN_FINC_CASH_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "APR2_EAPR_MXCP_CRDT_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DFP_SEGMENT_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_FEE_NM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_FEE_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_PSTN_BCKT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_MMB_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_RCUR_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_LTTR_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_MEMO_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_BTCH_ALPH_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_EMBD_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_RESN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_STMT_PSTN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_RPT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DFP_DYNM_FEE_GNRC_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_DETL_ICHG_FEE_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_POS_ENTR_MODE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_PI_TYPE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_ILR_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_FEE_ATTRIBUTE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TKN_CDT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TKN_SRVC_NMBR_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_WLLT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TKN_RQST_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_TKN_FILLER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_GNRC_TRAN_FLD_SEG_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_CARD_ACCP_TERM_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_MRCH_FULL_ZIP_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RDT_GTF_FILLER",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_TransactionAnalysis_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "transaction_analysis_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "transaction_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FIS_DebitDemographic2')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw/Account"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "FISDebitDemographic.csv",
+                        "fileSystem": "source-fis"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FISDebitDemographicID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PlasticNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "GreetingName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionRouteTransit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastUsedDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationLimitGroup",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINOffset",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackTwoDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDAAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SavingsAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberFive",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberFive",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressLineOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressLineTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressZip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderFirstName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderLastName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderMiddleInitial",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalIssueDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastIssueDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MothersMaidenName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HomePhone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "WorkPhone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserValidation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VRUCounter",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BirthDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationMethod",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PreviousExpirationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PreviousCardActivationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardStatusTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HashFullRecord",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastUpdatedDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dim_Payment_Token_Requestor')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "payment_token_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "token_request_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "transaction",
+                    "table": "dim_payment_token_requestor"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dim_Merchant_Type')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "merchant_type_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_category_code_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_category_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Merchant",
+                    "table": "dim_merchant_type"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/snkDatawarehouse')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "schema": {
+                        "type": "string"
+                    },
+                    "tableName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "account_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "account_geography_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "customer_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "national_identifier",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "date_of_birth",
+                        "type": "date"
+                    },
+                    {
+                        "name": "account_activation_flag",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_status_flag",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "cardholder_address_line_one",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "cardholder_address_line_two",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "durable_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().schema",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().tableName",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_TerminalAnalysis_Daily')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "terminal_analysis_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "issuer_client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transmission_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "origin_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "on_us_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "product_type",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_outcome_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "on_premise",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "terminal_key",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_address",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_city",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_state",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_zipcode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_country",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "terminal_analysis_daily"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_MerchantAnalysis_Daily')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "account_key",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "settlement_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_outcome_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_address",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_city",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_state",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_zipcode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_country",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_merchant_analysis_daily"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

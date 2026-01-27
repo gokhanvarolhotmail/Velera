@@ -1,0 +1,823 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        },
+        "Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FilePath": {
+            "type": "string",
+            "defaultValue": "@join(skip(split(triggerBody().folderPath,'/'),1),'/')"
+        },
+        "Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "Raw_Stage_TBL_CD495DTL_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_BIN_Invalid_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_monthly_PL_Billing_properties_PL_Billing_parameters_report_date": {
+            "type": "string",
+            "defaultValue": "@trigger().scheduledTime"
+        },
+        "TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_card_status_change_date": {
+            "type": "object",
+            "defaultValue": null
+        },
+        "TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_clientnumber": {
+            "type": "object",
+            "defaultValue": null
+        },
+        "TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceContainer": {
+            "type": "string",
+            "defaultValue": "raw"
+        },
+        "TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceDirectory": {
+            "type": "string",
+            "defaultValue": "Reference/BinType"
+        },
+        "TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceContainer": {
+            "type": "string",
+            "defaultValue": "raw"
+        },
+        "TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceDirectory": {
+            "type": "string",
+            "defaultValue": "Reference/CoreBin"
+        },
+        "TR_Daily_IC_Demographic_Semantic_Load_properties_PL_Master_Semantic_Loads_Demographics_SF_parameters_report_date": {
+            "type": "string",
+            "defaultValue": "@trigger().scheduledTime"
+        },
+        "TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_evn_Copy_RewardsDemoResponseDaily_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_evn_Copy_RewardsKobieTransOutbound_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_evn_Copy_RewardsKobieDemoOutbound_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/Raw_Stage_TBL_CD495DTL')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "Raw_CD495DTL_to_ConsDW_trigger",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "FilePath": "[parameters('Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FilePath')]",
+                            "FileName": "[parameters('Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/raw/blobs/Fiserv/CD495DTL/",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('Raw_Stage_TBL_CD495DTL_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/3DSLongTermReportDaily')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "3DSLongTerm_Pipeline",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-03-18T15:48:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                30
+                            ],
+                            "hours": [
+                                5
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_evn_BIN_Invalid')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_BIN_Invalid",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Coop/Audit/BIN/",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('TR_evn_BIN_Invalid_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_FraudTransaction_FISERVSpend')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Raw_FiservSpendtrend_to_ConsDW",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2021-06-27T21:23:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                8
+                            ],
+                            "weekDays": [
+                                "Tuesday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RawToStage_VisaFiles_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_ABLB_RawToStage_VisaFile",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-06-16T21:20:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                7
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_FraudTransaction_VISA')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Raw_VisaChargeback_to_ConsDW",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Month",
+                        "interval": 1,
+                        "startTime": "2021-06-16T21:24:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                15
+                            ],
+                            "hours": [
+                                8
+                            ],
+                            "monthDays": [
+                                5
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_FraudTransaction__FISCon')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Raw_FISConfirmedFraud_to_ConsDW",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2021-06-16T21:23:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                3
+                            ],
+                            "weekDays": [
+                                "Wednesday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Hourly_RawTo_Stage_ReferenceFiles')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_RawToStage_ReferenceFiles",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Hour",
+                        "interval": 1,
+                        "startTime": "2021-06-23T20:36:00",
+                        "timeZone": "Eastern Standard Time"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_ populate_dim_business_partner')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_populate_dim_business_partner",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-07-29T21:08:00",
+                        "timeZone": "Central Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                21
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_monthly_PL_Billing')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Billing",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "report_date": "[parameters('TR_monthly_PL_Billing_properties_PL_Billing_parameters_report_date')]"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Month",
+                        "interval": 1,
+                        "startTime": "2021-04-03T03:00:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                30
+                            ],
+                            "hours": [
+                                3
+                            ],
+                            "monthDays": [
+                                4
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_MS_ClientBINRTN')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Master_ClientBINRTN",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-07-21T01:06:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                6
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_weekly_Kobie_Demographics')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Kobie_Demographics_Multiple_file",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "card_status_change_date": "[parameters('TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_card_status_change_date')]",
+                            "clientnumber": "[parameters('TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_clientnumber')]"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2021-05-12T23:11:00",
+                        "timeZone": "Central Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                30
+                            ],
+                            "hours": [
+                                15
+                            ],
+                            "weekDays": [
+                                "Monday",
+                                "Tuesday",
+                                "Wednesday",
+                                "Thursday",
+                                "Friday",
+                                "Saturday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Weekly_FIS_BinType')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "process_BinType_FIS",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_SourceContainer": "[parameters('TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceContainer')]",
+                            "par_SourceDirectory": "[parameters('TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceDirectory')]"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2022-06-07T21:38:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                16
+                            ],
+                            "weekDays": [
+                                "Tuesday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_Fiserv_BinType')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "process_BinType_Fiserv",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_SourceContainer": "[parameters('TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceContainer')]",
+                            "par_SourceDirectory": "[parameters('TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceDirectory')]"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-06-07T21:40:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                14
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_IC_Demographic_Semantic_Load')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Scheduled trigger to populate semantic layer for Demographic data.",
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Master_Semantic_Loads_Demographics_SF",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "report_date": "[parameters('TR_Daily_IC_Demographic_Semantic_Load_properties_PL_Master_Semantic_Loads_Demographics_SF_parameters_report_date')]"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2020-08-11T05:01:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {}
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_evn_Copy_RewardsDemoResponseDaily')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Copy_RewardsDemoResponseDaily",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_FolderPath": "[parameters('TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FolderPath')]",
+                            "par_FileName": "[parameters('TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Rewards/Inbound/Demographics/",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('TR_evn_Copy_RewardsDemoResponseDaily_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_evn_Copy_RewardsKobieTransOutbound')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Copy_RewardsKobieOutbound",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_FolderPath": "[parameters('TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath')]",
+                            "par_FileName": "[parameters('TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/raw/blobs/Rewards/Transaction/20",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('TR_evn_Copy_RewardsKobieTransOutbound_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_evn_Copy_RewardsKobieDemoOutbound')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Copy_RewardsKobieOutbound",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_FolderPath": "[parameters('TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath')]",
+                            "par_FileName": "[parameters('TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/raw/blobs/Rewards/Demographics/20",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('TR_evn_Copy_RewardsKobieDemoOutbound_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Tr_evn_Copy_FIS_Network_Interchange_Validation')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Copy_FIS_Network_Interchange_Validation",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_FolderPath": "[parameters('Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FolderPath')]",
+                            "par_FileName": "[parameters('Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/raw/blobs/FIS/InterchangeValidation/20",
+                    "blobPathEndsWith": ".txt",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_PL_Load_MasterCard_RAW_To_ConsDW')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Raw_MasterCardChargeback_to_ConsDW",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-12-15T22:56:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                10
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

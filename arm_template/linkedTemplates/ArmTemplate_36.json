@@ -1,0 +1,1025 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_RewardsConfigurationStatementOptions')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_Application_DB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Application_DB/Rewards"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "REWARDSCONFIGURATIONSTATEMENTOPTIONID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "REWARDSCONFIGURATIONID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "REWARDSSTATEMENTOPTIONID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "STATUS",
+                        "type": "VARCHAR",
+                        "precision": 1,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATEDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "CREATEBY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFYDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "MODIFYBY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DELETEDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "DELETEBY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "REWARDS",
+                    "table": "REWARDSCONFIGURATIONSTATEMENTOPTIONS"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_RewardsProgramBINExtensions')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_Application_DB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Application_DB/Rewards"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "REWARDSPROGRAMBINEXTENSIONID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "REWARDSPROGRAMBINID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "EXTENSION",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATEDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "CREATEBY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFYDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "MODIFYBY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCECODEID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "STATUS",
+                        "type": "VARCHAR",
+                        "precision": 1,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DELETEDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "DELETEBY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "REWARDS",
+                    "table": "REWARDSPROGRAMBINEXTENSIONS"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_RewardsProgramBINs')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_Application_DB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Application_DB/Rewards"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "REWARDSPROGRAMBINID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "REWARDSPROGRAMID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATEDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "CREATEBY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFYDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "MODIFYBY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCECODEID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "STATUS",
+                        "type": "VARCHAR",
+                        "precision": 1,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DELETEDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "DELETEBY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "REWARDS",
+                    "table": "REWARDSPROGRAMBINS"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_dropZone_Rewards_Transaction')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Rewards/Inbound/Transaction",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "\t",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_dropzone_RewardsTransaction')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Rewards/Inbound/Transaction",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_rawRewardsTransactionError')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@concat('Rewards/Inbound/Transaction/Error/',substring(dataset().outputdirectorypath,27,4),'/' ,substring(dataset().outputdirectorypath,31,2),'/' ,substring(dataset().outputdirectorypath,33,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Staging_Transaction_Daily_Raw_Error')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "filename",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Data_f",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "Transaction_Daily_Raw_Error"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_PIPE_Header_Folder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Zelle_File_Audit_Log')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "file_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "BR_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "file_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "file_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "error_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "threshold",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "Record_count",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "comments",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "loaded_by",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "zelle",
+                    "table": "Zelle_File_Audit_Log"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Member_Cardholder_Sys_Reward_Admin')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "CardHolderId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "CUPersonUniqueId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolderFirstName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolderLastName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SourceId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "LoadDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "acctUUID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "cardholder_Type_Cd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "cb",
+                        "type": "bigint",
+                        "precision": 19
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Member",
+                    "table": "Cardholder_Sys_Reward_Admin"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_FeedzAI_Folder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory_Client": {
+                        "type": "string"
+                    },
+                    "Directory_Type": {
+                        "type": "string"
+                    },
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@concat(dataset().Directory_Client,'/',dataset().Directory_Type,'/',dataset().Directory_Year,'/',dataset().Directory_Month,'/',dataset().Directory_Day)",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "\"|\"",
+                    "escapeChar": "\\",
+                    "quoteChar": "`"
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Binary_GZIP_Folder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "compression": {
+                        "type": "gzip",
+                        "level": "Optimal"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_NoDelimiter_Header_File')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "\u0001",
+                    "escapeChar": "",
+                    "firstRowAsHeader": true,
+                    "quoteChar": ""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_NoDelimiter_Header_Folder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "\u0001",
+                    "escapeChar": "",
+                    "firstRowAsHeader": true,
+                    "quoteChar": ""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_NoDelimiter_NoHeader_File')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Directory": {
+                        "type": "string"
+                    },
+                    "Container": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "\u0001",
+                    "escapeChar": "",
+                    "quoteChar": ""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_NoDelimiter_NoHeader_Folder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "\u0001",
+                    "escapeChar": "",
+                    "quoteChar": ""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_PIPE_NoHeader_File')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_SF_Mastercard_FallbackTrans')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "MasterCard"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [],
+                "typeProperties": {}
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_fully_parameterized_Object1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string",
+                        "defaultValue": "Raw"
+                    },
+                    "Directory_Client": {
+                        "type": "string",
+                        "defaultValue": "Fiserv"
+                    },
+                    "Directory_Type": {
+                        "type": "string",
+                        "defaultValue": "BalanceStatus"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@concat(dataset().Directory_Client,'/',dataset().Directory_Type)",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_fully_parameterized_Month1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory_Client": {
+                        "type": "string"
+                    },
+                    "Directory_Type": {
+                        "type": "string"
+                    },
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@concat(dataset().Directory_Client,'/',dataset().Directory_Type,'/',dataset().Directory_Year,'/',dataset().Directory_Month,'/')",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        }
+    ]
+}

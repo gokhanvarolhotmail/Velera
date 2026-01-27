@@ -1,0 +1,3708 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimMerchant')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimMerchant",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 5,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimMerchant",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "ConformedTransactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        },
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "SrcDWDimMerchant": {},
+                                    "SrcDWDimSourceSystem": {},
+                                    "LoadDWDimMerchant": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimMerch-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-07-01T23:14:33Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_PaymentTokenRequestor')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "initialLoad_PaymentTokenRequestor",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "initialLoad_PaymentTokenRequestor",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "DimPaymentTokenRequestor": {},
+                                    "PaymentTokenRequestor": {},
+                                    "snkDimPaymentTokenRequestor": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions/Static Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-10-13T14:55:58Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_MerchantTypeDimension')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimMerchantType",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimMerchantType",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "srcMerchantType": {},
+                                    "DwDimMerchantType": {},
+                                    "snkDimMerchantType": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions/Static Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-10-09T22:34:56Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimPaymentToken')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimPaymentTokenRequestor",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 5,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimPaymentTokenRequestor",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "ConformedTransactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        },
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "SourceSystem": {},
+                                    "srcdimPaymentTokenRequestor": {},
+                                    "srcPaymentToken": {},
+                                    "dimPaymentTokentRequestor": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimPaymentToken-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-03-08T23:57:57Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Populate_Semantic_IterativeDateRange')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ProcessEachDay",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "GetDistinctDates",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('GetDistinctDates').output.value",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "activities": [
+                                {
+                                    "name": "PopulateTransactionAnalysis",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semTransactionAnalysis_singleDay",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ProcessDate": {
+                                                "value": "@item().settlement_date_key",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "PopulateMerchantAnalysis",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semMerchantAnalysis_singleDay",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ProcessDate": {
+                                                "value": "@item().settlement_date_key",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "PopulateTerminalAnalysis",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semTerminalAnalysis_singleDay",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ProcessDate": {
+                                                "value": "@item().settlement_date_key",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "PopulateCardholderAnalysis",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semCardholderAnalysis_singleDay",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ProcessDate": {
+                                                "value": "@item().settlement_date_key",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "GetDistinctDates",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderStoredProcedureName": "[[sem].[s_settlementdates_by_dateRange]",
+                                "storedProcedureParameters": {
+                                    "EndDate": {
+                                        "type": "DateTime",
+                                        "value": {
+                                            "value": "@pipeline().parameters.EndDate",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "StartDate": {
+                                        "type": "DateTime",
+                                        "value": {
+                                            "value": "@pipeline().parameters.StartDate",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "dim_Transaction_Name",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": false
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "StartDate": {
+                        "type": "string",
+                        "defaultValue": "1/1/2019"
+                    },
+                    "EndDate": {
+                        "type": "string",
+                        "defaultValue": "1/2/2019"
+                    }
+                },
+                "folder": {
+                    "name": "SemanticLayer/IterativeLoad/Daily"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-09-14T20:05:19Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_semAccountAnalysis')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Lookup1",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "Select Count(*) as records from (Select Distinct ft.account_key , ft.source_system_key as ft_source_system_key\nFrom \n[transaction].[fact_transaction] ft with (nolock)\ninner join (Select distinct run_id from  [Audit].[transactions_log]\nwhere loaded_to_semantic = 'False' and sem_start_date is not NULL) tl  on ft.run_id = tl.run_id) a",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "populate_AuditTransactionsLog",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        }
+                    },
+                    {
+                        "name": "If Condition1",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "Lookup1",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@greater(activity('Lookup1').output.firstRow.records,0)",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "populate_AcctStaging",
+                                    "type": "Copy",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "populate_DimAccount_FactTransaction",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "SqlDWSource",
+                                            "sqlReaderStoredProcedureName": "[[sem].[s_account_analysis_daily_Days_Data]",
+                                            "queryTimeout": "02:00:00",
+                                            "partitionOption": "None"
+                                        },
+                                        "sink": {
+                                            "type": "AzureSqlSink",
+                                            "preCopyScript": "TRUNCATE TABLE [staging].[account_analysis_daily]",
+                                            "disableMetricsCollection": false
+                                        },
+                                        "enableStaging": false,
+                                        "parallelCopies": 4,
+                                        "translator": {
+                                            "type": "TabularTranslator",
+                                            "mappings": [
+                                                {
+                                                    "source": {
+                                                        "name": "import_file_date_Key",
+                                                        "type": "DateTime"
+                                                    },
+                                                    "sink": {
+                                                        "name": "date",
+                                                        "type": "DateTime"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "binnumber",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "binnumber",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "bin_type",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "bin_type",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "network_cd",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "network_cd",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "client_id",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "client_id",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "client_name",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "client_name",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "account_number",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "account_number",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "source_system_key",
+                                                        "type": "Int32"
+                                                    },
+                                                    "sink": {
+                                                        "name": "source_system_key",
+                                                        "type": "Int32"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "issue_date",
+                                                        "type": "DateTime"
+                                                    },
+                                                    "sink": {
+                                                        "name": "issue_date",
+                                                        "type": "DateTime"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "account_activation_Date",
+                                                        "type": "DateTime"
+                                                    },
+                                                    "sink": {
+                                                        "name": "activation_Date",
+                                                        "type": "DateTime"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "account_expiration_date",
+                                                        "type": "DateTime"
+                                                    },
+                                                    "sink": {
+                                                        "name": "expiration_date",
+                                                        "type": "DateTime"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "FrstTrxn",
+                                                        "type": "DateTime"
+                                                    },
+                                                    "sink": {
+                                                        "name": "first_txn_date",
+                                                        "type": "DateTime"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "IsActive",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "account_activation_flag",
+                                                        "type": "Int32"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "days_to_first_usage",
+                                                        "type": "Int32"
+                                                    },
+                                                    "sink": {
+                                                        "name": "days_to_first_usage",
+                                                        "type": "Int32"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "days_to_activation",
+                                                        "type": "Int32"
+                                                    },
+                                                    "sink": {
+                                                        "name": "days_to_activation",
+                                                        "type": "Int32"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "dailyNumTrxns",
+                                                        "type": "Int32"
+                                                    },
+                                                    "sink": {
+                                                        "name": "cnt_transactions",
+                                                        "type": "Int32"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "DailyAmount",
+                                                        "type": "Decimal"
+                                                    },
+                                                    "sink": {
+                                                        "name": "sum_settlement_amount",
+                                                        "type": "Decimal"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "vw_AccountAnalysis_Daily",
+                                            "type": "DatasetReference",
+                                            "parameters": {}
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "sem_AccountAnalysis_Daily_staging",
+                                            "type": "DatasetReference",
+                                            "parameters": {}
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "DELETE_ACCT",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "populate_AcctStaging",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[sem].[s_account_analysis_daily_delete]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "Consolidation",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                },
+                                {
+                                    "name": "populate_AcctFinal",
+                                    "type": "Copy",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "DELETE_ACCT",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "AzureSqlSource",
+                                            "queryTimeout": "02:00:00",
+                                            "partitionOption": "None"
+                                        },
+                                        "sink": {
+                                            "type": "AzureSqlSink"
+                                        },
+                                        "enableStaging": false,
+                                        "translator": {
+                                            "type": "TabularTranslator",
+                                            "mappings": [
+                                                {
+                                                    "source": {
+                                                        "name": "date",
+                                                        "type": "DateTime"
+                                                    },
+                                                    "sink": {
+                                                        "name": "date",
+                                                        "type": "DateTime"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "binnumber",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "binnumber",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "bin_type",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "bin_type",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "network_cd",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "network_cd",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "client_id",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "client_id",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "client_name",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "client_name",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "account_number",
+                                                        "type": "String"
+                                                    },
+                                                    "sink": {
+                                                        "name": "account_number",
+                                                        "type": "String"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "source_system_key",
+                                                        "type": "Int32"
+                                                    },
+                                                    "sink": {
+                                                        "name": "source_system_key",
+                                                        "type": "Int32"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "issue_date",
+                                                        "type": "DateTime"
+                                                    },
+                                                    "sink": {
+                                                        "name": "issue_date",
+                                                        "type": "DateTime"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "activation_Date",
+                                                        "type": "DateTime"
+                                                    },
+                                                    "sink": {
+                                                        "name": "activation_Date",
+                                                        "type": "DateTime"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "expiration_date",
+                                                        "type": "DateTime"
+                                                    },
+                                                    "sink": {
+                                                        "name": "expiration_date",
+                                                        "type": "DateTime"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "first_txn_date",
+                                                        "type": "DateTime"
+                                                    },
+                                                    "sink": {
+                                                        "name": "first_txn_date",
+                                                        "type": "DateTime"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "account_activation_flag",
+                                                        "type": "Int32"
+                                                    },
+                                                    "sink": {
+                                                        "name": "account_activation_flag",
+                                                        "type": "Int32"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "days_to_first_usage",
+                                                        "type": "Int32"
+                                                    },
+                                                    "sink": {
+                                                        "name": "days_to_first_usage",
+                                                        "type": "Int32"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "days_to_activation",
+                                                        "type": "Int32"
+                                                    },
+                                                    "sink": {
+                                                        "name": "days_to_activation",
+                                                        "type": "Int32"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "cnt_transactions",
+                                                        "type": "Int32"
+                                                    },
+                                                    "sink": {
+                                                        "name": "cnt_transactions",
+                                                        "type": "Int32"
+                                                    }
+                                                },
+                                                {
+                                                    "source": {
+                                                        "name": "sum_settlement_amount",
+                                                        "type": "Decimal"
+                                                    },
+                                                    "sink": {
+                                                        "name": "sum_settlement_amount",
+                                                        "type": "Decimal"
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "sem_AccountAnalysis_Daily_staging",
+                                            "type": "DatasetReference",
+                                            "parameters": {}
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "sem_AccountAnalysis_Daily",
+                                            "type": "DatasetReference",
+                                            "parameters": {}
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "populate_DimAccount_FactTransaction",
+                                    "type": "ExecuteDataFlow",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataflow": {
+                                            "referenceName": "populate_DimAccount_FactTransaction",
+                                            "type": "DataFlowReference",
+                                            "parameters": {},
+                                            "datasetParameters": {
+                                                "QryAccountsFromFactTransaction": {},
+                                                "dimAccount": {},
+                                                "snkDimAccount": {}
+                                            }
+                                        },
+                                        "staging": {
+                                            "linkedService": {
+                                                "referenceName": "EnterpriseDataSourceDev",
+                                                "type": "LinkedServiceReference"
+                                            },
+                                            "folderPath": "staging/workspace"
+                                        },
+                                        "compute": {
+                                            "coreCount": 8,
+                                            "computeType": "General"
+                                        },
+                                        "traceLevel": "Fine"
+                                    }
+                                },
+                                {
+                                    "name": "Update_SemAccountAnalysisDaily",
+                                    "type": "ExecuteDataFlow",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "populate_AcctFinal",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataflow": {
+                                            "referenceName": "Update_SemAccountAnalysisDaily",
+                                            "type": "DataFlowReference",
+                                            "parameters": {},
+                                            "datasetParameters": {
+                                                "FirstTxnDate": {},
+                                                "srcAccountAnalysisDaily": {},
+                                                "snkAccountAnalysisDaily": {}
+                                            }
+                                        },
+                                        "staging": {},
+                                        "compute": {
+                                            "coreCount": 8,
+                                            "computeType": "General"
+                                        },
+                                        "traceLevel": "Fine"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "SemanticLayer"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-06-04T23:27:40Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_ClientDimensions_Fiserv')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populateClientDim",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimClient_Fiserv",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "client": {},
+                                    "DWClient": {},
+                                    "ClientDimension": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "populateBinandRTN",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "populateClientDim",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimBinandRTN_Fiserv",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "client": {},
+                                    "DWClient": {},
+                                    "dimRTN": {},
+                                    "dimBIN": {},
+                                    "RTNDimension": {},
+                                    "BinDimension": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace/dimclient"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions/Static Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-10-09T22:34:56Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/droptoStage_FDReferenceFile')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Balance Status DrpToStage",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSReadSettings",
+                                    "recursive": false,
+                                    "wildcardFileName": "*sv",
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "DelimitedTextSink",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSWriteSettings",
+                                    "copyBehavior": "MergeFiles"
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextWriteSettings",
+                                    "quoteAllText": true,
+                                    "fileExtension": ".txt"
+                                }
+                            },
+                            "enableStaging": false
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "dzFDBalanceStatus_Meta",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "all_stgFDReferenceFile",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "outputdirectorypath": "BalanceStatus.csv"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Base Data DrpToStage",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSReadSettings",
+                                    "recursive": false,
+                                    "wildcardFileName": "*sv",
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "DelimitedTextSink",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSWriteSettings",
+                                    "copyBehavior": "MergeFiles"
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextWriteSettings",
+                                    "quoteAllText": true,
+                                    "fileExtension": ".txt"
+                                }
+                            },
+                            "enableStaging": false
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "dzFDBaseData_Meta",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "all_stgFDReferenceFile",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "outputdirectorypath": "BaseData.csv"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Account Hierarchy DrpToStage",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSReadSettings",
+                                    "recursive": false,
+                                    "wildcardFileName": "*sv",
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "DelimitedTextSink",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSWriteSettings",
+                                    "copyBehavior": "MergeFiles"
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextWriteSettings",
+                                    "quoteAllText": true,
+                                    "fileExtension": ".txt"
+                                }
+                            },
+                            "enableStaging": false
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "dzFDAccountHierarchy_meta",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "all_stgFDReferenceFile",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "outputdirectorypath": "AccountHierarchy.csv"
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "PI_Record Merge Latest to Stage",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "findLatestPath",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {
+                                "Source": "Fiserv",
+                                "Object": "PI_Record",
+                                "dest_filename": "PI_Record.csv",
+                                "dest_container": "stage",
+                                "dest_filePath": "Fiserv/ReferenceFile"
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "variables": {
+                    "filename": {
+                        "type": "String",
+                        "defaultValue": "test"
+                    }
+                },
+                "folder": {
+                    "name": "FirstData/DropToStage"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-06-18T23:30:13Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimAccountGeography_FD')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This will populate DimAccountGeograpy in the member schema in Azure SQ DW. This will populate DimAccountGeograpy in the member schema in Azure SQ DW. We updated this table to include Account Address Line One, Account Address Line Two, as well as changed the hashkeys to Sha1. July 20th, 2020",
+                "activities": [
+                    {
+                        "name": "populate_DimAccountGeography_FD",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimAccountGeography_FD",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FDCustomerData": {},
+                                    "dimAccountGeography": {},
+                                    "RefAccountRegionReference": {},
+                                    "SnkdimAccountGeography": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage/testrun"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimAccountGeography-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 5,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-11-05T18:19:05Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_Demographics')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "DimCustomerFD",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimCustomer_FD",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FDCustomerData": {},
+                                    "DWdimCustomer": {},
+                                    "FDBaseData": {},
+                                    "SnkDimCustomer": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimCustomer-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FirstData"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-12-15T03:05:34Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimAccount_FD')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimAccount_FD",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimAccount_FD",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FDCustomerData": {},
+                                    "DwDimAccount": {},
+                                    "FDBaseData": {},
+                                    "AccountHierarchy": {},
+                                    "PIRecord": {},
+                                    "FactTransactions": {},
+                                    "DWDimBin": {},
+                                    "CCUMSTR": {},
+                                    "CD495": {},
+                                    "PIStatus": {},
+                                    "SnkDimAccount": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/Fiserv/Demographics"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimAccount-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 5,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-04-15T20:44:59Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimCustomer_FD')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimCustomer_FD",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimCustomer_FD",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FDCustomerData": {},
+                                    "DWdimCustomer": {},
+                                    "FDBaseData": {},
+                                    "SnkDimCustomer": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimCustomer-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 5,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-11-05T18:19:05Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Populate_Semantic_IterativeTransaction')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ProcessEachDay",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "GetDistinctDates",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('GetDistinctDates').output.value",
+                                "type": "Expression"
+                            },
+                            "isSequential": true,
+                            "activities": [
+                                {
+                                    "name": "PopulateTransactionAnalysis",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semTransactionAnalysis_singleDay",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ProcessDate": {
+                                                "value": "@item().settlement_date_key",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "GetDistinctDates",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderStoredProcedureName": "[[sem].[s_settlementdates_by_dateRange]",
+                                "storedProcedureParameters": {
+                                    "EndDate": {
+                                        "type": "DateTime",
+                                        "value": {
+                                            "value": "@pipeline().parameters.EndDate",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "StartDate": {
+                                        "type": "DateTime",
+                                        "value": {
+                                            "value": "@pipeline().parameters.StartDate",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "dim_Transaction_Name",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": false
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "StartDate": {
+                        "type": "string",
+                        "defaultValue": "1/1/2019"
+                    },
+                    "EndDate": {
+                        "type": "string",
+                        "defaultValue": "1/2/2019"
+                    }
+                },
+                "folder": {
+                    "name": "SemanticLayer/IterativeLoad"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-03-31T23:13:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Populate_Semantic_Terminal')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ProcessEachDay",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "GetDistinctDates",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('GetDistinctDates').output.value",
+                                "type": "Expression"
+                            },
+                            "isSequential": true,
+                            "activities": [
+                                {
+                                    "name": "PopulateTerminalAnalysis",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semTerminalAnalysis_singleDay",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ProcessDate": {
+                                                "value": "@item().settlement_date_key",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "GetDistinctDates",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderStoredProcedureName": "[[sem].[s_settlementdates_by_dateRange]",
+                                "storedProcedureParameters": {
+                                    "EndDate": {
+                                        "type": "DateTime",
+                                        "value": {
+                                            "value": "@pipeline().parameters.EndDate",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "StartDate": {
+                                        "type": "DateTime",
+                                        "value": {
+                                            "value": "@pipeline().parameters.StartDate",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "dim_Transaction_Name",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": false
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "StartDate": {
+                        "type": "string",
+                        "defaultValue": "1/1/2019"
+                    },
+                    "EndDate": {
+                        "type": "string",
+                        "defaultValue": "1/2/2019"
+                    }
+                },
+                "folder": {
+                    "name": "SemanticLayer/IterativeLoad"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-03-31T23:13:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Populate_Semantic_IterativeMerchant')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ProcessEachDay",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "GetDistinctDates",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('GetDistinctDates').output.value",
+                                "type": "Expression"
+                            },
+                            "isSequential": true,
+                            "activities": [
+                                {
+                                    "name": "PopulateMerchantAnalysis",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semMerchantAnalysis_singleDay",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ProcessDate": {
+                                                "value": "@item().settlement_date_key",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "GetDistinctDates",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderStoredProcedureName": "[[sem].[s_settlementdates_by_dateRange]",
+                                "storedProcedureParameters": {
+                                    "EndDate": {
+                                        "type": "DateTime",
+                                        "value": {
+                                            "value": "@pipeline().parameters.EndDate",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "StartDate": {
+                                        "type": "DateTime",
+                                        "value": {
+                                            "value": "@pipeline().parameters.StartDate",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "dim_Transaction_Name",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": false
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "StartDate": {
+                        "type": "string",
+                        "defaultValue": "1/1/2019"
+                    },
+                    "EndDate": {
+                        "type": "string",
+                        "defaultValue": "1/2/2019"
+                    }
+                },
+                "folder": {
+                    "name": "SemanticLayer/IterativeLoad"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-03-31T23:13:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Populate_Semantic_IterativeCardholder')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ProcessEachDay",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "GetDistinctDates",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('GetDistinctDates').output.value",
+                                "type": "Expression"
+                            },
+                            "isSequential": true,
+                            "activities": [
+                                {
+                                    "name": "PopulateCardholderAnalysis",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semCardholderAnalysis_singleDay",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ProcessDate": {
+                                                "value": "@item().settlement_date_key",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "GetDistinctDates",
+                        "type": "Lookup",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderStoredProcedureName": "[[sem].[s_settlementdates_by_dateRange]",
+                                "storedProcedureParameters": {
+                                    "EndDate": {
+                                        "type": "DateTime",
+                                        "value": {
+                                            "value": "@pipeline().parameters.EndDate",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "StartDate": {
+                                        "type": "DateTime",
+                                        "value": {
+                                            "value": "@pipeline().parameters.StartDate",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "dim_Transaction_Name",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": false
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "StartDate": {
+                        "type": "string",
+                        "defaultValue": "1/1/2019"
+                    },
+                    "EndDate": {
+                        "type": "string",
+                        "defaultValue": "1/2/2019"
+                    }
+                },
+                "folder": {
+                    "name": "SemanticLayer/IterativeLoad"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-03-31T23:13:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_semAccountAnalysis_singleDay1')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_AcctStaging",
+                        "type": "Copy",
+                        "dependsOn": [
+                            {
+                                "activity": "populate_DimAccount_FactTransaction",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderStoredProcedureName": "[[sem].[s_account_analysis_daily_Days_Data]",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "sink": {
+                                "type": "AzureSqlSink",
+                                "preCopyScript": "TRUNCATE TABLE [staging].[account_analysis_daily]",
+                                "disableMetricsCollection": false
+                            },
+                            "enableStaging": false,
+                            "parallelCopies": 4,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "mappings": [
+                                    {
+                                        "source": {
+                                            "name": "import_file_date_Key",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "date",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "binnumber",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "binnumber",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "bin_type",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "bin_type",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "network_cd",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "network_cd",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "client_id",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "client_id",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "client_name",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "client_name",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "account_number",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "account_number",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "source_system_key",
+                                            "type": "Int32"
+                                        },
+                                        "sink": {
+                                            "name": "source_system_key",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "issue_date",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "issue_date",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "account_activation_Date",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "activation_Date",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "account_expiration_date",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "expiration_date",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "FrstTrxn",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "first_txn_date",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "IsActive",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "account_activation_flag",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "days_to_first_usage",
+                                            "type": "Int32"
+                                        },
+                                        "sink": {
+                                            "name": "days_to_first_usage",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "days_to_activation",
+                                            "type": "Int32"
+                                        },
+                                        "sink": {
+                                            "name": "days_to_activation",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "dailyNumTrxns",
+                                            "type": "Int32"
+                                        },
+                                        "sink": {
+                                            "name": "cnt_transactions",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "DailyAmount",
+                                            "type": "Decimal"
+                                        },
+                                        "sink": {
+                                            "name": "sum_settlement_amount",
+                                            "type": "Decimal"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "vw_AccountAnalysis_Daily2",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "sem_AccountAnalysis_Daily_staging2",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "DELETE_ACCT",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "populate_AcctStaging",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[s_account_analysis_daily_delete]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "Consolidation",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "populate_AcctFinal",
+                        "type": "Copy",
+                        "dependsOn": [
+                            {
+                                "activity": "DELETE_ACCT",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "AzureSqlSource",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "sink": {
+                                "type": "AzureSqlSink"
+                            },
+                            "enableStaging": false,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "mappings": [
+                                    {
+                                        "source": {
+                                            "name": "date",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "date",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "binnumber",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "binnumber",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "bin_type",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "bin_type",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "network_cd",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "network_cd",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "client_id",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "client_id",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "client_name",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "client_name",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "account_number",
+                                            "type": "String"
+                                        },
+                                        "sink": {
+                                            "name": "account_number",
+                                            "type": "String"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "source_system_key",
+                                            "type": "Int32"
+                                        },
+                                        "sink": {
+                                            "name": "source_system_key",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "issue_date",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "issue_date",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "activation_Date",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "activation_Date",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "expiration_date",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "expiration_date",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "first_txn_date",
+                                            "type": "DateTime"
+                                        },
+                                        "sink": {
+                                            "name": "first_txn_date",
+                                            "type": "DateTime"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "account_activation_flag",
+                                            "type": "Int32"
+                                        },
+                                        "sink": {
+                                            "name": "account_activation_flag",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "days_to_first_usage",
+                                            "type": "Int32"
+                                        },
+                                        "sink": {
+                                            "name": "days_to_first_usage",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "days_to_activation",
+                                            "type": "Int32"
+                                        },
+                                        "sink": {
+                                            "name": "days_to_activation",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "cnt_transactions",
+                                            "type": "Int32"
+                                        },
+                                        "sink": {
+                                            "name": "cnt_transactions",
+                                            "type": "Int32"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "sum_settlement_amount",
+                                            "type": "Decimal"
+                                        },
+                                        "sink": {
+                                            "name": "sum_settlement_amount",
+                                            "type": "Decimal"
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "sem_AccountAnalysis_Daily_staging2",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "sem_AccountAnalysis_Daily2",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "populate_DimAccount_FactTransaction",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimAccount_FactTransaction",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "QryAccountsFromFactTransaction": {},
+                                    "dimAccount": {},
+                                    "snkDimAccount": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "Update_SemAccountAnalysisDaily",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "populate_AcctFinal",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "Update_SemAccountAnalysisDaily1",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FirstTxnDate": {},
+                                    "srcAccountAnalysisDaily": {},
+                                    "snkAccountAnalysisDaily": {}
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "SemanticLayer/IterativeLoad"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-06-04T23:27:40Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/process_BinType_Fiserv')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "metaGetYears",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Binary_Folder",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "Container": {
+                                        "value": "@pipeline().parameters.par_SourceContainer",
+                                        "type": "Expression"
+                                    },
+                                    "Directory": {
+                                        "value": "@pipeline().parameters.par_SourceDirectory",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "varYear",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "filterYears",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "var_Year",
+                            "value": {
+                                "value": "@last(activity('filterYears').output.value).name",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "metaGetMonths",
+                        "type": "GetMetadata",
+                        "dependsOn": [
+                            {
+                                "activity": "varYear",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Binary_Folder",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "Container": {
+                                        "value": "@pipeline().parameters.par_SourceContainer",
+                                        "type": "Expression"
+                                    },
+                                    "Directory": {
+                                        "value": "@concat(pipeline().parameters.par_SourceDirectory,'/',variables('var_Year'))",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "varMonth",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "filterMonths",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "var_Month",
+                            "value": {
+                                "value": "@last(activity('filterMonths').output.value).name",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "metaGetDays",
+                        "type": "GetMetadata",
+                        "dependsOn": [
+                            {
+                                "activity": "varMonth",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Binary_Folder",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "Container": {
+                                        "value": "@pipeline().parameters.par_SourceContainer",
+                                        "type": "Expression"
+                                    },
+                                    "Directory": {
+                                        "value": "@concat(pipeline().parameters.par_SourceDirectory,'/',variables('var_Year'),'/',variables('var_Month'))",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "varDay",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "filterDays",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "var_Day",
+                            "value": {
+                                "value": "@last(activity('filterDays').output.value).name",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "filterYears",
+                        "type": "Filter",
+                        "dependsOn": [
+                            {
+                                "activity": "metaGetYears",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('metaGetYears').output.childItems",
+                                "type": "Expression"
+                            },
+                            "condition": {
+                                "value": "@startswith(item().name,'20')",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "filterMonths",
+                        "type": "Filter",
+                        "dependsOn": [
+                            {
+                                "activity": "metaGetMonths",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('metaGetMonths').output.childItems",
+                                "type": "Expression"
+                            },
+                            "condition": {
+                                "value": "@and(greater(item().name,'0'),less(item().name,'13'))",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "filterDays",
+                        "type": "Filter",
+                        "dependsOn": [
+                            {
+                                "activity": "metaGetDays",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('metaGetDays').output.childItems",
+                                "type": "Expression"
+                            },
+                            "condition": {
+                                "value": "@and(greater(item().name,'0'),less(item().name,'32'))",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "validationFileExists",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "varFileName",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Binary_File",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "Container": {
+                                        "value": "@pipeline().parameters.par_SourceContainer",
+                                        "type": "Expression"
+                                    },
+                                    "Directory": {
+                                        "value": "@concat(pipeline().parameters.par_SourceDirectory,'/',variables('var_Year'),'/',variables('var_Month'),'/',variables('var_Day'))",
+                                        "type": "Expression"
+                                    },
+                                    "FileName": {
+                                        "value": "@variables('var_FileName')",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "timeout": "0.00:15:00",
+                            "sleep": 30,
+                            "minimumSize": 500000
+                        }
+                    },
+                    {
+                        "name": "update_BinType",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "validationFileExists",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "1.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "DF_update_BinType_CoreBIN",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "srcCoreBin": {
+                                        "Container": {
+                                            "value": "@pipeline().parameters.par_SourceContainer",
+                                            "type": "Expression"
+                                        },
+                                        "Directory": {
+                                            "value": "@concat(pipeline().parameters.par_SourceDirectory,'/',variables('var_Year'),'/',variables('var_Month'),'/',variables('var_Day'))",
+                                            "type": "Expression"
+                                        },
+                                        "FileName": {
+                                            "value": "@variables('var_FileName')",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "srcDWBIN": {},
+                                    "snkDWBIN": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "metaFileName",
+                        "type": "GetMetadata",
+                        "dependsOn": [
+                            {
+                                "activity": "varDay",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Binary_Folder",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "Container": {
+                                        "value": "@pipeline().parameters.par_SourceContainer",
+                                        "type": "Expression"
+                                    },
+                                    "Directory": {
+                                        "value": "@concat(pipeline().parameters.par_SourceDirectory,'/',variables('var_Year'),'/',variables('var_Month'),'/',variables('var_Day'))",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "varFileName",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "metaFileName",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "var_FileName",
+                            "value": {
+                                "value": "@last(activity('metaFileName').output.childItems).name",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "par_SourceContainer": {
+                        "type": "string",
+                        "defaultValue": "raw"
+                    },
+                    "par_SourceDirectory": {
+                        "type": "string",
+                        "defaultValue": "Reference/CoreBin"
+                    }
+                },
+                "variables": {
+                    "var_Year": {
+                        "type": "String"
+                    },
+                    "var_Month": {
+                        "type": "String"
+                    },
+                    "var_Day": {
+                        "type": "String"
+                    },
+                    "var_FileName": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/Dimension Masters"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-06-07T21:31:28Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/process_BinType_FIS')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "metaGetYears",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Binary_Folder",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "Container": {
+                                        "value": "@pipeline().parameters.par_SourceContainer",
+                                        "type": "Expression"
+                                    },
+                                    "Directory": {
+                                        "value": "@pipeline().parameters.par_SourceDirectory",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "varYear",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "filterYears",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "var_Year",
+                            "value": {
+                                "value": "@last(activity('filterYears').output.value).name",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "metaGetMonths",
+                        "type": "GetMetadata",
+                        "dependsOn": [
+                            {
+                                "activity": "varYear",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Binary_Folder",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "Container": {
+                                        "value": "@pipeline().parameters.par_SourceContainer",
+                                        "type": "Expression"
+                                    },
+                                    "Directory": {
+                                        "value": "@concat(pipeline().parameters.par_SourceDirectory,'/',variables('var_Year'))",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "varMonth",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "filterMonths",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "var_Month",
+                            "value": {
+                                "value": "@last(activity('filterMonths').output.value).name",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "metaGetDays",
+                        "type": "GetMetadata",
+                        "dependsOn": [
+                            {
+                                "activity": "varMonth",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Binary_Folder",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "Container": {
+                                        "value": "@pipeline().parameters.par_SourceContainer",
+                                        "type": "Expression"
+                                    },
+                                    "Directory": {
+                                        "value": "@concat(pipeline().parameters.par_SourceDirectory,'/',variables('var_Year'),'/',variables('var_Month'))",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "varDay",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "filterDays",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "var_Day",
+                            "value": {
+                                "value": "@last(activity('filterDays').output.value).name",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "filterYears",
+                        "type": "Filter",
+                        "dependsOn": [
+                            {
+                                "activity": "metaGetYears",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('metaGetYears').output.childItems",
+                                "type": "Expression"
+                            },
+                            "condition": {
+                                "value": "@startswith(item().name,'20')",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "filterMonths",
+                        "type": "Filter",
+                        "dependsOn": [
+                            {
+                                "activity": "metaGetMonths",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('metaGetMonths').output.childItems",
+                                "type": "Expression"
+                            },
+                            "condition": {
+                                "value": "@and(greater(item().name,'0'),less(item().name,'13'))",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "filterDays",
+                        "type": "Filter",
+                        "dependsOn": [
+                            {
+                                "activity": "metaGetDays",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('metaGetDays').output.childItems",
+                                "type": "Expression"
+                            },
+                            "condition": {
+                                "value": "@and(greater(item().name,'0'),less(item().name,'32'))",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "validationFileExists",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "varFileName",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Binary_File",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "Container": {
+                                        "value": "@pipeline().parameters.par_SourceContainer",
+                                        "type": "Expression"
+                                    },
+                                    "Directory": {
+                                        "value": "@concat(pipeline().parameters.par_SourceDirectory,'/',variables('var_Year'),'/',variables('var_Month'),'/',variables('var_Day'))",
+                                        "type": "Expression"
+                                    },
+                                    "FileName": {
+                                        "value": "@variables('var_FileName')",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "timeout": "0.00:15:00",
+                            "sleep": 30,
+                            "minimumSize": 1048576
+                        }
+                    },
+                    {
+                        "name": "update_BinType",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "validationFileExists",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "1.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "DF_update_BinType",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "srcDWBin": {},
+                                    "BinType": {
+                                        "par_Directory": {
+                                            "value": "@concat(pipeline().parameters.par_SourceDirectory,'/',variables('var_Year'),'/',variables('var_Month'),'/',variables('var_Day'))",
+                                            "type": "Expression"
+                                        },
+                                        "par_FileName": {
+                                            "value": "@variables('var_FileName')",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "snkDWBIN": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "metaFileName",
+                        "type": "GetMetadata",
+                        "dependsOn": [
+                            {
+                                "activity": "varDay",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Binary_Folder",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "Container": {
+                                        "value": "@pipeline().parameters.par_SourceContainer",
+                                        "type": "Expression"
+                                    },
+                                    "Directory": {
+                                        "value": "@concat(pipeline().parameters.par_SourceDirectory,'/',variables('var_Year'),'/',variables('var_Month'),'/',variables('var_Day'))",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "varFileName",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "metaFileName",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "var_FileName",
+                            "value": {
+                                "value": "@last(activity('metaFileName').output.childItems).name",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "par_SourceContainer": {
+                        "type": "string",
+                        "defaultValue": "raw"
+                    },
+                    "par_SourceDirectory": {
+                        "type": "string",
+                        "defaultValue": "Reference/BinType"
+                    }
+                },
+                "variables": {
+                    "var_Year": {
+                        "type": "String"
+                    },
+                    "var_Month": {
+                        "type": "String"
+                    },
+                    "var_Day": {
+                        "type": "String"
+                    },
+                    "var_FileName": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/Dimension Masters"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-06-07T21:30:52Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DD553')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "update_DD553",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "update_DD553",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "file_name": "'DD553'"
+                                },
+                                "datasetParameters": {
+                                    "Transactions": {},
+                                    "DD553": {},
+                                    "sink1": {
+                                        "Directory_Year": "2019",
+                                        "Directory_Month": "01",
+                                        "Directory_Day": "01"
+                                    }
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "file_name": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-06-04T23:27:42Z"
+            },
+            "dependsOn": []
+        }
+    ]
+}

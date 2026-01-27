@@ -1,0 +1,1251 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_BINARY_DZ_FDTransactions')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone/Fiserv"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Fiserv/Transactions",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_BINARY_RAW_FDCrossCycle')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('Fiserv/CrossCycle_Adjustments/',substring(dataset().outputdirectorypath,22,4),'/',substring(dataset().outputdirectorypath,26,2),'/',substring(dataset().outputdirectorypath,28,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_BINARY_RAW_FDTransactions')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('Fiserv/Transactions/'\n,if(equals(substring(dataset().outputdirectorypath,11,1),'s'),substring(dataset().outputdirectorypath,13,4),substring(dataset().outputdirectorypath,12,4))\n,'/'\n,if(equals(substring(dataset().outputdirectorypath,11,1),'s'),substring(dataset().outputdirectorypath,17,2),substring(dataset().outputdirectorypath,16,2))\n,'/'\n,if(equals(substring(dataset().outputdirectorypath,11,1),'s'),substring(dataset().outputdirectorypath,19,2),substring(dataset().outputdirectorypath,18,2))\n)",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_BINARY_DZ_FDCycleToDate')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone/Fiserv"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Fiserv/CycleToDate_Adjustments",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Dim_Asset_Size')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/FinancialInstituition"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "ASSET_SIZE_KEY",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "ASSET_SIZE_DSC",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ASSET_SIZE_MIN_AMT",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "ASSET_SIZE_MAX_AMT",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "CREATE_DTE",
+                        "type": "date"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "FinancialInstitution",
+                    "table": "DIM_ASSET_SIZE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_FinancialInstitution_Dim_Geographic_Region')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "GEOGRAPHIC_REGION_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "GEOGRAPIC_REGION_NM",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATED_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATED_BY",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFIED_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFIED_BY",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "FINANCIALINSTITUTION",
+                    "table": "DIM_GEOGRAPHIC_REGION"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_FinancialInstitution_Dim_Asset_Size')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "ASSET_SIZE_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ASSET_SIZE_DSC",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ASSET_SIZE_MIN_AMT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "ASSET_SIZE_MAX_AMT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "CREATED_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATED_BY",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFIED_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFIED_BY",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "FINANCIALINSTITUTION",
+                    "table": "DIM_ASSET_SIZE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_FinancialInstitution_Dim_Client')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "CLIENT_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "IR_ID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "STREET_ADDRESS1",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "STREET_ADDRESS2",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "CITY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "STATE",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ZIPCODE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "IS_CURRENT",
+                        "type": "BOOLEAN",
+                        "precision": 1,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BEGIN_EFFECTIVE_DATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "END_EFFECTIVE_DATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "PREFERRED_NAME",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "PARENT_CLIENT_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERGER_ACQUISITION_DTE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "GEOGRAPHIC_REGION_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ASSET_SIZE_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "PORTFOLIO_SIZE_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ASSET_SIZE_AMT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "PORTFOLIO_SIZE_CNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATED_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATED_BY",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFIED_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFIED_BY",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "FINANCIALINSTITUTION",
+                    "table": "DIM_CLIENT"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_FinancialInstitution_Dim_Portfolio_Size')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "PORTFOLIO_SIZE_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "PORTFOLIO_SIZE_DSC",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "PORTFOLIO_SIZE_MIN_CNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "PORTFOLIO_SIZE_MAX_CNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATED_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATED_BY",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFIED_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MODIFIED_BY",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "FINANCIALINSTITUTION",
+                    "table": "DIM_PORTFOLIO_SIZE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Dim_Geographic_Region')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/FinancialInstituition"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "GEOGRAPHIC_REGION_KEY",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "GEOGRAPHIC_REGION_NM",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CREATE_DTE",
+                        "type": "date"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "FinancialInstitution",
+                    "table": "DIM_GEOGRAPHIC_REGION"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ConsolidatedDW_Mcycle')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_Mcycle_SqlPool",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "SourceSchema": {
+                        "type": "string"
+                    },
+                    "SourceTable": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "CardHolderId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "CardHolderGuid",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SourceId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SourceSystemKey",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardholderType",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountKey",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ClientNumber",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CCCID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ExternalStatus",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FirstName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "LastName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MiddleName",
+                        "type": "char"
+                    },
+                    {
+                        "name": "Nationalidentifier",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AddressLine1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AddressLine2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "City",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "State",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Country",
+                        "type": "smallint",
+                        "precision": 5
+                    },
+                    {
+                        "name": "ZipCode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PIID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardType",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardStatus",
+                        "type": "char"
+                    },
+                    {
+                        "name": "BirthDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "HomePhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CellPhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "WorkPhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SSNLast4",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CheckingAccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SavingsAccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PersonalEmail",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "WorkEmail",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolderTypeCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardHolderPositionCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "MothersMaiden",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Deceased",
+                        "type": "char"
+                    },
+                    {
+                        "name": "ExpirationDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "CardHolderEntity",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "CardProgram",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum3",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SpaSystemBank",
+                        "type": "char"
+                    },
+                    {
+                        "name": "SpaPrincipalBank",
+                        "type": "char"
+                    },
+                    {
+                        "name": "SpaAgentBank",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CreditBureauFlag",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardStatusChangeDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "InternalStatus",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SrcReportDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "SrcCreateDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SrcModifiedDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().SourceSchema",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().SourceTable",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Zelle_routing_number_mapping')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "org_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "org_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "isobin",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "routing_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "br_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "issuer_routing_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "zelle_routing_number_mapping"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_ZelleRouting_NumberData')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Zelle Routing Number Data",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "ZelleRoutingNumberMapping.txt",
+                        "folderPath": "Reference/SharedBranch/ZelleRoutingNumber",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "org_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "org_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "isobin",
+                        "type": "String"
+                    },
+                    {
+                        "name": "routing_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "br_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "issuer_routing_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "String"
+                    },
+                    {
+                        "name": "GA_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "file_name_prefix",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Dim_Portfolio_Size_Stg')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Staging"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "PORTFOLIO_SIZE_KEY",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "PORTFOLIO_SIZE_DSC",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PORTFOLIO_SIZE_MIN_CNT",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "PORTFOLIO_SIZE_MAX_CNT",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "DIM_PORTFOLIO_SIZE_STG"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_Reference_user_mapping')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [
+                    "Rewards"
+                ],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Reference/Rewards/UserMapping",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_Staging_rewards_user_mapping')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [
+                    "Rewards"
+                ],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "Source_System_Key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "Source_System",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolder_Type_Cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolder_Type_Cd_Description",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Rewards_auth_user_role_code",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "auth_user_can_redeem_ind",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "rewards_user_mapping"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ATM_terminals_history')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/SourceCOOP"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "ATMs",
+                        "fileSystem": "source-coop"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_TSV_Header_File')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "\t",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Binary_File')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Binary_Folder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

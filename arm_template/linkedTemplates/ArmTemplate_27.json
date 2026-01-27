@@ -1,0 +1,1563 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/src_rawInterchangeLegacy_meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw/Reference/Interchange"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Reference/InterchangeLegacy/current",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/snk_rawInterchangeLegacy')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw/Reference/Interchange"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Reference/InterchangeLegacy/current",
+                        "fileSystem": "raw"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Reference_Status')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Reference/Rewards/Status",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Reference_Transaction_Type')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Reference/Rewards/TransactionType",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Rewards_Response')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Rewards/Inbound/Demographics",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Reference_Rewards_Category_Code')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Reference/Rewards/RecurringCategoryCode",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "recurring_desc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "product_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acct_type ",
+                        "type": "String"
+                    },
+                    {
+                        "name": "credit_union_feed",
+                        "type": "String"
+                    },
+                    {
+                        "name": "rewards_category_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "rewards_category_description",
+                        "type": "String"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Ref_Gender_Code_rewards')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Reference/Rewards/GenderCode",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_stgPhone')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "ChargebacksDB"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "Phone.csv",
+                        "folderPath": "Fiserv/ReferenceFile",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Phone_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_GROUP_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_OUT_KEY_SYS_BANK",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_OUT_KEY_PRIN_BANK",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_OUT_KEY_AGENT_BANK",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_OUT_KEY_ACCT_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_TYPE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_MMBR_SQNC_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_OUT_EXTR_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_OUT_CMNC_TYPE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_OUT_CMNC_TX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_OUT_CNTC_PRHB_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reportDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dateProcessed",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDR_DATE_PROCESSED",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_OUT_TYPE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PHON_OUT_UPDT_DT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DBI_CLIENT_NUMBER",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Rewards')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RewardsDB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [
+                    "Deprecated"
+                ],
+                "type": "AzureSqlTable",
+                "schema": [],
+                "typeProperties": {}
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Ref_Payment_Token')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "token_request_ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "token_request_description",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_sub_type",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_sub_type_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "rewards_map_wallet_payment_token_requestor"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dst_MemberCardHolder_staging')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "ChargebacksDB"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "CardHolderId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "ClientNum",
+                        "type": "char"
+                    },
+                    {
+                        "name": "AccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolder_Type_Cd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardHolderPositionCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardTypeCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardProgram",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SeperateEntityInd",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "PersonUniqueId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "CardHolderNamePrefix",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolderFirstName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolderMiddleName",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardHolderLastName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolderNameSuffix",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SocialSecurityNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CustomerControlId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MothersMadenName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BirthDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "DeceasedCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "Address1LineOne",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Address1LineTwo",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Address1City",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Address1State",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Address1ZipCode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Address1CountryAlpha3",
+                        "type": "char"
+                    },
+                    {
+                        "name": "Address1CountryNumeric",
+                        "type": "smallint",
+                        "precision": 5
+                    },
+                    {
+                        "name": "AddressSource",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolderSex",
+                        "type": "char"
+                    },
+                    {
+                        "name": "DriversLicenseNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "DriversLicenseState",
+                        "type": "char"
+                    },
+                    {
+                        "name": "HomePhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BusinessPhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MobilePhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TransitRoutingNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CheckingAccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SavingsAccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountSystemEntryDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "ExpirationDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "CardsIssuedCnt",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "StatementCycleCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum3",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountBalance",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "ExternalStatus",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "InternalStatus",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardStatus",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardStatusChangeDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "CreditBureauReportCode",
+                        "type": "char"
+                    },
+                    {
+                        "name": "DoNotSolicitInd",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "SpaSystemBank",
+                        "type": "char"
+                    },
+                    {
+                        "name": "SpaPrincipalBank",
+                        "type": "char"
+                    },
+                    {
+                        "name": "SpaAgentBank",
+                        "type": "char"
+                    },
+                    {
+                        "name": "SourceId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "ModifiedDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "CardHolder"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dropZone_Rewards')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Rewards/Inbound/Demographics",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_stgOmahaClientData')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "ChargebacksDB"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "Core - Omaha Client Data.txt",
+                        "folderPath": "Fiserv/Core",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "ClientID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CharterNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RouteTransitNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BillingRouteTransitNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AddressLine1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AddressLine2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Sys",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Prin",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Agent",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SeparateEntityFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "StarParticipantNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ShazamParticipantNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISIssuerClientId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISSubProgramIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Platform",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Reference_Payment_Token')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Reference/Rewards/WalletPaymentToken",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Ref_Rewards_Status')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "source_system",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "external_status_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "external_status_code_desc",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "internal_status_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "internal_status_code_desc",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_status_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_status",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_status_reason_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_status_reason",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "earn",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "redeem",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "points_are_forfeited",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "rewards_map_status"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dst_MemberCardHolderEmail_staging')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "ChargebacksDB"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "CardHolderEmailId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "AccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolder_Type_Cd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardHolderPositionCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "EmailAddress",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "EmailAddressStatus",
+                        "type": "char"
+                    },
+                    {
+                        "name": "EmailUseTypeCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "ModifiedDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "CardHolderEmail"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Ref_Gender_Rewards')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "sex_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "sex_flag",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "gender_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "gender_desc",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "rewards_map_gender_code"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Reference_Rewards_CategoryCode')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "recurring_desc",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "product_type",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "acct_type",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "credit_union_feed",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_category_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_category_description",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "rewards_map_recurring_category_code"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Ref_Transaction_Type')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "product_type",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_transaction_type_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_transaction_type_description",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_payment_type_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_payment_type_description",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "rewards_map_transaction_type"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ds_ASYN_ConsolidatedDW')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "SourceSchema": {
+                        "type": "string",
+                        "defaultValue": "sbe"
+                    },
+                    "SourceTable": {
+                        "type": "string",
+                        "defaultValue": "vw_cardholder"
+                    }
+                },
+                "folder": {
+                    "name": "SpringboardExpansion"
+                },
+                "annotations": [
+                    "Springboard Expansion Azure Synapse Consolidated DW Dataset"
+                ],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "CardHolderId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "CardHolderGuid",
+                        "type": "uniqueidentifier"
+                    },
+                    {
+                        "name": "sourceId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sourcesystemkey",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "CardHolderType",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountKey",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ClientNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CCCID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ExternalStatus",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PersonUniqueId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SOURCE_MEMBER_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FirstName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "LastName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MIDDLENAME",
+                        "type": "char"
+                    },
+                    {
+                        "name": "Nationalidentifier",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AddressLine1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AddressLine2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "City",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "State",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Country",
+                        "type": "char"
+                    },
+                    {
+                        "name": "Zipcode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PIID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "cardtype",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardStatus",
+                        "type": "char"
+                    },
+                    {
+                        "name": "BirthDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "HomePhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CellPhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "WorkPhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SSNLast4",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CheckingAccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SavingsAccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PersonalEmail",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "WorkEmail",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolderTypeCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardHolderPositionCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "MothersMaiden",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Deceased",
+                        "type": "char"
+                    },
+                    {
+                        "name": "ExpirationDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "CardHolderEntity",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardProgram",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum3",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SpaSystemBank",
+                        "type": "char"
+                    },
+                    {
+                        "name": "SpaPrincipalBank",
+                        "type": "char"
+                    },
+                    {
+                        "name": "SpaAgentBank",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CreditBureauFlag",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardStatusChangeDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "InternalStatus",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SrcReportDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "SrcCreateDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SrcModifiedDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "Lastmodifiedon",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "Createdon",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().SourceSchema",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().SourceTable",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

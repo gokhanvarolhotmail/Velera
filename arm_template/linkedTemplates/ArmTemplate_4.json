@@ -1,0 +1,1541 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/sp_Delete_Old_Data_Fact_Transactions')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "FactTransactions",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[transaction].[s_delete_fact_transaction]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-09-14T20:05:11Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sp_Delete_Old_Data_Semantic_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "stored procedures to delete older data out of the semantic layer.",
+                "activities": [
+                    {
+                        "name": "TransactionAnalysisMonthly",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[d_old_MonthData_Transaction_analysis_Monthly]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "Consolidation",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "TransactionVolumeAnalysis",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[d_old_MonthData_Transaction_Volume_analysis_Monthly]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "Consolidation",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "TransactionSpendAnalysis",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[d_old_MonthData_Transaction_Spend_analysis_Monthly]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "Consolidation",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "CardholderDeclineAnalysis",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[d_old_MonthData_Cardholder_Decline_analysis_Monthly]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "MerchantandCardholder",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "MerchantCategoryAnalysis",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[d_old_MonthData_Merchant_Category_analysis_Monthly]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "MerchantandCardholder",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "AMTTerminalAnalysis",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[d_old_MonthData_ATM_Terminal_analysis_Monthly]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "Consolidation",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ATMTransactionAnalysis",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[d_old_MonthData_ATM_Transaction_analysis_Monthly]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "Consolidation",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "concurrency": 1,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-09-14T20:05:07Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CUSCComplete_EOM_Backups')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This pipeline will execute the stored procedure that will create a rolling three month backup of the CUSC Complete DB.",
+                "activities": [
+                    {
+                        "name": "CUSC Complete DB Backups",
+                        "description": "This stored procedure executed will create a rolling three month backup of the CUSC Complete DB. In addition, we will need to create views in the back up databases to be able to reference existing tables for views needed. ",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[CREATE_CUSC_Complete_SNAPSHOT]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "CUSCComplete",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Create Views On CUSCEOM1",
+                        "description": "Azure SQL Database does not let you reference tables from other databases that have the same name, so we must create views to give them different names to reference them",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "CUSC Complete DB Backups",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[CREATE_VIEWS_CUSCEOM1]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "CUSCEOM1",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Create Views On CUSCEOM2",
+                        "description": "Azure SQL Database does not let you reference tables from other databases that have the same name, so we must create views to give them different names to reference them",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "CUSC Complete DB Backups",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[CREATE_VIEWS_CUSCEOM2]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "CUSCEOM2",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Shared Branch/OracleMig/End Of Month Process"
+                },
+                "annotations": [
+                    "Shared Branch"
+                ],
+                "lastPublishTime": "2021-05-17T21:08:57Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Oracle_SharedBranch_EOM1')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This pipeline executes the stored procedures that are ran for the End Of Month process.",
+                "activities": [
+                    {
+                        "name": "FIS_MONTHLY_TRANS",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[CREATE_FIS_MONTHLY_TRANS]",
+                            "storedProcedureParameters": {
+                                "MONTH": {
+                                    "value": null,
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "COOPSB",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "FIS_SNAPSHOT",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "FIS_MONTHLY_TRANS",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[CREATE_FIS_SNAPSHOT]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "COOPSB",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Rolling24MonthsFISHistory",
+                        "description": "This is to remove the oldest month from CoopSB.FIS_Data_History, This table should only contain a rolling 24 months of history.",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "FIS_SNAPSHOT",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[FIS_DATA_HISTORY_ROLLING24MONTHS]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "COOPSB",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Shared Branch/OracleMig"
+                },
+                "annotations": [
+                    "Shared Branch"
+                ],
+                "lastPublishTime": "2022-01-18T23:07:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CUSCComplete_EOM_Backups_copy1')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This pipeline will execute the stored procedure that will create a rolling three month backup of the CUSC Complete DB.",
+                "activities": [
+                    {
+                        "name": "Create Views On CUSCEOM1",
+                        "description": "Azure SQL Database does not let you reference tables from other databases that have the same name, so we must create views to give them different names to reference them",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[CREATE_VIEWS_CUSCEOM1]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "CUSCEOM1",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Create Views On CUSCEOM2",
+                        "description": "Azure SQL Database does not let you reference tables from other databases that have the same name, so we must create views to give them different names to reference them",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[CREATE_VIEWS_CUSCEOM2]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "CUSCEOM2",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Shared Branch/OracleMig"
+                },
+                "annotations": [
+                    "Shared Branch"
+                ],
+                "lastPublishTime": "2021-05-17T21:08:57Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/PL_sp_Drop_Temp_Tables')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "sp_Drop_Temp_Tables",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[common].[s_drop_temp_tables]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-05-21T18:08:04Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/PL_BIN_Research')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Produces a list of BIN's that are unmapped to CU's.",
+                "activities": [
+                    {
+                        "name": "sp_BIN_Research",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 3,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Audit].[sp_BIN_research]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Audit"
+                },
+                "annotations": [
+                    "BIN",
+                    "Monitoring",
+                    "Audit",
+                    "EDW"
+                ],
+                "lastPublishTime": "2021-05-27T19:50:33Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/PL_sp_update_binkey_transactions')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Attempts to retroactively update the BinKey in fact_transactions for any transactions where the binkey is NULL",
+                "activities": [
+                    {
+                        "name": "sp_Update_BinKey_Transactions",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[transaction].[s_update_binkey_transactions]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-07-20T23:32:11Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SB_App')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "SB_Apps TMG Export",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Create TMG Export",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[RQS_TMG_DATA_EXPORT]",
+                            "storedProcedureParameters": {
+                                "RUNDATE": {
+                                    "value": {
+                                        "value": "02/08/2022",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "SB_Apps",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Create TMG Export",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[CREATE_TMG_EXPORT]",
+                            "storedProcedureParameters": {
+                                "RUNDATE": {
+                                    "value": {
+                                        "value": "02/08/2022",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "COOPSB",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-02-11T18:06:01Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/PL_SharedBranch_Integrated_Load')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This PL calls 2 stored proc's , the first sp loads the SB transaction and SB Interchange data into a Stage table and the second SP loads data from stage to SB.Shared_Branch_Trans_Interchg_Integrated\n",
+                "activities": [
+                    {
+                        "name": "s_load_SB_trans_Intchg_to_stage",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Staging].[s_shared_branch_trans_interchg_stage]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "s_load_SB_trans_Intchng_stage_to_final",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "s_load_SB_trans_Intchg_to_stage",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[SB].[s_shared_branch_trans_interchg_integrated]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Shared Branch/Masters"
+                },
+                "annotations": [
+                    "SharedBranch"
+                ],
+                "lastPublishTime": "2022-09-30T21:57:47Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dim_Network')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "network_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "network_id",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "network_desc",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "network_name_normalized",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "transaction",
+                    "table": "dim_network"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dim_BIN')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "bin_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "source_system_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bankIdentificationNumberISO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bankIdentificationNumberEXT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_key",
+                        "type": "bigint",
+                        "precision": 19
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "FinancialInstitution",
+                    "table": "dim_bin"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dim_Terminal')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "atm_terminal_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "terminal_key",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "coop_atm_indicator",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "on_premise_indicator",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "atm_indicator",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "modified_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Transaction",
+                    "table": "dim_terminal"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/fact_Transaction')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Facts"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "transaction_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "source_system_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_key",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "Acquirer_Network_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "bin_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "card_entry_method_code_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "card_presence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "import_file_date_key",
+                        "type": "date"
+                    },
+                    {
+                        "name": "interchange_amount",
+                        "type": "decimal",
+                        "precision": 25,
+                        "scale": 2
+                    },
+                    {
+                        "name": "issuer_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "issuer_network_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "merchant_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "merchant_terminal_geography_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "merchant_type_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "monetary",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "on_us_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transmission_date_key",
+                        "type": "date"
+                    },
+                    {
+                        "name": "origin_date_key",
+                        "type": "date"
+                    },
+                    {
+                        "name": "recurring_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "settlement_amount",
+                        "type": "decimal",
+                        "precision": 25,
+                        "scale": 2
+                    },
+                    {
+                        "name": "settlement_date_key",
+                        "type": "date"
+                    },
+                    {
+                        "name": "surcharge_amount",
+                        "type": "decimal",
+                        "precision": 25,
+                        "scale": 2
+                    },
+                    {
+                        "name": "termnial_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "token_requestid",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "transaction_name_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "Transaction_type_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "run_id",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "digital_card_issued_ind",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "authorization_ind",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "authorization_no",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "transaction",
+                    "table": "fact_transaction"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_TransactionAnalysis_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "account_key",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "settlement_Date",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_transaction_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_TransactionAnalysis_Daily')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "account_key",
+                        "type": "decimal",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_transaction_analysis_daily"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dim_Transaction_Name')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "transaction_name_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "product_type",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "monetary_flag",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "denial_flag",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "transaction",
+                    "table": "dim_transaction_name"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Fact_New_Account')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Facts"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "fact_new_account_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "account_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "activation_date_id",
+                        "type": "date"
+                    },
+                    {
+                        "name": "days_to_activation",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "days_to_first_usage",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "first_txn_date_id",
+                        "type": "date"
+                    },
+                    {
+                        "name": "expiration_date_id",
+                        "type": "date"
+                    },
+                    {
+                        "name": "issue_date_id",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Member",
+                    "table": "fact_new_account"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dim_Response_Code')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "response_code_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "response_code_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_outcome_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_detail",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "transaction",
+                    "table": "dim_response_code"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dim_usertable')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "UserID",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "ClientID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BINID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "UserName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "user"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

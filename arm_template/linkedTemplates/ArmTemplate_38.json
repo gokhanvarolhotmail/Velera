@@ -1,0 +1,1266 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Staging_Rewards_outbound_demographic')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "seq",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "recordType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "customerType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "prefixCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "firstName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "middleName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "lastName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "suffixCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "genderCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "languageCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "businessName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "dobDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "doNotContactInd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "addressLine1",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "addressLine2",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "city",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "stateProvinceCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "postalCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "addressCountryCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "addressLocationCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "addressDeliverabilityCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "emailAddress",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "emailLocationCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "emailDeliveryabilityCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "phoneCountryCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "phoneLocationCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "phoneDeliverabilityCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Segmentation",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "customer_key",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "accountId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "externalAccountID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "enrollDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "openDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "closeDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "expireDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "deliquentDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "programCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "sourceCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "routing_number",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "autoRedeemInd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "accountStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "accountStatusReason",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "sourceChannelCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "sourceLocationCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "userName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "cardProductCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "startDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "endDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "HomePhone",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "BusinessPhone",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CardNum",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ExternalStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "InternalStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CardStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_status_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_status_reason_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SocialSecurityNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CheckingAccountNum",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SavingsAccountNum",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "AccountNum",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CardHolder_Type_Cd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "platform",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "client_number",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "source_name",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "rewards_outbound_demographic"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_VW_Rewards_outbound_Demographic')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "seq",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "recordType",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "customerType",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "prefixCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "firstName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "middleName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "lastName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "suffixCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "genderCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "languageCode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "businessName",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "dobDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "doNotContactInd",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "addressLine1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "addressLine2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "city",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "stateProvinceCode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "postalCode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "addressCountryCode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "addressLocationCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "addressDeliverabilityCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "emailAddress",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "emailLocationCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "emailDeliveryabilityCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "phoneCountryCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "phoneLocationCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "phoneDeliverabilityCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "Segmentation",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "accountId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "externalAccountID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "enrollDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "openDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "closeDate",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "expireDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "deliquentDate",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "programCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "sourceCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "autoRedeemInd",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "accountStatus",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "accountStatusReason",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "sourceChannelCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "sourceLocationCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "userName",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "cardNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "cardProductCode",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "startDate",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "endDate",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "PLATFORM",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "client_number",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "vw_rewards_outbound_demographic"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASQL_getRewardsProgramDataforMigration')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RewardsDB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [],
+                "typeProperties": {}
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASQL_vwcardholder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Chargebacks",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "CardHolderId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "CardHolderLastName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolderFirstName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SocialSecurityNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BirthDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "Address1LineOne",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Address1LineTwo",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Address1City",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Address1State",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Address1ZipCode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Address1CountryAlpha3",
+                        "type": "char"
+                    },
+                    {
+                        "name": "Address1CountryNumeric",
+                        "type": "smallint",
+                        "precision": 5
+                    },
+                    {
+                        "name": "HomePhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BusinessPhone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CheckingAccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SavingsAccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardHolder_Type_Cd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardHolderPositionCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "AccountSystemEntryDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "ExpirationDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "CardsIssuedCnt",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "StatementCycleCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CrossReferenceAccountNum3",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountBalance",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "ExternalStatus",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "InternalStatus",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardStatus",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CardStatusChangeDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "SourceId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "LoadDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "vwCardHolder"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DW_FDCustomerData')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Fiserv"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "fiserv",
+                    "table": "FDCustomerData"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DW_FDPIRecord')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Fiserv"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "fiserv",
+                    "table": "FDPIRecord"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DW_FDPIStatus')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Fiserv"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "fiserv",
+                    "table": "FDPIStatus"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dropZoneTransactions_Rewards_Custom_Demo')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone/Zelle_drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Rewards/Inbound/Demographics/Custom",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DW_FDCD495DTL')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Fiserv"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "fiserv",
+                    "table": "FDCD495DTL"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DW_CCUMSTR')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Fiserv"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "fiserv",
+                    "table": "FDCCUMSTR"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DW_FDAccountHierarcy')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Fiserv"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "fiserv",
+                    "table": "FDAccountHierarcy"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DW_FDBalanceStatus')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Fiserv"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "fiserv",
+                    "table": "FDBalanceStatus"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DW_FDBaseData')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Fiserv"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "FISERV",
+                    "table": "FDBaseData"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASQL_AccountTypes')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RewardsDB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "AccountTypeId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "Name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Description",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "AccountTypes"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASQL_CashbackMethods')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RewardsDB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "CashbackMethodId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "Name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Description",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "CashbackMethods"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASQL_CashbackSourceAccountTypes')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RewardsDB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "CashbackSourceAccountTypeId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "Name",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "CashbackSourceAccountTypes"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASQL_map_status')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RewardsDB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "source_system",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "external_status_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "external_status_code_desc",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "internal_status_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "internal_status_code_desc",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_status_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_status",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_status_reason_code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "rewards_status_reason",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "earn",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "redeem",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "points_are_forfeited",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "map_status"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASQL_programSettings')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RewardsDB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "programSettingsId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "externalSettingId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "ModifyDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "programSettings"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASQL_RewardsAdjustmentCodes')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RewardsDB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "AdjustmentCodeId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "Name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Code",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Description",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "RewardsAdjustmentCodes"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASQL_RewardsBonusCodes')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RewardsDB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "BonusCodeId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "Name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Code",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Description",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "RewardsBonusCodes"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

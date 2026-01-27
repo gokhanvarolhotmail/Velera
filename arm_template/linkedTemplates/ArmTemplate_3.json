@@ -1,0 +1,764 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        },
+        "LS_Mcycle_SqlPool_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_Mcycle_SqlPool'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ConsolidatedDW"
+        },
+        "LS_SF_Application_DB_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'LS_SF_Application_DB'"
+        },
+        "SharedBranchDM_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'SharedBranchDM'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=SharedBranchDM"
+        },
+        "Consolidated_DW_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'Consolidated_DW'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ConsolidatedDW"
+        },
+        "SBEAccountManagement_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'SBEAccountManagement'"
+        },
+        "SBEAccountManagement_DR_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'SBEAccountManagement_DR'"
+        },
+        "LS_ASQM_ExtendedPayment_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_ASQM_ExtendedPayment'"
+        },
+        "LS_SF_Application_DB_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "APPLICATION_DB"
+        },
+        "LS_SF_Application_DB_properties_typeProperties_role": {
+            "type": "string",
+            "defaultValue": "SVC_ETL_ADF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_Mcycle_SqlPool')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDW",
+                "typeProperties": {
+                    "connectionString": "[parameters('LS_Mcycle_SqlPool_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_SF_Application_DB')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "SnowflakeV2",
+                "typeProperties": {
+                    "authenticationType": "Basic",
+                    "accountIdentifier": "coopsfprod.east-us-2.azure",
+                    "user": "SVC_ETL_ADF",
+                    "database": "[parameters('LS_SF_Application_DB_properties_typeProperties_database')]",
+                    "warehouse": "DATA_INGESTION",
+                    "role": "[parameters('LS_SF_Application_DB_properties_typeProperties_role')]",
+                    "password": {
+                        "type": "SecureString",
+                        "value": "[parameters('LS_SF_Application_DB_password')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/MS_SBTransactions_trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Executes the Shared Branch Summary Daily and Monthly process",
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-01-25T00:02:00",
+                        "timeZone": "Central America Standard Time"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/3DS_LongTermRPTDailyTrigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-02-03T21:16:00",
+                        "timeZone": "UTC-11",
+                        "schedule": {
+                            "minutes": [
+                                55
+                            ],
+                            "hours": [
+                                4
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/3DSInterimReport_trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2020-12-09T17:46:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                1
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/OTPTrigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2021-01-20T18:15:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                1
+                            ],
+                            "hours": [
+                                0
+                            ],
+                            "weekDays": [
+                                "Monday",
+                                "Tuesday",
+                                "Wednesday",
+                                "Thursday",
+                                "Friday",
+                                "Sunday",
+                                "Saturday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_DetectionRate_Stage_To_ConsolidateDW')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-01-06T23:09:00",
+                        "timeZone": "Central Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                14
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/PL_SendEmail')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "web_SendEmail",
+                        "type": "WebActivity",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.00:05:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "method": "POST",
+                            "headers": {
+                                "Content-Type": "application/json"
+                            },
+                            "url": "https://prod-15.southcentralus.logic.azure.com:443/workflows/151d86dd1ea74ad1b3bab09c02ef9bdc/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=w6h-f9hp7zQky4e8VxdDzQdu0zK-fvw36bfaDEgOB2Q",
+                            "body": {
+                                "message": "@pipeline().parameters.message",
+                                "dataFactoryName": "@{pipeline().DataFactory}",
+                                "pipelineName": "@{pipeline().parameters.pipeline}",
+                                "receiver": "@pipeline().parameters.receiver",
+                                "subject": "@pipeline().parameters.subject"
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "receiver": {
+                        "type": "string",
+                        "defaultValue": "scott.torres@coop.org; alex.layton@coop.org"
+                    },
+                    "message": {
+                        "type": "string",
+                        "defaultValue": "Pipeline Finished Successfully!"
+                    },
+                    "subject": {
+                        "type": "string",
+                        "defaultValue": "Test Email from ADF using Logic Apps."
+                    },
+                    "pipeline": {
+                        "type": "string",
+                        "defaultValue": "Your Pipeline Name"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [
+                    "Utilities"
+                ],
+                "lastPublishTime": "2021-06-25T16:54:53Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SharedBranchDM')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "linked service for SQL DB SharedBranchDM",
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('SharedBranchDM_connectionString')]"
+                },
+                "connectVia": {
+                    "referenceName": "FISTrans-Compute-16Cores-30TTL",
+                    "type": "IntegrationRuntimeReference"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Consolidated_DW')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Consolidated_DW",
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('Consolidated_DW_connectionString')]"
+                },
+                "connectVia": {
+                    "referenceName": "FISTrans-Compute-16Cores-30TTL",
+                    "type": "IntegrationRuntimeReference"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SBEAccountManagement')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "SpringBoard Expansion Database LInked Service",
+                "parameters": {
+                    "DBName": {
+                        "type": "string",
+                        "defaultValue": "SpringboardAccountManagement"
+                    }
+                },
+                "annotations": [
+                    "SpringBoard Expansion Database LInked Service"
+                ],
+                "type": "AzureSqlMI",
+                "typeProperties": {
+                    "connectionString": "[parameters('SBEAccountManagement_connectionString')]"
+                },
+                "connectVia": {
+                    "referenceName": "vms0pmsb01",
+                    "type": "IntegrationRuntimeReference"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SBEAccountManagement_DR')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "SpringBoard Expansion Database DR LInked Service",
+                "parameters": {
+                    "DBName": {
+                        "type": "string",
+                        "defaultValue": "SpringboardAccountManagement"
+                    }
+                },
+                "annotations": [
+                    "SpringBoard Expansion Database DR LInked Service"
+                ],
+                "type": "AzureSqlMI",
+                "typeProperties": {
+                    "connectionString": "[parameters('SBEAccountManagement_DR_connectionString')]"
+                },
+                "connectVia": {
+                    "referenceName": "vms0pmsb02",
+                    "type": "IntegrationRuntimeReference"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_ASQM_ExtendedPayment')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlMI",
+                "typeProperties": {
+                    "connectionString": "[parameters('LS_ASQM_ExtendedPayment_connectionString')]"
+                },
+                "connectVia": {
+                    "referenceName": "vms0pmsb01",
+                    "type": "IntegrationRuntimeReference"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_SplitFiles_NoHeader')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Utilities"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "linkedService": {
+                                "referenceName": "EnterpriseDataSource",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "Source"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "linkedService": {
+                                "referenceName": "EnterpriseDataSource",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "Sink"
+                        }
+                    ],
+                    "transformations": [],
+                    "script": "parameters{\n\tsnk_Container as string,\n\tsrc_Directory as string,\n\tsrc_Container as string,\n\tsnk_Directory as string,\n\tsrc_FileName as string,\n\tsnk_Partitions as integer\n}\nsource(useSchema: false,\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delimited',\n\tfileSystem: ($src_Container),\n\tcolumnDelimiter: '\\u0001',\n\tescapeChar: '',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: false,\n\twildcardPaths:[(concat($src_Directory,'/',$src_FileName))]) ~> Source\nSource sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delimited',\n\tfileSystem: ($snk_Container),\n\tfolderPath: ($snk_Directory),\n\tcolumnDelimiter: '\\u0001',\n\tescapeChar: '',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: false,\n\tfilePattern:(concat(split($src_FileName,'.')[1],'_','[n]','.csv')),\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('roundRobin', ($snk_Partitions))) ~> Sink"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_SplitFiles_Header')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Utilities"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "linkedService": {
+                                "referenceName": "EnterpriseDataSource",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "Source"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "linkedService": {
+                                "referenceName": "EnterpriseDataSource",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "Sink"
+                        }
+                    ],
+                    "transformations": [],
+                    "script": "parameters{\n\tsnk_Container as string,\n\tsrc_Directory as string,\n\tsrc_Container as string,\n\tsnk_Partitions as integer,\n\tsrc_FileName as string,\n\tsnk_Directory as string\n}\nsource(useSchema: false,\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delimited',\n\tfileSystem: ($src_Container),\n\tcolumnDelimiter: '',\n\tescapeChar: '',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: true,\n\twildcardPaths:[(concat($src_Directory,'/',$src_FileName))]) ~> Source\nSource sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delimited',\n\tfileSystem: ($snk_Container),\n\tfolderPath: ($snk_Directory),\n\tcolumnDelimiter: '',\n\tescapeChar: '',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: true,\n\tfilePattern:(concat(split($src_FileName,'.')[1],'_','[n]','.csv')),\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('roundRobin', ($snk_Partitions))) ~> Sink"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sp_Delete_Duplicate_Dimension_Records')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Stored Procedure1",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[transaction].[s_delete_duplicate_dimension_records]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-09-14T20:05:06Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sp_Truncate_Table')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Stored Procedure1",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[Truncate_Table]",
+                            "storedProcedureParameters": {
+                                "TableName": {
+                                    "value": "",
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-09-14T20:05:11Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Oracle_SharedBranch_EOM')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This pipeline executes the stored procedures that are ran for the End Of Month process.",
+                "activities": [
+                    {
+                        "name": "FIS_MONTHLY_TRANS",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[CREATE_FIS_MONTHLY_TRANS]",
+                            "storedProcedureParameters": {
+                                "MONTH": {
+                                    "value": null,
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "COOPSB",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "FIS_SNAPSHOT",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "FIS_MONTHLY_TRANS",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[CREATE_FIS_SNAPSHOT]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "COOPSB",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Rolling24MonthsFISHistory",
+                        "description": "This is to remove the oldest month from CoopSB.FIS_Data_History, This table should only contain a rolling 24 months of history.",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "FIS_SNAPSHOT",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[FIS_DATA_HISTORY_ROLLING24MONTHS]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "COOPSB",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Shared Branch/OracleMig/End Of Month Process"
+                },
+                "annotations": [
+                    "Shared Branch"
+                ],
+                "lastPublishTime": "2022-01-18T23:07:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sp_Delete_Previous_Loads')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Delete Load",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[transaction].[s_delete_previous_loads]",
+                            "storedProcedureParameters": {
+                                "file_name": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                },
+                                "import_file_date": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.import_file_date",
+                                        "type": "Expression"
+                                    },
+                                    "type": "DateTime"
+                                },
+                                "source_system_key": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.source_system_key",
+                                        "type": "Expression"
+                                    },
+                                    "type": "Int32"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "import_file_date": {
+                        "type": "string"
+                    },
+                    "source_system_key": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-07-01T23:14:06Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sp_Delete_Old_Data_Semantic_Daily')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "TransactionAnalysis",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[d_old_DaysData_Transaction_analysis_Daily]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "Consolidation",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-12-28T21:45:50Z"
+            },
+            "dependsOn": []
+        }
+    ]
+}

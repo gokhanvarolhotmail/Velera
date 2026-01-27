@@ -1,0 +1,2392 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        },
+        "TR_Process_user_properties_PL_Process_User_parameters_par_source": {
+            "type": "string",
+            "defaultValue": "Reference"
+        },
+        "TR_Process_user_properties_PL_Process_User_parameters_par_object": {
+            "type": "string",
+            "defaultValue": "User"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Rewards_Account_Misc')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Rewards_Account_Misc",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-12-29T15:35:00",
+                        "timeZone": "Central Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                9
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Process_user')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Process_User",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_source": "[parameters('TR_Process_user_properties_PL_Process_User_parameters_par_source')]",
+                            "par_object": "[parameters('TR_Process_user_properties_PL_Process_User_parameters_par_object')]"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Hour",
+                        "interval": 1,
+                        "startTime": "2022-05-23T21:00:00",
+                        "timeZone": "Eastern Standard Time"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_DCI_AzuretoSF')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Master_DCI_AzuretoSnowflake",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-11-30T23:51:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                22
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Weekly_PL_Load_VISAChargeBack_RAW_To_ConsDW')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Load_VISAChargeBack_RAW_To_ConsDW",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2022-12-15T22:45:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                9
+                            ],
+                            "weekDays": [
+                                "Tuesday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Tr_Weekly_PL_Load_FISERV_SPENDTREND_RAW_To_ConsDW')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Load_FISERV_SPENDTREND_RAW_To_ConsDW",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2022-12-15T23:02:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                8
+                            ],
+                            "weekDays": [
+                                "Tuesday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Tr_Weekly_PL_Load_Confirmed_Fraud_RAW_To_ConsDW')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Load_FISConfirmedFraud_Raw_to_ConsDW",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2022-11-25T19:53:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                3
+                            ],
+                            "weekDays": [
+                                "Wednesday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Tr_Daily_Load_FalconFad_Raw_Stage_ConsDW')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Load_FalconFad_Raw_Stage_ConsDW",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2022-12-27T16:20:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                13
+                            ],
+                            "weekDays": [
+                                "Monday",
+                                "Tuesday",
+                                "Wednesday",
+                                "Thursday",
+                                "Friday",
+                                "Saturday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Tr_Daily_Feedzai_Raw_Stage_ConsDW')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Load_Feedzai_Raw_Stage_ConsDW",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-12-27T16:36:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                13
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_POTT_Azure_SF')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This trigger is to run the jobs ate 6 AM EST time.",
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Master_POTT",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2023-01-10T00:51:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                6
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FIS_MasterDemographics')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "FIS Demographics",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "FIS_MasterDemographics_Populate",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "All Master Pipelines/Demographic Masters"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-06-04T20:36:55Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/process_InterchangeDaily')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get Metadata1",
+                        "type": "GetMetadata",
+                        "dependsOn": [
+                            {
+                                "activity": "DropToRaw_Interchange",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "snk_rawReferenceInterchange_meta",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "ForEach1",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get Metadata1",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get Metadata1').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "batchCount": 5,
+                            "activities": [
+                                {
+                                    "name": "Process_Interchange",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_InterchangeDaily",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "file_name": {
+                                                "value": "@item().name",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Delete_Processed",
+                                    "type": "Delete",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "Process_Interchange",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataset": {
+                                            "referenceName": "snk_rawReferenceInterchange",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "fileName": {
+                                                    "value": "@item().name",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        "enableLogging": false,
+                                        "storeSettings": {
+                                            "type": "AzureBlobFSReadSettings",
+                                            "recursive": true
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "DropToRaw_Interchange",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "droptoRaw_Interchange",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "variables": {
+                    "load_date": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/Dimension Masters"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-09-14T20:05:20Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/MasterTransactions_Futurestate_CD031')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "TransactionDimensions",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "CD031",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "populate_TransactionDimensions",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {
+                                "Directory_Year": {
+                                    "value": "@substring(pipeline().parameters.fileName,6,4)",
+                                    "type": "Expression"
+                                },
+                                "Directory_Month": {
+                                    "value": "@substring(pipeline().parameters.fileName,10,2)",
+                                    "type": "Expression"
+                                },
+                                "Directory_Day": {
+                                    "value": "@substring(pipeline().parameters.fileName,12,2)",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "FactTransactions",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "TransactionDimensions",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "populate_FactTransactions",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {
+                                "Directory_Year": {
+                                    "value": "@substring(pipeline().parameters.fileName,6,4)",
+                                    "type": "Expression"
+                                },
+                                "Directory_Month": {
+                                    "value": "@substring(pipeline().parameters.fileName,10,2)",
+                                    "type": "Expression"
+                                },
+                                "Directory_Day": {
+                                    "value": "@substring(pipeline().parameters.fileName,12,2)",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "name": "CD031",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "CD031",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {
+                                "Directory_Year": {
+                                    "value": "@substring(pipeline().parameters.fileName,6,4)",
+                                    "type": "Expression"
+                                },
+                                "Directory_Month": {
+                                    "value": "@substring(pipeline().parameters.fileName,10,2)",
+                                    "type": "Expression"
+                                },
+                                "Directory_Day": {
+                                    "value": "@substring(pipeline().parameters.fileName,12,2)",
+                                    "type": "Expression"
+                                },
+                                "fileName": {
+                                    "value": "@pipeline().parameters.fileName",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string",
+                        "defaultValue": "2019"
+                    },
+                    "Directory_Month": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "Directory_Day": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "others"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_ChargeOff_MasterTransactions_Populate')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "RawToConformed",
+                        "type": "IfCondition",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_conformed,'1')",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "DeleteDrop_ChargeOff",
+                                    "type": "Delete",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataset": {
+                                            "referenceName": "dropZoneTransactions_ChargeOff",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "filename": {
+                                                    "value": "@pipeline().parameters.fileName",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        "enableLogging": false,
+                                        "storeSettings": {
+                                            "type": "AzureBlobFSReadSettings",
+                                            "recursive": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FD_ChargeOff",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "ChargeOff",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,10,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,14,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,16,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToFactTransactions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_fact_transactions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FactTransactions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_FactTransactions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,10,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,14,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,16,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToDimensions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_dimensions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "TransactionDimensions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_TransactionDimensions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,10,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,14,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,16,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string",
+                        "defaultValue": "2019"
+                    },
+                    "Directory_Month": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "Directory_Day": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_ChargeOff"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_CD031_MasterTransactions_Populate')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "RawToConformed",
+                        "type": "IfCondition",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_conformed,'1')",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "DeleteDrop_CD031",
+                                    "type": "Delete",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataset": {
+                                            "referenceName": "dropZoneTransactions_CD031",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "fileName": {
+                                                    "value": "@pipeline().parameters.fileName",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        "enableLogging": false,
+                                        "storeSettings": {
+                                            "type": "AzureBlobFSReadSettings",
+                                            "recursive": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FD_CD031",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "CD031",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,6,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,10,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,12,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToFactTransactions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_fact_transactions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FactTransactions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_FactTransactions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,6,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,10,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,12,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToDimensions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_dimensions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "TransactionDimensions_copy1",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_TransactionDimensions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,6,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,10,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,12,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string",
+                        "defaultValue": "2019"
+                    },
+                    "Directory_Month": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "Directory_Day": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_CD031"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_DD031_MasterTransactions_Populate')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "RawToConformed",
+                        "type": "IfCondition",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_conformed,'1')",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "DeleteDrop_DD031",
+                                    "type": "Delete",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataset": {
+                                            "referenceName": "dropZoneTransactions_DD031",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "fileName": {
+                                                    "value": "@pipeline().parameters.fileName",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        "enableLogging": false,
+                                        "storeSettings": {
+                                            "type": "AzureBlobFSReadSettings",
+                                            "recursive": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FD_DD031",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "DD031",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,6,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,10,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,12,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToDimensions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_dimensions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "TransactionDimensions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_TransactionDimensions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,6,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,10,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,12,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToFactTransactions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_transactions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FactTransactions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_FactTransactions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,6,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,10,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,12,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string",
+                        "defaultValue": "2019"
+                    },
+                    "Directory_Month": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "Directory_Day": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "run_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_DD031"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_CrossCycle_MasterTransactions_Populate')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "RawToConformed",
+                        "type": "IfCondition",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_conformed,'1')",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "DeleteDrop_CrossCycle",
+                                    "type": "Delete",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataset": {
+                                            "referenceName": "dropZoneTransactions_CrossCycle",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "fileName": {
+                                                    "value": "@pipeline().parameters.fileName",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        "enableLogging": false,
+                                        "storeSettings": {
+                                            "type": "AzureBlobFSReadSettings",
+                                            "recursive": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FD_CrossCycle",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "CrossCycle_Adjustments",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,22,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,26,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,28,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToDimensions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_dimensions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "TransactionDimensions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_TransactionDimensions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,22,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,26,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,28,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToFactTransactions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_fact_transactions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FactTransactions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_FactTransactions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,22,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,26,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,28,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string",
+                        "defaultValue": "2019"
+                    },
+                    "Directory_Month": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "Directory_Day": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_CrossCycle"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FIS_MasterTransactions_Populate')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "RawToConformed",
+                        "type": "IfCondition",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_conformed,'1')",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "DeleteDropFile",
+                                    "type": "Delete",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataset": {
+                                            "referenceName": "all_dropFISTransactions",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "fileName": {
+                                                    "value": "@pipeline().parameters.fileName",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        "enableLogging": false,
+                                        "storeSettings": {
+                                            "type": "AzureBlobFSReadSettings",
+                                            "recursive": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FISTransactions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "FIS_Transactions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,20,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,24,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,26,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToDimensions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_dimensions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "TransactionDimensions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_TransactionDimensions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,20,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,24,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,26,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToFactTransactions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_fact_transactions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FactTransactions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_FactTransactions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,20,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,24,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,26,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string",
+                        "defaultValue": "2019"
+                    },
+                    "Directory_Month": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "Directory_Day": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FIS Masters/FIS_Transactions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-10-28T21:43:44Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_CycleToDate_MasterTransactions_Populate')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "RawToConformed",
+                        "type": "IfCondition",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_conformed,'1')",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "DeleteDrop_CycleToDate",
+                                    "type": "Delete",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataset": {
+                                            "referenceName": "dropZoneTransactions_CycleToDate",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "fileName": {
+                                                    "value": "@pipeline().parameters.fileName",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        "enableLogging": false,
+                                        "storeSettings": {
+                                            "type": "AzureBlobFSReadSettings",
+                                            "recursive": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FD_CycleToDate",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "CycleToDate_Adjustments",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,23,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,27,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,29,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToDimensions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_dimensions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "TransactionDimensions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_TransactionDimensions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,23,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,27,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,29,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToFactTransactions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_fact_transactions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FactTransactions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_FactTransactions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@substring(pipeline().parameters.fileName,23,4)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@substring(pipeline().parameters.fileName,27,2)",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@substring(pipeline().parameters.fileName,29,2)",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string",
+                        "defaultValue": "2019"
+                    },
+                    "Directory_Month": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "Directory_Day": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_CycleToDate"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_MasterTransactions_Populate')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "RawToConformed",
+                        "type": "IfCondition",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_conformed,'1')",
+                                "type": "Expression"
+                            },
+                            "ifFalseActivities": [
+                                {
+                                    "name": "DeleteDrop_FDTrans",
+                                    "type": "Delete",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataset": {
+                                            "referenceName": "dropZoneTransactions_FD",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "fileName": {
+                                                    "value": "@pipeline().parameters.fileName",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        },
+                                        "enableLogging": false,
+                                        "storeSettings": {
+                                            "type": "AzureBlobFSReadSettings",
+                                            "recursive": false
+                                        }
+                                    }
+                                }
+                            ],
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FD Transactions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "FDTransactions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@if(equals(substring(pipeline().parameters.fileName,11,1),'s'),substring(pipeline().parameters.fileName,13,4),substring(pipeline().parameters.fileName,12,4))",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@if(equals(substring(pipeline().parameters.fileName,11,1),'s'),substring(pipeline().parameters.fileName,17,2),substring(pipeline().parameters.fileName,16,2))",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@if(equals(substring(pipeline().parameters.fileName,11,1),'s'),substring(pipeline().parameters.fileName,19,2),substring(pipeline().parameters.fileName,18,2))",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToDimensions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_dimensions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "TransactionDimensions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_TransactionDimensions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@if(equals(substring(pipeline().parameters.fileName,11,1),'s'),substring(pipeline().parameters.fileName,13,4),substring(pipeline().parameters.fileName,12,4))",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@if(equals(substring(pipeline().parameters.fileName,11,1),'s'),substring(pipeline().parameters.fileName,17,2),substring(pipeline().parameters.fileName,16,2))",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@if(equals(substring(pipeline().parameters.fileName,11,1),'s'),substring(pipeline().parameters.fileName,19,2),substring(pipeline().parameters.fileName,18,2))",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "ConformedToFactTransactions",
+                        "type": "IfCondition",
+                        "dependsOn": [
+                            {
+                                "activity": "RawToConformed",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@equals(pipeline().parameters.run_fact_transactions,'1')",
+                                "type": "Expression"
+                            },
+                            "ifTrueActivities": [
+                                {
+                                    "name": "FactTransactions",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_FactTransactions",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Directory_Year": {
+                                                "value": "@if(equals(substring(pipeline().parameters.fileName,11,1),'s'),substring(pipeline().parameters.fileName,13,4),substring(pipeline().parameters.fileName,12,4))",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Month": {
+                                                "value": "@if(equals(substring(pipeline().parameters.fileName,11,1),'s'),substring(pipeline().parameters.fileName,17,2),substring(pipeline().parameters.fileName,16,2))",
+                                                "type": "Expression"
+                                            },
+                                            "Directory_Day": {
+                                                "value": "@if(equals(substring(pipeline().parameters.fileName,11,1),'s'),substring(pipeline().parameters.fileName,19,2),substring(pipeline().parameters.fileName,18,2))",
+                                                "type": "Expression"
+                                            },
+                                            "fileName": {
+                                                "value": "@pipeline().parameters.fileName",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string",
+                        "defaultValue": "2019"
+                    },
+                    "Directory_Month": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "Directory_Day": {
+                        "type": "string",
+                        "defaultValue": "01"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_Transactions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_MasterDemographics')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "FD Demographics",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "FD_MasterDemographics_Populate",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "All Master Pipelines/Demographic Masters"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-11-05T18:19:05Z"
+            },
+            "dependsOn": []
+        }
+    ]
+}

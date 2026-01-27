@@ -1,0 +1,3608 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimAccountGeography_FD_NEW')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This will populate DimAccountGeograpy in the member schema in Azure SQ DW. This will populate DimAccountGeograpy in the member schema in Azure SQ DW. We updated this table to include Account Address Line One, Account Address Line Two, as well as changed the hashkeys to Sha1. July 20th, 2020",
+                "activities": [
+                    {
+                        "name": "populate_DimAccountGeography_FD_NEW",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimAccountGeography_FD_NEW",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FDCustomerData": {},
+                                    "dimAccountGeography": {},
+                                    "RefAccountRegionReference": {},
+                                    "SnkdimAccountGeography": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage/testrun"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimAccountGeography-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 5,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-11-05T18:19:05Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_XrefMember_FD')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This is to populate a cross reference table  for Account, Customer, Account GEO to the Azure DW. Using Sha1 as the hashkey reference. Dim Account, Dim Customer, and Account Geography tables are all now using the Sha1 hashkey. July 20th, 2020",
+                "activities": [
+                    {
+                        "name": "populate_XrefMember_FD",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_XrefMember_FD",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FDCustomerData": {},
+                                    "DwXrefMember": {},
+                                    "SnkXrefMember": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage/testrun"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimAccountGeography-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 5,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-11-05T18:19:05Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_InsightCenterDCI')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "InsightCenter_DCI",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "InsightCenter_DCI",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "DigitalCardIssuance": {},
+                                    "CardHolder": {},
+                                    "sinkConsolidated": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": {
+                                    "value": "staging",
+                                    "type": "Expression"
+                                }
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "Update-FactTransactionTable",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "InsightCenter_DCI",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dci].[update_digital_card_issued_ind]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "SemanticLayer"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-03-16T22:28:44Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RawToStage_FISReferenceFiles')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "FISDemo Merge Latest to Stage",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "PL_RawToStage_FindLatestPath",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {
+                                "par_Source": "FIS",
+                                "par_Object": "Demographics",
+                                "par_destFilename": "FISDebitDemographic.csv",
+                                "par_destContainer": "stage",
+                                "par_destFilePath": "FIS/ReferenceFile"
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "variables": {
+                    "fileName": {
+                        "type": "String",
+                        "defaultValue": "test"
+                    }
+                },
+                "folder": {
+                    "name": "FIS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-12-15T23:06:03Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_semantic_IterativeMonthRange_SF')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Loads Semantic Layer by Month Desc.\nValid Dashboard Parameter Values are:\nMerchantAnalysis\nMerchantCategoryAnalysis\nTransactionSpendAnalysis\nTransactionVolumeAnalysis\nTransactionAnalysis\nCardholderDeclineAnalysis\nATMTerminalAnalysis\nATMTransactionAnalysis",
+                "activities": [
+                    {
+                        "name": "Until1",
+                        "type": "Until",
+                        "dependsOn": [
+                            {
+                                "activity": "Start Date",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@less(formatDateTime(variables('Date_Increment_End')),formatDateTime(pipeline().parameters.Date_Start))",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "EndDateIncrement_Trans",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "if_RunDB3",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        },
+                                        {
+                                            "activity": "if_RunDB6",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        },
+                                        {
+                                            "activity": "if_RunDB1",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_End",
+                                        "value": {
+                                            "value": "@substring(addToTime(formatDateTime(variables('Date_Increment_Start')),-1, 'Month'),0,10)",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "StartDateIncrement_Trans",
+                                    "type": "SetVariable",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_Start",
+                                        "value": {
+                                            "value": "@variables('Date_Increment_End')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "if_RunDB1",
+                                    "type": "IfCondition",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "StartDateIncrement_Trans",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@equals(pipeline().parameters.run_DB1_TransactionAnalysis,'1')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "TransactionAnalysis",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "populate_semTransactionAnalysis_singleMonth_SF",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "start_date": {
+                                                            "value": "@variables('Date_Increment_Start')",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "if_RunDB3",
+                                    "type": "IfCondition",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "if_RunDB7",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        }
+                                    ],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@equals(pipeline().parameters.run_DB3_TransactionVolumeAnalysis,'1')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "TransactionVolumeAnalysis",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "populate_semTransactionVolumeAnalysis_singleMonth_SF",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "start_date": {
+                                                            "value": "@variables('Date_Increment_Start')",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "if_RunDB4",
+                                    "type": "IfCondition",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "StartDateIncrement_Trans",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@equals(pipeline().parameters.run_DB4_MerchantCategoryAnalysis,'1')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "MerchantCategoryAnalysis",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "populate_semMerchantCategoryAnalysis_singleMonth_SF",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "start_date": {
+                                                            "value": "@variables('Date_Increment_Start')",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "if_RunDB6",
+                                    "type": "IfCondition",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "if_RunDB8",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        }
+                                    ],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@equals(pipeline().parameters.run_DB6_ATMTransactionAnalysis,'1')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "ATMTransactionAnalysis",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "populate_semATMTransactionAnalysis_singleMonth_SF",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "start_date": {
+                                                            "value": "@variables('Date_Increment_Start')",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "if_RunDB7",
+                                    "type": "IfCondition",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "if_RunDB4",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        }
+                                    ],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@equals(pipeline().parameters.run_DB7_ATMTerminalAnalysis,'1')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "ATMTerminalAnalysis",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "populate_semATMTerminalAnalysis_singleMonth_SF",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "start_date": {
+                                                            "value": "@variables('Date_Increment_Start')",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "if_RunDB8",
+                                    "type": "IfCondition",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "if_RunDB2",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        }
+                                    ],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@equals(pipeline().parameters.run_DB8_CardholderDeclineAnalysis,'1')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "CardholderDeclineAnalysis",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "populate_semCardholderDeclineAnalysis_singleMonth_SF",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "start_date": {
+                                                            "value": "@variables('Date_Increment_Start')",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "name": "if_RunDB2",
+                                    "type": "IfCondition",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "StartDateIncrement_Trans",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@equals(pipeline().parameters.run_DB2_TransactionSpendAnalysis,'1')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "TransactionSpendAnalysis",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "populate_semTransactionSpendAnalysis_singleMonth_SF",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "start_date": {
+                                                            "value": "@variables('Date_Increment_Start')",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ],
+                            "timeout": "7.00:00:00"
+                        }
+                    },
+                    {
+                        "name": "Start Date",
+                        "type": "SetVariable",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "Date_Increment_End",
+                            "value": {
+                                "value": "@substring(startOfMonth(formatDateTime(pipeline().parameters.Date_End)),0,10)",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Date_Start": {
+                        "type": "string",
+                        "defaultValue": "01/01/2018"
+                    },
+                    "Date_End": {
+                        "type": "string",
+                        "defaultValue": "01/01/2020"
+                    },
+                    "run_DB1_TransactionAnalysis": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_DB2_TransactionSpendAnalysis": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_DB3_TransactionVolumeAnalysis": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_DB4_MerchantCategoryAnalysis": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_DB6_ATMTransactionAnalysis": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_DB7_ATMTerminalAnalysis": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_DB8_CardholderDeclineAnalysis": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "variables": {
+                    "Date_Increment_Start": {
+                        "type": "String"
+                    },
+                    "Date_Increment_End": {
+                        "type": "String"
+                    },
+                    "Test": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "SnowFlake/Monthly"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-11-22T02:59:04Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Master_Semantic_Loads_Transactions_SF')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Semantic Load Start",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[s_SF_semantic_load_start]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Lookup_Monthly",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "Semantic Load Start",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "SELECT distinct cast(DATEADD(m, DATEDIFF(m, 0, settlement_date_key), 0) as date) as settlement_date  \nFROM [Audit].[vw_SF_load_settlement_date]\nwhere cast(settlement_date_key as date) between DATEADD(month,-25,cast(getDATE() as date)) and cast(getDATE() as date)\norder by settlement_date desc",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "populate_AuditTransactionsLog",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": false
+                        }
+                    },
+                    {
+                        "name": "ForEach_Monthly",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Lookup_Monthly",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Lookup_Monthly').output.value",
+                                "type": "Expression"
+                            },
+                            "isSequential": true,
+                            "activities": [
+                                {
+                                    "name": "populate_semTransactionAnalysis_singleMonth_SF",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semTransactionAnalysis_singleMonth_SF",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "start_date": {
+                                                "value": "@substring(startOfMonth(formatDateTime(item().settlement_date)),0,10)",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "populate_semMerchantCategoryAnalysis_singleMonth_SF",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semMerchantCategoryAnalysis_singleMonth_SF",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "start_date": {
+                                                "value": "@substring(startOfMonth(formatDateTime(item().settlement_date)),0,10)",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "populate_semCardholderDeclineAnalysis_singleMonth_SF",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "populate_semTransactionSpendAnalysis_singleMonth_SF",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semCardholderDeclineAnalysis_singleMonth_SF",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "start_date": {
+                                                "value": "@substring(startOfMonth(formatDateTime(item().settlement_date)),0,10)",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "populate_semATMTransactionAnalysis_singleMonth_SF",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "populate_semCardholderDeclineAnalysis_singleMonth_SF",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semATMTransactionAnalysis_singleMonth_SF",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "start_date": {
+                                                "value": "@substring(startOfMonth(formatDateTime(item().settlement_date)),0,10)",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "populate_semTransactionSpendAnalysis_singleMonth_SF",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semTransactionSpendAnalysis_singleMonth_SF",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "start_date": {
+                                                "value": "@substring(startOfMonth(formatDateTime(item().settlement_date)),0,10)",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "populate_semTransactionVolumeAnalysis_singleMonth_SF",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "populate_semATMTerminalAnalysis_singleMonth_SF",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semTransactionVolumeAnalysis_singleMonth_SF",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "start_date": {
+                                                "value": "@substring(startOfMonth(formatDateTime(item().settlement_date)),0,10)",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "populate_semATMTerminalAnalysis_singleMonth_SF",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "populate_semMerchantCategoryAnalysis_singleMonth_SF",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semATMTerminalAnalysis_singleMonth_SF",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "start_date": {
+                                                "value": "@substring(startOfMonth(formatDateTime(item().settlement_date)),0,10)",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Semantic Load End",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "ForEach_Daily",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            },
+                            {
+                                "activity": "ForEach_Monthly",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[sem].[s_SF_semantic_load_end]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Lookup_Daily",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "Semantic Load Start",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "SqlDWSource",
+                                "sqlReaderQuery": "SELECT distinct cast(settlement_date_key as date) as settlement_date  FROM [Audit].[vw_SF_load_settlement_date]\nwhere cast(settlement_date_key as date) between DATEADD(month,-13,cast(getDATE() as date)) and cast(getDATE() as date) \norder by settlement_date desc",
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "populate_AuditTransactionsLog",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": false
+                        }
+                    },
+                    {
+                        "name": "ForEach_Daily",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Lookup_Daily",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Lookup_Daily').output.value",
+                                "type": "Expression"
+                            },
+                            "isSequential": true,
+                            "activities": [
+                                {
+                                    "name": "TransactionAnalysisDaily",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_semTransactionAnalysis_singleDay_SF",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "ProcessDate": {
+                                                "value": "@substring(item().settlement_date,0,10)",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "concurrency": 1,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "SnowFlake"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-11-22T02:59:04Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/interchange_MSTR')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "update_Interchange_MSTR_IPM",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 4,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "update_Interchange_MSTR_IPM",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "load_date": {
+                                        "value": "'@{pipeline().parameters.load_date}'",
+                                        "type": "Expression"
+                                    },
+                                    "card": "'MSTR'"
+                                },
+                                "datasetParameters": {
+                                    "srcFISConformedTransactions": {},
+                                    "dwTransactionAuditLog": {},
+                                    "srcInterchangeRaw": {},
+                                    "snkFactTransactions": {},
+                                    "snkAuditInterchange": {},
+                                    "snkAuditTransactionsLog": {},
+                                    "snkInterchangeRaw": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage/FIS/Interchange"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "Interchange-8cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "None",
+                            "cacheSinks": {
+                                "firstRowOnly": true
+                            }
+                        }
+                    },
+                    {
+                        "name": "update_Interchange_MSTR_Cirrus",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "update_Interchange_MSTR_IPM",
+                                "dependencyConditions": [
+                                    "Completed"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 4,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "update_Interchange_MSTR_Cirrus",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "load_date": {
+                                        "value": "'@{pipeline().parameters.load_date}'",
+                                        "type": "Expression"
+                                    },
+                                    "card": "'MSTR'"
+                                },
+                                "datasetParameters": {
+                                    "srcFISConformedTransactions": {},
+                                    "dwTransactionAuditLog": {},
+                                    "srcInterchangeRaw": {},
+                                    "snkFactTransactions": {},
+                                    "snkAuditInterchange": {},
+                                    "snkAuditTransactionsLog": {},
+                                    "snkInterchangeRaw": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage/FIS/Interchange"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "Interchange-8cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "None",
+                            "cacheSinks": {
+                                "firstRowOnly": true
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "load_date": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FIS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-07-30T22:16:21Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/interchange_VISA')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "update_Interchange_VISA",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 4,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "update_Interchange_VISA",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "load_date": {
+                                        "value": "'@{pipeline().parameters.load_date}'",
+                                        "type": "Expression"
+                                    },
+                                    "card": "'VISA'"
+                                },
+                                "datasetParameters": {
+                                    "srcFISConformedTransactions": {},
+                                    "dwTransactionAuditLog": {},
+                                    "srcInterchangeRaw": {},
+                                    "snkFactTransactions": {},
+                                    "snkAuditInterchange": {},
+                                    "snkAuditTransactionsLog": {},
+                                    "snkInterchangeRaw": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage/FIS/Interchange"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "Interchange-8cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "None",
+                            "cacheSinks": {
+                                "firstRowOnly": true
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "load_date": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FIS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-07-30T22:16:21Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/interchange_PULSE')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "update_Interchange_PULSE",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 4,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "update_Interchange_PULSE",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "load_date": {
+                                        "value": "'@{pipeline().parameters.load_date}'",
+                                        "type": "Expression"
+                                    },
+                                    "card": "'PULS'"
+                                },
+                                "datasetParameters": {
+                                    "srcFISConformedTransactions": {},
+                                    "dwTransactionAuditLog": {},
+                                    "srcInterchangeRaw": {},
+                                    "snkFactTransactions": {},
+                                    "snkAuditInterchange": {},
+                                    "snkAuditTransactionsLog": {},
+                                    "snkInterchangeRaw": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage/FIS/Interchange"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "Interchange-8cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "None",
+                            "cacheSinks": {
+                                "firstRowOnly": true
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "load_date": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FIS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-07-30T22:16:21Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Chargebacks_FISMembers')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Populate_ChargebacksFIS",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "stgFISDebitDemographic",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_Chargebacks_FISMembers",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "srcFISDebitDemographic": {},
+                                    "srcCountryCode": {},
+                                    "srcCountryCodeSubdivision": {},
+                                    "snkCardHolder": {}
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "stgFISDebitDemographic",
+                        "type": "Validation",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgFISDebitDemographic",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "7.00:00:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "partition_switch_CardHolderFIS",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Populate_ChargebacksFIS",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[dbo].[usp_switch_CardHolderFIS]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "Chargebacks",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "FIS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-10-27T23:34:18Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FISCardHolder')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "stgFISDebitDemographic",
+                        "type": "Validation",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgFISDebitDemographic_CH",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:00:20",
+                            "sleep": 10
+                        }
+                    },
+                    {
+                        "name": "Populate_FISCardHolder",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "stgFISDebitDemographic",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_CardHolderFIS",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "srcFISDebitDemographic": {},
+                                    "srcCountryCode": {},
+                                    "srcCountryCodeSubdivision": {},
+                                    "dwDimBin": {},
+                                    "dwDimClient": {},
+                                    "snkCardHolderStaging": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/FIS/Cardholder"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "Cardholder-Integration-Runtime",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "FIS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-04-13T03:20:32Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FDCardHolder')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Populate_FDCardHolder",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "srcCCUMSTR",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_CardHolderFD",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "srcPIRecord": {},
+                                    "srcBalanceStatus": {},
+                                    "scrCustExpanded": {},
+                                    "srcAltCustIdentification": {},
+                                    "srcExpAddr": {},
+                                    "srcPIStatus": {},
+                                    "srcEmail": {},
+                                    "srcCountryCode": {},
+                                    "srcCountryCodeSubdivision": {},
+                                    "srcBaseData": {},
+                                    "srcCustRole": {},
+                                    "srcPhone": {},
+                                    "srcCCUMSTR": {},
+                                    "dwDimBin": {},
+                                    "dwDimClient": {},
+                                    "snkCardHolderWithBASTAddr": {},
+                                    "snkMemberCardHolderEmail": {},
+                                    "snkCardHolderWithExpAddr": {},
+                                    "snkNoAddr": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage/Fiserv/Cardholder"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "Cardholder-Integration-Runtime",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "stgPIStatus",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgPhone",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgPI_Status",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgAltCustIdentification",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgBaseData",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgAltCustIdentification",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgCustExpanded",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgAltCustIdentification",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgCustExpanded",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgEmail",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgCustExpanded",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgEmail",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgExpAddr",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgEmail",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgExpAddr",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgBalanceStatus",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgPIStatus",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "DS_ADLS_stage_BalanceStatus",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgPIRecord",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgBalanceStatus",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgPIRecord",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgCountryCode",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgPIRecord",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgCountryCode",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgCountryCodeSubdivision",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgCountryCode",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgCountryCodeSubdivision",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgBaseData",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgCustRole",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "all_stgFDBaseData",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgCustRole",
+                        "type": "Validation",
+                        "dependsOn": [],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgCustRole",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "stgPhone",
+                        "description": "",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgExpAddr",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgPhone",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    },
+                    {
+                        "name": "srcCCUMSTR",
+                        "type": "Validation",
+                        "dependsOn": [
+                            {
+                                "activity": "stgCountryCodeSubdivision",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_stgCCUMSTR",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "timeout": "0.00:01:00",
+                            "sleep": 10,
+                            "minimumSize": 1000
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "FirstData"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-05-18T01:48:14Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/droptoRaw_InterchangeLegacy')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Source_Metadata",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_drpInterchangeLegacy_meta",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "ForEach_Files",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Source_Metadata",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Source_Metadata').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "activities": [
+                                {
+                                    "name": "CopyInterchange",
+                                    "type": "Copy",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "archive_InterchangeLegacy",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "BinarySource",
+                                            "storeSettings": {
+                                                "type": "AzureBlobFSReadSettings",
+                                                "recursive": false,
+                                                "deleteFilesAfterCompletion": true
+                                            },
+                                            "formatSettings": {
+                                                "type": "BinaryReadSettings"
+                                            }
+                                        },
+                                        "sink": {
+                                            "type": "BinarySink",
+                                            "storeSettings": {
+                                                "type": "AzureBlobFSWriteSettings"
+                                            }
+                                        },
+                                        "enableStaging": false
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "src_drpInterchangeLegacy",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "fileName": {
+                                                    "value": "@item().name",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "snk_rawInterchangeLegacy",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "fileName": {
+                                                    "value": "@item().name",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "archive_InterchangeLegacy",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "archive_InterchangeLegacy",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {}
+                                    }
+                                },
+                                {
+                                    "name": "populate_InterchancgeLegacyRaw",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "CopyInterchange",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "populate_InterchancgeLegacyRaw",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "fileName": {
+                                                "value": "@item().name",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "FIS/DropToRaw"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-11-21T01:36:52Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Kobie_Demographics_Multiple_file')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "s_kobie_demographic",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "s_kobie_outbound_demographic",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": {
+                                "value": "[[Staging].[s_rewards_demographic]",
+                                "type": "Expression"
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Get-Tables",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "s_rewards_demographic_hdt",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "AzureSqlSource",
+                                "sqlReaderQuery": {
+                                    "value": "select name as table_name\nfrom sys.tables\nwhere schema_name(schema_id) = 'rewards'  and  name like 'kobie_demographic%'",
+                                    "type": "Expression"
+                                },
+                                "queryTimeout": "02:00:00",
+                                "partitionOption": "None"
+                            },
+                            "dataset": {
+                                "referenceName": "Consolidated_DCI",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "firstRowOnly": false
+                        }
+                    },
+                    {
+                        "name": "ForEach1",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get-Tables",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get-Tables').output.value",
+                                "type": "Expression"
+                            },
+                            "batchCount": 50,
+                            "activities": [
+                                {
+                                    "name": "Kobie-Demographic-Multiplefile-split",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "AzureSqlSource",
+                                            "sqlReaderQuery": {
+                                                "value": "select * from [rewards].[@{item().table_name}]\norder by [externalAccountID] , cardNumber,\ncase when recordtype = '001' then 0\n              when recordtype = '201' then 1\n  when recordtype = '202' then 2\n  when recordtype = '203' then 3\n  when recordtype = '204' then 4\n  when recordtype = '002' then 5\nend",
+                                                "type": "Expression"
+                                            },
+                                            "queryTimeout": "02:00:00",
+                                            "partitionOption": "None"
+                                        },
+                                        "sink": {
+                                            "type": "DelimitedTextSink",
+                                            "storeSettings": {
+                                                "type": "AzureBlobFSWriteSettings"
+                                            },
+                                            "formatSettings": {
+                                                "type": "DelimitedTextWriteSettings",
+                                                "quoteAllText": true,
+                                                "fileExtension": ""
+                                            }
+                                        },
+                                        "enableStaging": false,
+                                        "translator": {
+                                            "type": "TabularTranslator",
+                                            "mappings": [
+                                                {
+                                                    "source": {
+                                                        "name": "dataf",
+                                                        "type": "String",
+                                                        "physicalType": "nvarchar"
+                                                    },
+                                                    "sink": {
+                                                        "type": "String",
+                                                        "ordinal": 1
+                                                    }
+                                                }
+                                            ],
+                                            "typeConversion": true,
+                                            "typeConversionSettings": {
+                                                "allowDataTruncation": true,
+                                                "treatBooleanAsNumber": false
+                                            }
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "Rewards_Kobie_test",
+                                            "type": "DatasetReference",
+                                            "parameters": {}
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "DS_ADLS_Rewards_Demographics_Outbound",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "outputfolder": {
+                                                    "value": "@item().table_name",
+                                                    "type": "Expression"
+                                                }
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "s_rewards_demographic_hdt",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "s_kobie_demographic",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": {
+                                "value": "[[Staging].[s_rewards_demographic_hdt]",
+                                "type": "Expression"
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "s_kobie_outbound_demographic",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Staging_usp_loadCardHolder_FF",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": {
+                                "value": "[[Staging].[s_rewards_outbound_demographic]",
+                                "type": "Expression"
+                            },
+                            "storedProcedureParameters": {
+                                "ClientNumber": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.clientnumber",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Staging_usp_loadCardHolder_FF",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Rewards_Construct_DWH",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": {
+                                "value": "[[Staging].[usp_loadCardHolder_FF]",
+                                "type": "Expression"
+                            },
+                            "storedProcedureParameters": {
+                                "card_status_change_date": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.card_status_change_date",
+                                        "type": "Expression"
+                                    },
+                                    "type": "DateTime"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Rewards_Construct_DWH",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "Rewards_Construct_DWH",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "card_status_change_date": {
+                        "type": "string"
+                    },
+                    "clientnumber": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [
+                    "Deprecated"
+                ],
+                "lastPublishTime": "2022-05-17T21:16:08Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Rewards_Response')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "DropToDWRaw",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "Rewards_Response",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "RewardsSource": {
+                                        "filename": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "ResponseDWRaw": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/rewards"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Rewards/Response_Master"
+                },
+                "annotations": [
+                    "deprecated"
+                ],
+                "lastPublishTime": "2022-05-17T21:17:54Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Kobie_Transaction_Multiple_file')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "s_rewards_outbound_transaction",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": {
+                                "value": "[[Staging].[s_rewards_outbound_transaction]",
+                                "type": "Expression"
+                            },
+                            "storedProcedureParameters": {
+                                "ClientNumber": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.ClientNumber",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                },
+                                "EndDate": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.EndDate",
+                                        "type": "Expression"
+                                    },
+                                    "type": "DateTime"
+                                },
+                                "OffSetMonths": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.OffSetMonths",
+                                        "type": "Expression"
+                                    },
+                                    "type": "Int32"
+                                },
+                                "StartDate": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.StartDate",
+                                        "type": "Expression"
+                                    },
+                                    "type": "DateTime"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "s_rewards_transaction",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "sp_i_rewards_audit_table",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": {
+                                "value": "[[Staging].[s_rewards_transaction]",
+                                "type": "Expression"
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Get-Tables",
+                        "type": "Lookup",
+                        "dependsOn": [
+                            {
+                                "activity": "s_rewards_transaction_hdt",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSReadSettings",
+                                    "recursive": true,
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "dataset": {
+                                "referenceName": "DS_ADLS_Transaction_Outbound",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "outputfolder": "@item().table_name"
+                                }
+                            },
+                            "firstRowOnly": false
+                        }
+                    },
+                    {
+                        "name": "ForEach1",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get-Tables",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get-Tables').output.value",
+                                "type": "Expression"
+                            },
+                            "batchCount": 50,
+                            "activities": [
+                                {
+                                    "name": "Kobie-Transaction-Multiplefile-split",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "AzureSqlSource",
+                                            "sqlReaderQuery": {
+                                                "value": "select * from [rewards].[@{item().table_name}]\norder by externalID, case when recordtype = '001' then 0\n              when recordtype = '101' then 1\n  when recordtype = '102' then 2\n  when recordtype = '103' then 3\n  when recordtype = '104' then 4\n  when recordtype = '002' then 5\nend",
+                                                "type": "Expression"
+                                            },
+                                            "queryTimeout": "02:00:00",
+                                            "partitionOption": "None"
+                                        },
+                                        "sink": {
+                                            "type": "DelimitedTextSink",
+                                            "storeSettings": {
+                                                "type": "AzureBlobFSWriteSettings"
+                                            },
+                                            "formatSettings": {
+                                                "type": "DelimitedTextWriteSettings",
+                                                "quoteAllText": true,
+                                                "fileExtension": ".txt"
+                                            }
+                                        },
+                                        "enableStaging": false,
+                                        "translator": {
+                                            "type": "TabularTranslator",
+                                            "mappings": [
+                                                {
+                                                    "source": {
+                                                        "name": "dataf",
+                                                        "type": "String",
+                                                        "physicalType": "nvarchar"
+                                                    },
+                                                    "sink": {
+                                                        "type": "String",
+                                                        "ordinal": 1
+                                                    }
+                                                }
+                                            ],
+                                            "typeConversion": true,
+                                            "typeConversionSettings": {
+                                                "allowDataTruncation": true,
+                                                "treatBooleanAsNumber": false
+                                            }
+                                        }
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "Rewards_Kobie_test",
+                                            "type": "DatasetReference",
+                                            "parameters": {}
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "DS_ADLS_Transaction_Outbound",
+                                            "type": "DatasetReference",
+                                            "parameters": {
+                                                "outputfolder": "@item().table_name"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "s_rewards_transaction_hdt",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "s_rewards_transaction",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": {
+                                "value": "[[Staging].[s_rewards_transaction_hdt]",
+                                "type": "Expression"
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "sp_i_rewards_audit_table",
+                        "description": "update audit table [Audit].[rewards_transactions_log]",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "s_rewards_outbound_transaction",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": {
+                                "value": "[[Staging].[i_rewards_audit_insert]",
+                                "type": "Expression"
+                            },
+                            "storedProcedureParameters": {
+                                "ClientNumber": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.ClientNumber",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                },
+                                "EndDate": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.EndDate",
+                                        "type": "Expression"
+                                    },
+                                    "type": "DateTime"
+                                },
+                                "OffSetMonths": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.OffSetMonths",
+                                        "type": "Expression"
+                                    },
+                                    "type": "Int32"
+                                },
+                                "StartDate": {
+                                    "value": {
+                                        "value": "@pipeline().parameters.StartDate",
+                                        "type": "Expression"
+                                    },
+                                    "type": "DateTime"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "ClientNumber": {
+                        "type": "string"
+                    },
+                    "OffSetMonths": {
+                        "type": "string",
+                        "defaultValue": "12"
+                    },
+                    "StartDate": {
+                        "type": "string"
+                    },
+                    "EndDate": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [
+                    "Deprecated"
+                ],
+                "lastPublishTime": "2022-05-17T21:50:01Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/3DS4140toOutboundforcsv')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This is to provide the extract in csv format",
+                "activities": [
+                    {
+                        "name": "3DS_4140csv",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "3DS_4140csv",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "MessageLog3DS4140": {},
+                                    "sinkOutboundfolder": {}
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "3DS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-12-30T22:55:08Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Raw_CD495DTL_to_ConsDW_trigger')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This pipeline loads CD495DTL files from Raw zone to Consolidated DW",
+                "activities": [
+                    {
+                        "name": "Copy Data from Stage to Table",
+                        "type": "Copy",
+                        "dependsOn": [
+                            {
+                                "activity": "Copy data from Raw to Stage",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageReadSettings",
+                                    "recursive": true,
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "AzureSqlSink",
+                                "preCopyScript": {
+                                    "value": "@{concat('delete from [FISERV].[STG_FDCD495DTL] where convert(varchar,cast(RPTDT as date),112) =',formatDateTime(join(skip(split(pipeline().parameters.FilePath,'/'),2),'/')\n,'yyyyMMdd'))}",
+                                    "type": "Expression"
+                                },
+                                "tableOption": "autoCreate",
+                                "disableMetricsCollection": false
+                            },
+                            "enableStaging": false,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "mappings": [
+                                    {
+                                        "source": {
+                                            "name": "CD495DTLID",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "CD495DTLID",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "INDX",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "INDX",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "ID",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "ID",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "DESCR",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "DESCR",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "BSYS",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "BSYS",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "BPRN",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "BPRN",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "BAGT",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "BAGT",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "TERMID",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TERMID",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "OPCODE",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "OPCODE",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "ACCTNO",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "ACCTNO",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "CUSTFG",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "CUSTFG",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "TRANTP",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TRANTP",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "TRDESC",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TRDESC",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "TDDATE",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TDDATE",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "TDYR",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TDYR",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "TDMO",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TDMO",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "TDDY",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TDDY",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "TDTIME",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TDTIME",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "TDINPT",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "TDINPT",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "DateProcessed",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "DateProcessed",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    },
+                                    {
+                                        "source": {
+                                            "name": "RPTDT",
+                                            "type": "String",
+                                            "physicalType": "String"
+                                        },
+                                        "sink": {
+                                            "name": "RPTDT",
+                                            "type": "String",
+                                            "physicalType": "nvarchar"
+                                        }
+                                    }
+                                ],
+                                "typeConversion": true,
+                                "typeConversionSettings": {
+                                    "allowDataTruncation": true,
+                                    "treatBooleanAsNumber": false
+                                }
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "Stage_CD495DTL",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "destpath": "Current",
+                                    "destfilename": {
+                                        "value": "@pipeline().parameters.FileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "Raw_CD495DTL_to_FDCD495DTL",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Load_Data_DW_Final",
+                        "description": "loads data from STG table into FISERV.FDCD495DTL_Load",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Copy Data from Stage to Table",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[FISERV].[s_FDCD495DTL_Load]",
+                            "storedProcedureParameters": {
+                                "RPTDT": {
+                                    "value": {
+                                        "value": "@formatDateTime(join(skip(split(pipeline().parameters.FilePath,'/'),2),'/')\n,'MM/dd/yy')",
+                                        "type": "Expression"
+                                    },
+                                    "type": "String"
+                                }
+                            }
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "Consolidated_DW",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Copy data from Raw to Stage",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "source": {
+                                "type": "DelimitedTextSource",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageReadSettings",
+                                    "recursive": true,
+                                    "wildcardFolderPath": {
+                                        "value": "@pipeline().parameters.FilePath",
+                                        "type": "Expression"
+                                    },
+                                    "wildcardFileName": "*.csv",
+                                    "enablePartitionDiscovery": false
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "DelimitedTextSink",
+                                "storeSettings": {
+                                    "type": "AzureBlobStorageWriteSettings",
+                                    "copyBehavior": "MergeFiles"
+                                },
+                                "formatSettings": {
+                                    "type": "DelimitedTextWriteSettings",
+                                    "quoteAllText": true,
+                                    "fileExtension": ".txt"
+                                }
+                            },
+                            "enableStaging": false,
+                            "translator": {
+                                "type": "TabularTranslator",
+                                "typeConversion": true,
+                                "typeConversionSettings": {
+                                    "allowDataTruncation": true,
+                                    "treatBooleanAsNumber": false
+                                }
+                            }
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "Raw_CD495DTL",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "Stage_CD495DTL",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "destpath": "Current",
+                                    "destfilename": {
+                                        "value": "@pipeline().parameters.FileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "name": "Delete from Current",
+                        "type": "Delete",
+                        "dependsOn": [
+                            {
+                                "activity": "Load_Data_DW_Final",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "Stage_CD495DTL",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "destpath": "Current",
+                                    "destfilename": {
+                                        "value": "@pipeline().parameters.FileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "enableLogging": false,
+                            "storeSettings": {
+                                "type": "AzureBlobStorageReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "FilePath": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "variables": {
+                    "Filepath": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "SmartGrowth"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-10-28T22:44:46Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/PL_populate_CUSCComplete_to_DW')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Get Issuer and Acquirer reference data from CUSC Complete (Central DB) to Data Warehouse",
+                "activities": [
+                    {
+                        "name": "DF_populateCUSCIssuer",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "DF_populateCUSCIssuer",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "srcCUSCIssuers": {},
+                                    "sinkCUSCissuerStg": {}
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "sp_CUSC_Issuer_load",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "DF_populateCUSCIssuer",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Staging].[s_CUSC_Issuer_load]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "DF_populateCUSCAcquirer",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "sp_CUSC_Issuer_load",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "DF_populateCUSCAcquirer",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "srcAcquirerCU": {},
+                                    "sinkCUSCAcquirerStg": {}
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "sp_CUSC_Acquirer_load",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "DF_populateCUSCAcquirer",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Staging].[s_CUSC_acquirer_load]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Shared Branch/Semantic"
+                },
+                "annotations": [
+                    "Shared Branch"
+                ],
+                "lastPublishTime": "2021-05-17T21:08:57Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/3DSLongTerm_Pipeline')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "3DS_LongTerm",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "3DS_LongTerm_DF",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "MessageLog": {},
+                                    "MemberCardholder": {},
+                                    "sink1": {}
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "3DS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-03-25T20:36:18Z"
+            },
+            "dependsOn": []
+        }
+    ]
+}

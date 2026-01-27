@@ -1,0 +1,1790 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_CardUsageAnalysis_staging_monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "timeperiod",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "date",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "total_cards",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "active_cards",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "non_transacting_cards",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "not_activated_cards",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "total_cards_prev",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "active_cards_prev",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "non_transacting_cards_prev",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "not_activated_cards_prev",
+                        "type": "bigint",
+                        "precision": 19
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "cardusage_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dest_common_date_dashboard')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "timeperiod",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "date_start",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "date_end",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "date_start_prev",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "date_end_prev",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "common",
+                    "table": "dim_date_dashboard"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_MerchantAnalysis_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "settlement_Date",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_address",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_city",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_state",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_zipcode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_country",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_merchant_analysis_monthly_noFilter"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_MerchantCategory_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "settlement_Date",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "digital_card_issued_ind",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_merchant_category_analysis_monthly_noFilter"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_CardUsageAnalysis_preagg')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "timeperiod",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "date",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "total_cards",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "active_cards",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "non_transacting_cards",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "not_activated_cards",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "total_cards_prev",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "active_cards_prev",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "non_transacting_cards_prev",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "not_activated_cards_prev",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_cardusage_analysis_preagg"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_CardUsageAnalysis_monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "timeperiod",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "date",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "total_cards",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "active_cards",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "non_transacting_cards",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "not_activated_cards",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "total_cards_prev",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "active_cards_prev",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "non_transacting_cards_prev",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "not_activated_cards_prev",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_cardusage_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/common_date_dashboard')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Common"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "timeperiod",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "date_start",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "date_end",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "date_start_prev",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "date_end_prev",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "common",
+                    "table": "dim_date_dashboard"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dest_User_MerchantandCardholder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "MerchantandCardholder",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "UserID",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "ClientID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BINID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "UserName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "user"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dest_User_Consolidation')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "UserID",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "ClientID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BINID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "UserName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "user"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_TransactionSpendAnalysis_Monthly_staging')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "transaction_spend_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_TransactionVolumeAnalysis_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "spend_analysis_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "transaction_volume_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_TransactionVolumeAnalysis_Monthly_staging')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "transaction_volume_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_TransactionSpendAnalysis_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "spend_analysis_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "transaction_spend_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_TransactionSummaryAnalysis_Monthly_NoFilter')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "account_key",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "settlement_Date",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_transaction_summary_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_TransactionAnalysis_Monthly_staging')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "transaction_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_CardholderDeclineAnalysis_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "MerchantandCardholder",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "cardholder_decline_analysis_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "origin_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_outcome_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "cardholder_decline_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_CardholderDeclineAnalysis_Monthly_staging')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "MerchantandCardholder",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "origin_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_outcome_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "cardholder_decline_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dz_FDCustomerData_meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Fiserv/CustomerData",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_CardholderDeclineAnalysis_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "origin_date",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_code_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "response_outcome_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_cardholder_decline_analysis_monthly"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/all_stgFDCustomerData')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "CustomerData.csv",
+                        "folderPath": "Fiserv/ReferenceFile",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "CustomerDataID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_ACCOUNT_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_PRINCIPAL_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_SPOUSE_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_ADDR_LINE_1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_ADDR_LINE_2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_CITY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_NUMERIC_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_DELIVERY_POINT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_PD_PREFIX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_PD_SUFFIX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_PD_ADDRESS_FORMAT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_PD_ADDR_LINE_3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_PD_COUNTY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_PD_POSTCODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_SD_PREFIX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_SD_SUFFIX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_SEX_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_SOC_SECURITY_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_TELEPHONE_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_SECOND_TELEPHONE_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_HOME_PHONE_FORMAT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_BUS_PHONE_FORMAT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_MOTHERS_MAIDEN_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_SECONDARY_SOC_SEC_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_DATE_LAST_ADDR_CHANGE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_NAME_ADDR_CHG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_ADDRESS_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_HOME_PHONE_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_BUSINESS_PHONE_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_DECEASED_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_SOLICITATION_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_EMPL_ACCT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_ALT_CUSTOMER_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_DATE_OF_BIRTH",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_SECONDARY_DATE_OF_BIRTH",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDR_Date_Processed",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExtractDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateProcessed",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_FIXD_MPD_USAG_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_MPW_APR_OVRR_USAG_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_MPW_APR_OVRR_USAG_DT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_FIXD_MPD_OVRR_AM1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_FIXD_MPD_OVRR_DT1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_FIXD_MPD_OVRR_AM2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_FIXD_MPD_OVRR_DT2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_FIXD_MPD_OVRR_AM3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_FIXD_MPD_OVRR_DT3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_FIXD_MPD_OVRR_AM4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_FIXD_MPD_OVRR_DT4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_TSM_PRTC_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHD_ZIP_CODE",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        }
+    ]
+}

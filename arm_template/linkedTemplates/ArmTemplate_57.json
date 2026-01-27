@@ -1,0 +1,1016 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Source": {
+            "type": "string",
+            "defaultValue": "Coop"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Object": {
+            "type": "string",
+            "defaultValue": "COOPER/CardTransaction"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilename": {
+            "type": "string",
+            "defaultValue": "UpdatedFeedzai.csv"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destContainer": {
+            "type": "string",
+            "defaultValue": "stage"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilePath": {
+            "type": "string",
+            "defaultValue": "Coop/COOPER/CardTransaction/Currentcsv"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_fileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_fileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_fileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "Tr_Daily_Populate_DetectionRate_ConsDW_Snowfalke_properties_PL_Populate_DetectionRate_parameters_starttime": {
+            "type": "string",
+            "defaultValue": "@trigger().scheduledTime"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_Rewards_to_blob')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Rewards_data_into_Blob_Daily",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-01-13T16:51:00",
+                        "timeZone": "Central Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                5
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Weekly_Rewards_to_Blob')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Rewards_data_into_Blob_Weekly",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2022-01-13T16:53:00",
+                        "timeZone": "Central Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                5
+                            ],
+                            "weekDays": [
+                                "Sunday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_Heatmap')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Populate_FraudHeatmap",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2022-01-16T17:15:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "hours": [
+                                11
+                            ],
+                            "weekDays": [
+                                "Wednesday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_Rewards_ProgramBINs_to_SF')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Rewards_ProgramBINs_to_SF_Daily",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-02-15T00:04:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                5
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Weekly_Rewards_Configuration_to_SF')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Rewards_Configuration_to_SF_Weekly",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2022-02-15T00:07:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                5
+                            ],
+                            "weekDays": [
+                                "Monday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Cardholder_Sys_Reward_Admin')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "TR_Cardholder_Sys_Reward_Admin",
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Cardholder_Sys_Reward_Admin",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-03-01T22:14:00",
+                        "timeZone": "Central Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                22
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Tr_Daily_RawtoStage_Feedzai')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_RawToStage_FeedzAI",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_Source": "[parameters('Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Source')]",
+                            "par_Object": "[parameters('Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Object')]",
+                            "par_destFilename": "[parameters('Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilename')]",
+                            "par_destContainer": "[parameters('Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destContainer')]",
+                            "par_destFilePath": "[parameters('Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilePath')]"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-03-11T23:31:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                1
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_Master_Populate_MDM')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Master_Populate_MDM",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-06-23T20:35:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                4
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Event_GZIP_FISDemographics_Daily')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_CopyGZipFile",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_srcFolderPath": "[parameters('TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath')]",
+                            "par_snkFolderPath": "[parameters('TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath')]",
+                            "par_fileName": "[parameters('TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_fileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/raw/blobs/FIS/Demographics/Daily/",
+                    "blobPathEndsWith": ".TXT",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('TR_Event_GZIP_FISDemographics_Daily_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Event_GZIP_FISDemographics_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_CopyGZipFile",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_srcFolderPath": "[parameters('TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_srcFolderPath')]",
+                            "par_snkFolderPath": "[parameters('TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_snkFolderPath')]",
+                            "par_fileName": "[parameters('TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_fileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/raw/blobs/FIS/Demographics/Monthly",
+                    "blobPathEndsWith": ".TXT",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('TR_Event_GZIP_FISDemographics_Monthly_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Event_GZIP_FISTransaction_Daily')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_CopyGZipFile",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_srcFolderPath": "[parameters('TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath')]",
+                            "par_snkFolderPath": "[parameters('TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath')]",
+                            "par_fileName": "[parameters('TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_fileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/raw/blobs/FIS/Transactions/Transactions_FIXED/",
+                    "blobPathEndsWith": ".TXT",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('TR_Event_GZIP_FISTransaction_Daily_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Tr_Daily_Populate_DetectionRate_ConsDW_Snowfalke')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Populate_DetectionRate",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "starttime": "[parameters('Tr_Daily_Populate_DetectionRate_ConsDW_Snowfalke_properties_PL_Populate_DetectionRate_parameters_starttime')]"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-12-27T16:56:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                15
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_TxnNameDimension')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populateTransactionNameDimension",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimTransactionName",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "TransactionName": {},
+                                    "DWDimTransactionName": {},
+                                    "snkDimTransactionName": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace/dimtransactionname"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions/Static Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-10-09T22:34:56Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_Network')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "initialLoad_Network",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "initialLoad_Network",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "dwNetwork": {},
+                                    "Network": {},
+                                    "dimNetwork": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions/Static Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-10-13T14:55:58Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Delete_DuplicateMerchants')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "DeleteDuplicateMerchants",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "DeleteDuplicateMerchants",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "DWDimMerchant": {},
+                                    "DeleteFromDimMerchant": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSourceDev",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/test_referencedata"
+                            },
+                            "compute": {
+                                "coreCount": 32,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-06-04T23:27:29Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_FactAccountUsage')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "  ",
+                "activities": [
+                    {
+                        "name": "FactAccountUsage",
+                        "description": "Runs after FISDebitDemographic and FISTransactions have processed.  Dependent on dimAccount, dimBIN, and factTransactions.",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_FactAccountUsage",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "ViewFactAccountUsage": {},
+                                    "srcDWFactAccountUsage": {},
+                                    "snkDWFactAccountUsage": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSourceDev",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Facts"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-06-04T23:27:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_FactNewAccount')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "  ",
+                "activities": [
+                    {
+                        "name": "populate_FactNewAccount",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_FactNewAccount",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FISDebitDemographic": {
+                                        "filename": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "DWFactNewAccountArchive": {},
+                                    "QryFactTransaction": {},
+                                    "DWFactNewAccount": {},
+                                    "SnkFactNewAccountArchive": {},
+                                    "snkUpdatesToFactNewAccount": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSourceDev",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/test_referencedata"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "factNewAccount-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Facts"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-06-04T23:27:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_UserTableTableau')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "User",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_User",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "Usercsv": {},
+                                    "sink1": {}
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-06-04T23:27:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_ResponseCode')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "initialLoad_ResponseCode",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "initialLoad_ResponseCode",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "DimResponseCode": {},
+                                    "ResponseCode": {},
+                                    "snkDimResponseCode": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions/Static Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-10-13T14:55:58Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimTerminal')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimTerminal",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 5,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimTerminal",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "srcdimTerminal": {},
+                                    "srcFISATMList": {},
+                                    "ConformedTransactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        },
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "srcFDTerminalsOnPremise": {},
+                                    "dwRTNNum": {},
+                                    "srcFDATMList": {},
+                                    "srcFDParReference": {},
+                                    "dwClientDim": {},
+                                    "srcSourceSystem": {},
+                                    "dimTerminal": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimTerminal-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 5,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-10-28T21:50:05Z"
+            },
+            "dependsOn": []
+        }
+    ]
+}

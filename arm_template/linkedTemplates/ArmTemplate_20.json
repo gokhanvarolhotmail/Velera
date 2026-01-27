@@ -1,0 +1,2482 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/ProcessingCodeSQLDW')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "ProcessingCode SQL DW",
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "processing_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "processing_code",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "processing_code_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "processing_code_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "processing_code_type_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "offline_tran_code",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "credit_debit_issuer_indicator",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "credit_debit_acquirer_indicator",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "processing_code"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/AcquirerDW')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Acquirer DW",
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "pt",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "institution",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "inst_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acqr_proc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "setl_proc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "term_bill",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "net_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "acquirer"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/IssuerDWTable')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "ISO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PAN",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "INSTITUTION",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "INST_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PROC_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BILL_GROUP",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ADDRESS",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CITY",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "STATE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ZIP_CODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "LEAGUE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ENFORM_DATE",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "issuer"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RawtoDW_ProcessingCode')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Processing Code data",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "ProcessingCode.csv",
+                        "folderPath": "Reference/SharedBranch/ProcessingCode",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RawtoDW_Financial_Institution')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Financial Institution Data",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "FinancialInstitutions.txt",
+                        "folderPath": "Reference/SharedBranch/FinancialInstitution",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "local_routing_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "isobin",
+                        "type": "String"
+                    },
+                    {
+                        "name": "bin_routing_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "network_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "financial_institution_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "address",
+                        "type": "String"
+                    },
+                    {
+                        "name": "phone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "state",
+                        "type": "String"
+                    },
+                    {
+                        "name": "zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "institution",
+                        "type": "String"
+                    },
+                    {
+                        "name": "load_dateload_by",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RawtoDW_Issuer')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Issuer data",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "Issuer.txt",
+                        "folderPath": "Reference/SharedBranch/Issuer",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "ISO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PAN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "INSTITUTION",
+                        "type": "String"
+                    },
+                    {
+                        "name": "INST_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PROC_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BILL_GROUP",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ADDRESS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CITY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ZIP_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LEAGUE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ENFORM_DATE",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RawtoDW_ResponseCode')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "ResponseCode.txt",
+                        "folderPath": "Reference/SharedBranch/ResponseCode",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RawtoDW_Acquirer')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Acquirer data",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "Acquirer.txt",
+                        "folderPath": "Reference/SharedBranch/Acquirer",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/srcResponseCode')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "response_codes.csv",
+                        "folderPath": "Reference/ResponseCode",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "response_code_key",
+                        "type": "String"
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "String"
+                    },
+                    {
+                        "name": "response_code_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "response_desc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "response_outcome_group",
+                        "type": "String"
+                    },
+                    {
+                        "name": "response_detail",
+                        "type": "String"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ProductDWTable')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "Response_Code",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Response_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Load_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "Load_By",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "product"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RawtoDW_Product')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Product data",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "Product.txt",
+                        "folderPath": "Reference/SharedBranch/Product",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Dynamic_DropZone_fully_parameterized')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This is a full parameterized file dataset that will be used for looping through files to move to raw.",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string",
+                        "defaultValue": "stage"
+                    },
+                    "Directory": {
+                        "type": "string",
+                        "defaultValue": "Fiserv/ReferenceFile"
+                    },
+                    "filename": {
+                        "type": "string",
+                        "defaultValue": "AccountHierarchy.csv"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Dynamic_Raw_fully_parameterized')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This is a full parameterized file dataset that will be used for looping through files to move to raw.",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string",
+                        "defaultValue": "stage"
+                    },
+                    "Directory": {
+                        "type": "string",
+                        "defaultValue": "Fiserv/ReferenceFile"
+                    },
+                    "filename": {
+                        "type": "string",
+                        "defaultValue": "AccountHierarchy.csv"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/HistoricalLoadErrors')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "COOPSB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB/COOPSB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "HistoricalLoadErrors"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Dynamic_DropZone_Meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This is a full parameterize dataset to allow for pulling meta data from the drop zone to move to raw.",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "container": {
+                        "type": "string"
+                    },
+                    "directory": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@dataset().directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FIS_data_hist')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB/COOPSB"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "FIS/SBTransactions/Oracle",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "load_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "tran_count",
+                        "type": "String"
+                    },
+                    {
+                        "name": "msgtype",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pan",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pcode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "settlement_amt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "trandatetime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "trans_conv_rate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "trace",
+                        "type": "String"
+                    },
+                    {
+                        "name": "local_time",
+                        "type": "String"
+                    },
+                    {
+                        "name": "local_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "exp_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "settlement_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "trans_conv_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cap_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acq_cntry_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pan_cntry_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "fwd_cntry_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_entry_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acq_inst_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "fwd_inst_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "resp_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ref_no",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_condition_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_name_loc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "trans_curr_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "rev_reason_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "credits",
+                        "type": "String"
+                    },
+                    {
+                        "name": "credit_reversal",
+                        "type": "String"
+                    },
+                    {
+                        "name": "adl_amt_part1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "adl_amt_part2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "debits",
+                        "type": "String"
+                    },
+                    {
+                        "name": "debit_reversal",
+                        "type": "String"
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ngn_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "credit_amt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "credit_rev_amt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "debit_amt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "debit_rev_amt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "auth_agent_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "qualifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acct_id1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acct_id2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "iss_trace",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acq_trace",
+                        "type": "String"
+                    },
+                    {
+                        "name": "trans_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "drank",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FIS_Data_HistTble')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "COOPSB",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB/COOPSB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "LOAD_DATE",
+                        "type": "date"
+                    },
+                    {
+                        "name": "TRAN_COUNT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MSGTYPE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PAN",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PCODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AMOUNT",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 6
+                    },
+                    {
+                        "name": "SETTLEMENT_AMT",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 6
+                    },
+                    {
+                        "name": "TRANDATETIME",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TRANS_CONV_RATE",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRACE",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 0
+                    },
+                    {
+                        "name": "LOCAL_TIME",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "LOCAL_DATE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "EXP_DATE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TRANS_CONV_DATE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CAP_DATE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACQ_CNTRY_CODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PAN_CNTRY_CODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FWD_CNTRY_CODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "POS_ENTRY_CODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACQ_INST_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FWD_INST_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RESP_CODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "REF_NO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TERMINAL_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACCEPTOR_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACCEPTOR_NAME",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "POS_CONDITION_CODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACCEPTOR_NAME_LOC",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TRANS_CURR_CODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "REV_REASON_CODE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CREDITS",
+                        "type": "decimal",
+                        "precision": 26,
+                        "scale": 6
+                    },
+                    {
+                        "name": "CREDIT_REVERSAL",
+                        "type": "decimal",
+                        "precision": 26,
+                        "scale": 6
+                    },
+                    {
+                        "name": "ADL_AMT_PART1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ADL_AMT_PART2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "DEBITS",
+                        "type": "decimal",
+                        "precision": 26,
+                        "scale": 6
+                    },
+                    {
+                        "name": "DEBIT_REVERSAL",
+                        "type": "decimal",
+                        "precision": 26,
+                        "scale": 6
+                    },
+                    {
+                        "name": "MERCHANT_TYPE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "NGN_DATA",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CREDIT_AMT",
+                        "type": "decimal",
+                        "precision": 26,
+                        "scale": 6
+                    },
+                    {
+                        "name": "CREDIT_REV_AMT",
+                        "type": "decimal",
+                        "precision": 26,
+                        "scale": 6
+                    },
+                    {
+                        "name": "DEBIT_AMT",
+                        "type": "decimal",
+                        "precision": 26,
+                        "scale": 6
+                    },
+                    {
+                        "name": "DEBIT_REV_AMT",
+                        "type": "decimal",
+                        "precision": 26,
+                        "scale": 6
+                    },
+                    {
+                        "name": "AUTH_AGENT_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "QUALIFIER",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACCT_ID1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACCT_ID2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ISS_TRACE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACQ_TRACE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TRANS_TYPE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "DRANK",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "FIS_DATA_HISTORY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_TransactionAnalysis_Monthly_noaccount_staging')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "settlement_year",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "settlement_month",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "transaction_analysis_monthly_no_account"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DestinationDataset_7cv')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "SmartGrowthBlobStore",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "folderPath": "FalconFad",
+                        "container": "sg8extracts"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SourceDataset_7cv')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Fiserv/FalconFad",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FALCONFADID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRAN_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CLIENT_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SYSTEM_NUM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PRIN_NUM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_AGENT_NUM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ACCOUNT_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_OLD_FRAUD_SCORE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_NEW_FRAUD_SCORE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DATE_CCYYMMDD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TIME_HHMMSS_N",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SCORE_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TOTAL_VELOCITY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CASH_VELOCITY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_INT_VIOLATIONS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PAY_PCT_CRLN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DATE_LAST_PMNT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TOTAL_PAY_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_REGION_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CVV_CVC_OUTCOME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ENTRY_MODE_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CLIENT_DEF_CAT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CLIENT_DEF_REG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRAN_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TIME_ON_BOOKS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DAYS_PLASTIC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ENT_EXP_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_EXP_DATE_ON_REC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_KEYED_SWIPED_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_NONRECPT_STRAT_LINE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_KITE_LINE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_LOST_STOLE_LINE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_COUNTERFT_STRAT_LINE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MERCH_ZIP",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CARD_ZIP",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MERCH_CAT_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_QUEUE_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAUD_TRANCODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRAN_AMOUNT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_AVAIL_CREDIT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_EXP_DATE_MATCH_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PORTFOLIO_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_STRATEGY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_RANDOM_DIGIT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_AUTH_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_LABEL_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_INP_SRCE_ADDL_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_LOCAL_TERM_IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_REISS_CONTROL_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_AUTH_REGION_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_24_HOUR_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MRCH_CTRY_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_NON_RCPT_AUTH_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_NON_RCPT_QUE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CNTR_AUTH_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CNTR_QUE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_KTNG_AUTH_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_KTNG_QUE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_LOST_STLN_AUTH_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_LOST_STLN_QUE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_BHVR_SCOR_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CRDT_BURE_SCOR_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CRDT_LINE_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PRFT_INDX_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_NMBR_DAYS_DLNQ",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CASH_PRCN_CRDT_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DLNQ_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_NRTH_SOTH_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MNTH_DEBT_ACTV_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PRCN_UTLZ_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_EXCP_SCOR_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_OVER_LIMT_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_HNC_FLCN_MODL_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CHD_CRRN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CVV2_CVC2_OTCM_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_CARD_USE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_CARD_PRSN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_MRCH_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_PRVS_CAT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_PRVS_MRCH_CNTR_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_PRVS_REGN_RISK_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CHD_CTRY_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CHD_POST_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MRCH_POST_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_PRMR_BCKP_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADDR_VRFC_OTCM_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PREV_ENTR_MODE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PREV_AUTH_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_SCOR_CHNG_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_LAST_AUTH_TM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_24_HOUR_ENTR_MODE_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_24_HOUR_MRCH_CTGR_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_24_HOUR_MRCH_CTGR_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PRSN_INST_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ELCT_CMMR_OTCM_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRAN_PCT_CRDT_LINE_RT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ACS_CRRN_PRTF_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_STOR_ORGN_OTCM_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DAY_ON_BOKS_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MRCH_ST_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_NAME_MTCH_OTCM_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_VAA_RISK_SCOR_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_VAA_RESN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_VAA_CNDT_1_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_VAA_CNDT_2_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_VAA_CNDT_3_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CHD_OPEN_DT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PSTL_CODE_DIST_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_BHVR_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FDR_PI_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_AUTH_VLCT_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_AUTH_BAL_VLCT_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ATC_USAG_DFFR_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PROCESS_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DATEPROCESSED",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RouteTransit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CUName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ScoreTypeDesc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVV_CVCV_Desc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "KeySwipedDesc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthTransCodeDesc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVV2_CVC2V_Desc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AddlStratAc01_Desc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthTime12",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FLCN_PIN_USAG_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_EMV_ISSR_ATHN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_EMV_TRAN_VLDT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_EMV_OFFL_ATHN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CHIP_DATA_AVLB_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRMN_CPBL_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MRCH_CARD_TYPE_C",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ARQC_RSLT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ACCT_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CARD_IN_USE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SPCL_DCSN_01_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SPCL_DCSN_02_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SPCL_DCSN_03_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SPCL_DCSN_04_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SPCL_DCSN_05_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SPCL_DCSN_06_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SPCL_DCSN_07_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SPCL_DCSN_08_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SPCL_DCSN_09_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_SPCL_DCSN_10_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CHD_ST_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MERCH_CITY_NM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CASH_BACK_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MRCH_NM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_EMS_FRAD_SCOR_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADC_THRT_SCOR_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADC_CASE_1_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADC_CASE_2_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADC_CASE_3_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADC_ACCT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADC_EXPR_DT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADC_CVC2_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADC_PIN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADC_MAG_STRIP_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADC_PRSN_INFO_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MRCH_VRFC_VALU_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADVR_MSSG_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_USE_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_STAR_PRDCT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_STAR_ATHN_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PI_FRAD_STGY_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PI_TYPE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MOBL_ZIP_DIST_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MOBL_MNTS_SINC_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_STAR_PAR_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_STAR_PREFIX_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRMN_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ACQR_PRCS_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADDR_VRFC_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CHD_BIN_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRST_3_DIGT_ZIP_DFFR_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ACQR_NTWK_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MISC_FLD7_PSTN1_TX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_FRAD_BHVR_2_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PIN_TRAN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ECOM_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CMPN_AUTH_STGY_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PI_PLST_TYPE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_AMEX_FRAD_SCOR_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_AMEX_RCMM_RULE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRVL_TAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TOKN_RQST_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TOKN_ASSR_LEVL_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DAY_OF_WEEK_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_VALD_MCC_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_AVRG_SPED_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YT_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YK_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YL_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YN_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YA_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YB_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YC_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YD_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YE_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YF_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YG_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YH_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YI_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YJ_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YM_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YO_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YP_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YQ_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YR_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_YS_FRAD_ACTN_QUE_RESN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_EXTR_STTS_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_EXTN_SRVC_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_STTS_24HR_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DEPT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DIV_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_STAR_FRD_SCOR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_STAR_FRD_RESN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DEPT_CLSS_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DEPT_SUB_CLSS_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_HRSK_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CRITICAL_NON_MON",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DAYS_SNCE_LST_MBL_ADT_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_STIP_SWTC_RESN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_LUK_ELPS_LIVE_TM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_LUK_TRAN_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_LUK_TRAN_AM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRAN_TYPE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_EMS_FRAD_SCR_RSN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PI_DAYS_RESS_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PI_DAYS_MALD_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PI_HOST_USE_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_PI_CHIP_USE_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MC_SEC_SRVC_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MC_SEC_DATA",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MC_RULS_SCR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MC_RULS_RCSN_CD1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MC_RULS_RCSN_CD2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MC_OB_SRVC_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MC_OB_RSLT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MC_REV_ADVC_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_MC_AUTH_DVC_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRVL_TAG2_PSTL_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRVL_TAG2_CITY_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRVL_TAG2_ST_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TRVL_TAG2_CTRY_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DEVICE_CONNECTION_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DEVICE_MODEL",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_RESERVED_INT7_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CHD_VRFC_MTHD_1_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CHD_VRFC_MTHD_2_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_TOKN_VRFC_RSLT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_THRE_DMNS_SECR_IN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_CAVV_DATA",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DEVC_ADDR_RISK_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_HRRC_VCAS_SCOR_NR",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ECMM_RSLT_RESN_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_BUYR_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ACTION_STMT_TRK_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_QUEUE_STMT_TRK_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_DRCT_SRVR_TRAN_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FFSL_ADX_ATHN_MTCH_CD",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        }
+    ]
+}

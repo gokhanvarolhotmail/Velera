@@ -1,0 +1,3061 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        },
+        "TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_endDate": {
+            "type": "string",
+            "defaultValue": "@trigger().startTime"
+        },
+        "TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_startDate": {
+            "type": "string",
+            "defaultValue": "@trigger().startTime"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/PL_RunPipelinefordateRangeSBInterchange')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This utility pipeline can be used for loading multiple Shared Branch Interchange files in sequence.",
+                "activities": [
+                    {
+                        "name": "setVar_Start Date",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "SP_truncate SBInterchange Stage",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "Date_Increment_End",
+                            "value": {
+                                "value": "@formatDateTime(pipeline().parameters.Date_Start)",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Until_SBInterchange",
+                        "type": "Until",
+                        "dependsOn": [
+                            {
+                                "activity": "setVar_Start Date",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@greater(formatDateTime(variables('Date_Increment_End'),'MM/dd/yyyy'),formatDateTime(pipeline().parameters.Date_End,'MM/dd/yyyy'))",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "setVar_Start Date Increment",
+                                    "type": "SetVariable",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_Start",
+                                        "value": {
+                                            "value": "@variables('Date_Increment_End')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "setVar_Set Year",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "setVar_Start Date Increment",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Year",
+                                        "value": {
+                                            "value": "@formatDateTime(variables('Date_Increment_Start'),'yyyy')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "setVar_Set Month",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "setVar_Start Date Increment",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Month",
+                                        "value": {
+                                            "value": "@formatDateTime(variables('Date_Increment_Start'),'MM')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "setVar_Set Day",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "setVar_Start Date Increment",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Day",
+                                        "value": {
+                                            "value": "@formatDateTime(variables('Date_Increment_Start'),'dd')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "setVar_End Date Increment",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "ExecPL_RunSharedBranchInterchangePipeline",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_End",
+                                        "value": {
+                                            "value": "@adddays(formatDateTime(variables('Date_Increment_Start')),1)",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "ExecPL_RunSharedBranchInterchangePipeline",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "setVar_Set Year",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        {
+                                            "activity": "setVar_Set Month",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        {
+                                            "activity": "setVar_Set Day",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "PL_SBInterchange",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Year": {
+                                                "value": "@formatDateTime(variables('Date_Increment_Start'),'yyyy')",
+                                                "type": "Expression"
+                                            },
+                                            "Month": {
+                                                "value": "@formatDateTime(variables('Date_Increment_Start'),'MM')",
+                                                "type": "Expression"
+                                            },
+                                            "Day": {
+                                                "value": "@formatDateTime(variables('Date_Increment_Start'),'dd')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ],
+                            "timeout": "7.00:00:00"
+                        }
+                    },
+                    {
+                        "name": "SP_truncate SBInterchange Stage",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Staging].[s_truncate_shared_branch_interchange_stage]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "s_delete_shared_branch_Interchange_daily",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Until_SBInterchange",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[SB].[s_delete_shared_branch_interchange_daily]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "s_shared_branch_Interchange_daily",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "s_delete_shared_branch_Interchange_daily",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "0.12:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[SB].[s_shared_branch_interchange_daily]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Date_Start": {
+                        "type": "string"
+                    },
+                    "Date_End": {
+                        "type": "string"
+                    }
+                },
+                "variables": {
+                    "Date_Increment_Start": {
+                        "type": "String"
+                    },
+                    "Date_Increment_End": {
+                        "type": "String"
+                    },
+                    "Year": {
+                        "type": "String"
+                    },
+                    "Month": {
+                        "type": "String"
+                    },
+                    "Day": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [
+                    "Shared Branch"
+                ],
+                "lastPublishTime": "2022-09-29T21:26:59Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/PL_Master_SBInterchange')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Shared Branch Interchange Data moving from Raw (ADLS) to stage table and to the SB final table.",
+                "activities": [
+                    {
+                        "name": "setVar_Establish End Date Interchange",
+                        "type": "SetVariable",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "Final_Date",
+                            "value": {
+                                "value": "@formatDateTime(coalesce(pipeline().parameters.Date_End,adddays(formatDateTime(utcnow()),-1)))",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "setVar_Set Initial Date Interchange",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "setVar_Establish End Date Interchange",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "Date_Increment_End",
+                            "value": {
+                                "value": "@formatDateTime(coalesce(pipeline().parameters.Date_Start,adddays(formatDateTime(utcnow()),-1)))",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Until_SBInterchange",
+                        "type": "Until",
+                        "dependsOn": [
+                            {
+                                "activity": "setVar_Set Initial Date Interchange",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@greaterOrEquals(formatDateTime(variables('Date_Increment_End'),'MM/dd/yyyy'),formatDateTime(variables('Final_Date'),'MM/dd/yyyy'))\n",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "setVar_Start Date Increment Interchange",
+                                    "type": "SetVariable",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_Start",
+                                        "value": {
+                                            "value": "@variables('Date_Increment_End')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "setVar_End Date Increment",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "SP_s_shared_branch_Interchange_daily",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_End",
+                                        "value": {
+                                            "value": "@adddays(formatDateTime(variables('Date_Increment_Start')),1)",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "SP_s_delete_shared_branch_Interchange_daily",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "ExecPL__RawToDwStageInterchange",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "0.12:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[SB].[s_delete_shared_branch_interchange_daily]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "DataWarehouse",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                },
+                                {
+                                    "name": "SP_s_shared_branch_Interchange_daily",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "SP_s_delete_shared_branch_Interchange_daily",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "0.12:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[SB].[s_shared_branch_interchange_daily]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "DataWarehouse",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                },
+                                {
+                                    "name": "ExecPL__RawToDwStageInterchange",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "SP_truncate SBInterchange Stage",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "PL_SBInterchange",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Year": {
+                                                "value": "@formatDateTime(variables('Date_Increment_Start'),'yyyy')",
+                                                "type": "Expression"
+                                            },
+                                            "Month": {
+                                                "value": "@formatDateTime(variables('Date_Increment_Start'),'MM')",
+                                                "type": "Expression"
+                                            },
+                                            "Day": {
+                                                "value": "@formatDateTime(variables('Date_Increment_Start'),'dd')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "SP_truncate SBInterchange Stage",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "setVar_Start Date Increment Interchange",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "0.12:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[Staging].[s_truncate_shared_branch_interchange_stage]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "DataWarehouse",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                }
+                            ],
+                            "timeout": "7.00:00:00"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Date_Start": {
+                        "type": "string"
+                    },
+                    "Date_End": {
+                        "type": "string"
+                    }
+                },
+                "variables": {
+                    "Date_Increment_Start": {
+                        "type": "String"
+                    },
+                    "Date_Increment_End": {
+                        "type": "String"
+                    },
+                    "Final_Date": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "Shared Branch/Masters"
+                },
+                "annotations": [
+                    "Shared Branch"
+                ],
+                "lastPublishTime": "2022-10-03T16:25:32Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FIS_Demographics_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "FIS_MasterDemographics",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2020-10-02T20:00:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                3
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/MS_OracleSBTrans_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "MasterTransactions_Oracle_SharedBranch",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2020-06-13T14:15:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {}
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/InterchangeDaily_trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "FIS_Interchange_Master",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2020-06-26T18:00:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {}
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_Demographics_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "FD_MasterDemographics",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2020-10-02T17:00:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "minutes": [
+                                30
+                            ],
+                            "hours": [
+                                3
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_daily_Master_SBTransactionsSummary')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Master_SBTransactionsSummary",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-03-06T06:02:00",
+                        "timeZone": "Central Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                21
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_FIS_RawNetworkFileLoad')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_InterchangeRawNetwork_Container",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_endDate": "[parameters('TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_endDate')]",
+                            "par_startDate": "[parameters('TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_startDate')]"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2022-01-19T05:38:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                30
+                            ],
+                            "hours": [
+                                23
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_ChargeOff_MasterTransactions_Loop')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get_Drop_Zone_Files",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_meta_ChargeOff",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "ForEach_DropFile",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get_Drop_Zone_Files",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get_Drop_Zone_Files').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "batchCount": 5,
+                            "activities": [
+                                {
+                                    "name": "If ChargeOff File",
+                                    "type": "IfCondition",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@contains(item().name,'ChargeOff')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "Execute FDChargeOffPopulate",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "FD_ChargeOff_MasterTransactions_Populate",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "fileName": {
+                                                            "value": "@item().name",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_fact_transactions": {
+                                                            "value": "@pipeline().parameters.run_fact_transactions",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_conformed": {
+                                                            "value": "@pipeline().parameters.run_conformed",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_dimensions": {
+                                                            "value": "@pipeline().parameters.run_dimensions",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Delete_Old_Fact_Transaction_Data",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "ForEach_DropFile",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sp_Delete_Old_Data_Fact_Transactions",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "variables": {
+                    "filename": {
+                        "type": "String",
+                        "defaultValue": "test"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_ChargeOff"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_CD031_MasterTransactions_Loop')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get_Drop_Zone_Files",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_meta_CD031",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "ForEach_DropFile",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get_Drop_Zone_Files",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get_Drop_Zone_Files').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "batchCount": 5,
+                            "activities": [
+                                {
+                                    "name": "If CD031 File",
+                                    "type": "IfCondition",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@contains(item().name,'CD031')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "Execute FDCD031Populate",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "FD_CD031_MasterTransactions_Populate",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "fileName": {
+                                                            "value": "@item().name",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_conformed": {
+                                                            "value": "@pipeline().parameters.run_conformed",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_fact_transactions": {
+                                                            "value": "@pipeline().parameters.run_fact_transactions",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_dimensions": {
+                                                            "value": "@pipeline().parameters.run_dimensions",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Delete_Old_Fact_Transaction_Data",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "ForEach_DropFile",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sp_Delete_Old_Data_Fact_Transactions",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "variables": {
+                    "filename": {
+                        "type": "String",
+                        "defaultValue": "test"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_CD031"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_DD031_MasterTransactions_Loop')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get_Drop_Zone_Files",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_meta_DD031",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "ForEach_DropFile",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get_Drop_Zone_Files",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get_Drop_Zone_Files').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "batchCount": 5,
+                            "activities": [
+                                {
+                                    "name": "If DD031 File",
+                                    "type": "IfCondition",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@contains(item().name,'DD031')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "Execute FD DD031Populate",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "FD_DD031_MasterTransactions_Populate",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "fileName": {
+                                                            "value": "@item().name",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_transactions": {
+                                                            "value": "@pipeline().parameters.run_transactions",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_conformed": {
+                                                            "value": "@pipeline().parameters.run_conformed",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_dimensions": {
+                                                            "value": "@pipeline().parameters.run_dimensions",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Delete_Old_Fact_Transaction_Data",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "ForEach_DropFile",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sp_Delete_Old_Data_Fact_Transactions",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "run_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "variables": {
+                    "filename": {
+                        "type": "String",
+                        "defaultValue": "test"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_DD031"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_CrossCycle_MasterTransactions_Loop')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get_Drop_Zone_Files",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_meta_CrossCycle",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "ForEach_DropFile",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get_Drop_Zone_Files",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get_Drop_Zone_Files').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "batchCount": 5,
+                            "activities": [
+                                {
+                                    "name": "If CrossCycle File",
+                                    "type": "IfCondition",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@contains(item().name,'CrossCycle')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "Execute FDCrossCyclePopulate",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "FD_CrossCycle_MasterTransactions_Populate",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "fileName": {
+                                                            "value": "@item().name",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_fact_transactions": {
+                                                            "value": "@pipeline().parameters.run_fact_transactions",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_conformed": {
+                                                            "value": "@pipeline().parameters.run_conformed",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_dimensions": {
+                                                            "value": "@pipeline().parameters.run_dimensions",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Delete_Old_Fact_Transaction_Data",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "ForEach_DropFile",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sp_Delete_Old_Data_Fact_Transactions",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "variables": {
+                    "filename": {
+                        "type": "String",
+                        "defaultValue": "test"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_CrossCycle"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_CycleToDate_MasterTransactions_Loop')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get_Drop_Zone_Files",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_meta_CycleToDate",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "ForEach_DropFile",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get_Drop_Zone_Files",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get_Drop_Zone_Files').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "batchCount": 5,
+                            "activities": [
+                                {
+                                    "name": "If CycleToDate File",
+                                    "type": "IfCondition",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@contains(item().name,'CycleToDate')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "Execute FDCycleToDatePopulate",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "FD_CycleToDate_MasterTransactions_Populate",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "fileName": {
+                                                            "value": "@item().name",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_fact_transactions": {
+                                                            "value": "@pipeline().parameters.run_fact_transactions",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_conformed": {
+                                                            "value": "@pipeline().parameters.run_conformed",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_dimensions": {
+                                                            "value": "@pipeline().parameters.run_dimensions",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Delete_Old_Fact_Transaction_Data",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "ForEach_DropFile",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sp_Delete_Old_Data_Fact_Transactions",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "variables": {
+                    "filename": {
+                        "type": "String",
+                        "defaultValue": "test"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_CycleToDate"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FIS_MasterTransactions_Loop')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get_Drop_Zone_Files",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_meta",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "ForEach_DropFile",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get_Drop_Zone_Files",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get_Drop_Zone_Files').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "batchCount": 20,
+                            "activities": [
+                                {
+                                    "name": "If FISDebit File",
+                                    "type": "IfCondition",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@contains(item().name,'FISDebitTransaction')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "Execute MstrTrans",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "FIS_MasterTransactions_Populate",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "fileName": {
+                                                            "value": "@item().name",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_fact_transactions": {
+                                                            "value": "@pipeline().parameters.run_fact_transactions",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_dimensions": {
+                                                            "value": "@pipeline().parameters.run_dimensions",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_conformed": {
+                                                            "value": "@pipeline().parameters.run_conformed",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Delete_Old_Fact_Transaction_Data",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "ForEach_DropFile",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sp_Delete_Old_Data_Fact_Transactions",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "variables": {
+                    "filename": {
+                        "type": "String",
+                        "defaultValue": "test"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FIS Masters/FIS_Transactions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-10-28T21:43:45Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_MasterTransactions_Loop')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get_Drop_Zone_Files",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_meta_FD",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true
+                            },
+                            "formatSettings": {
+                                "type": "DelimitedTextReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "ForEach_DropFile",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get_Drop_Zone_Files",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get_Drop_Zone_Files').output.childItems",
+                                "type": "Expression"
+                            },
+                            "isSequential": false,
+                            "batchCount": 5,
+                            "activities": [
+                                {
+                                    "name": "If FD Transactions File",
+                                    "type": "IfCondition",
+                                    "dependsOn": [],
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "expression": {
+                                            "value": "@contains(item().name,'Transaction')",
+                                            "type": "Expression"
+                                        },
+                                        "ifTrueActivities": [
+                                            {
+                                                "name": "Execute FD Transactions Populate",
+                                                "type": "ExecutePipeline",
+                                                "dependsOn": [],
+                                                "policy": {
+                                                    "secureInput": false
+                                                },
+                                                "userProperties": [],
+                                                "typeProperties": {
+                                                    "pipeline": {
+                                                        "referenceName": "FD_MasterTransactions_Populate",
+                                                        "type": "PipelineReference"
+                                                    },
+                                                    "waitOnCompletion": true,
+                                                    "parameters": {
+                                                        "fileName": {
+                                                            "value": "@item().name",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_conformed": {
+                                                            "value": "@pipeline().parameters.run_conformed",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_fact_transactions": {
+                                                            "value": "@pipeline().parameters.run_fact_transactions",
+                                                            "type": "Expression"
+                                                        },
+                                                        "run_dimensions": {
+                                                            "value": "@pipeline().parameters.run_dimensions",
+                                                            "type": "Expression"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "Delete_Old_Fact_Transaction_Data",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "ForEach_DropFile",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sp_Delete_Old_Data_Fact_Transactions",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "run_fact_transactions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_conformed": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    },
+                    "run_dimensions": {
+                        "type": "string",
+                        "defaultValue": "1"
+                    }
+                },
+                "variables": {
+                    "filename": {
+                        "type": "String",
+                        "defaultValue": "test"
+                    }
+                },
+                "folder": {
+                    "name": "All Master Pipelines/FD Masters/FD_Transactions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:02Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Zelle_Master_PMTREQ')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Move Files to Raw",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "droptoRaw_Zelle_PMTREQ",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "s_truncate_zelle_payment_raw",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Staging].[s_truncate_zelle_payment_raw]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Loop Through Files and Delete",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "s_truncate_zelle_payment_raw",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "Zelle_Master_PMTREQ_Loop",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "s_delete_zelle_payment",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "Loop Through Files and Delete",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Staging].[s_delete_zelle_payment]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "s_zelle_payment",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "s_delete_zelle_payment",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[zelle].[s_zelle_payment]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Delete_Zelle_PMTREQ_Files",
+                        "type": "Delete",
+                        "dependsOn": [
+                            {
+                                "activity": "s_zelle_payment",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            },
+                            {
+                                "activity": "Move Files to Raw",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_ZellePMTREQ_delete",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "enableLogging": false,
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": false
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Zelle/Masters/PMTREQ"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-29T22:53:23Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Master_SB')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Opting to set NO start or end date parameters will default to run UTCNow()-1",
+                "activities": [
+                    {
+                        "name": "Until1",
+                        "type": "Until",
+                        "dependsOn": [
+                            {
+                                "activity": "Set Initial Date",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@greater(formatDateTime(variables('Date_Increment_End'),'MM/dd/yyyy'),formatDateTime(variables('Final_Date'),'MM/dd/yyyy'))",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "End Date Increment",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "s_shared_branch_transactions_daily",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_End",
+                                        "value": {
+                                            "value": "@adddays(formatDateTime(variables('Date_Increment_Start')),1)",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Start Date Increment",
+                                    "type": "SetVariable",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_Start",
+                                        "value": {
+                                            "value": "@variables('Date_Increment_End')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "dropToDwRaw",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "s_truncate_shared_branch_transactions_raw",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        {
+                                            "activity": "s_truncate_shared_branch_transactions_daily",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "Master_SB_Loop",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Year": {
+                                                "value": "@formatDateTime(variables('Date_Increment_Start'),'yyyy')",
+                                                "type": "Expression"
+                                            },
+                                            "Month": {
+                                                "value": "@formatDateTime(variables('Date_Increment_Start'),'MM')",
+                                                "type": "Expression"
+                                            },
+                                            "Day": {
+                                                "value": "@formatDateTime(variables('Date_Increment_Start'),'dd')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "s_truncate_shared_branch_transactions_daily",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "Start Date Increment",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[Staging].[s_truncate_shared_branch_transactions_daily]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "DataWarehouse",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                },
+                                {
+                                    "name": "s_truncate_shared_branch_transactions_raw",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "Start Date Increment",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[Staging].[s_truncate_shared_branch_transactions_raw]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "DataWarehouse",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                },
+                                {
+                                    "name": "s_shared_branch_transactions_daily_raw",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "dropToDwRaw",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[Staging].[s_shared_branch_transactions_daily]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "DataWarehouse",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                },
+                                {
+                                    "name": "s_delete_shared_branch_transactions_daily",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "s_shared_branch_transactions_daily_raw",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[SB].[s_delete_shared_branch_transactions_daily]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "DataWarehouse",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                },
+                                {
+                                    "name": "s_shared_branch_transactions_daily",
+                                    "type": "SqlServerStoredProcedure",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "s_delete_shared_branch_transactions_daily",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "storedProcedureName": "[[SB].[s_shared_branch_transactions_daily]"
+                                    },
+                                    "linkedServiceName": {
+                                        "referenceName": "DataWarehouse",
+                                        "type": "LinkedServiceReference"
+                                    }
+                                },
+                                {
+                                    "name": "End Date Increment Missing File",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "dropToDwRaw",
+                                            "dependencyConditions": [
+                                                "Failed"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_End",
+                                        "value": {
+                                            "value": "@adddays(formatDateTime(variables('Date_Increment_Start')),1)",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            ],
+                            "timeout": "7.00:00:00"
+                        }
+                    },
+                    {
+                        "name": "Set Initial Date",
+                        "type": "SetVariable",
+                        "dependsOn": [
+                            {
+                                "activity": "Establish End Date",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "Date_Increment_End",
+                            "value": {
+                                "value": "@formatDateTime(coalesce(pipeline().parameters.Date_Start,adddays(formatDateTime(utcnow()),-1)))",
+                                "type": "Expression"
+                            }
+                        }
+                    },
+                    {
+                        "name": "Establish End Date",
+                        "type": "SetVariable",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "Final_Date",
+                            "value": {
+                                "value": "@formatDateTime(coalesce(pipeline().parameters.Date_End,adddays(formatDateTime(utcnow()),-1)))",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Date_Start": {
+                        "type": "string"
+                    },
+                    "Date_End": {
+                        "type": "string"
+                    }
+                },
+                "variables": {
+                    "Date_Increment_Start": {
+                        "type": "String"
+                    },
+                    "Date_Increment_End": {
+                        "type": "String"
+                    },
+                    "Final_Date": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "Shared Branch/Masters"
+                },
+                "annotations": [
+                    "Shared Branch"
+                ],
+                "lastPublishTime": "2021-05-17T21:08:58Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Zelle_Master_MEMBERS')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This pipeline run transactions from Drop To Raw And Conformed.\nCalling the dropToRaw and Mastertransactions pipelines",
+                "activities": [
+                    {
+                        "name": "droptoRaw",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "droptoRaw_Zelle_MEMBERS",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "dropToDWRaw",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "s_truncate_zelle_member_raw",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "Zelle_Master_MEMBERS_Loop",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "s_truncate_zelle_member_raw",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Staging].[s_truncate_zelle_member_raw]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "s_delete_zelle_member",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "dropToDWRaw",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Staging].[s_delete_zelle_member]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "s_zelle_member",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "s_delete_zelle_member",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[zelle].[s_zelle_member]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "Delete_Zelle_Member_Files",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "s_zelle_member",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            },
+                            {
+                                "activity": "droptoRaw",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "Delete_Zelle_Member_Files",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Zelle/Masters/MEMBERS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-29T22:55:20Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RunPipelineFordateRange')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Until1",
+                        "type": "Until",
+                        "dependsOn": [
+                            {
+                                "activity": "Start Date",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "expression": {
+                                "value": "@greater(formatDateTime(variables('Date_Increment_End'),'MM/dd/yyyy'),formatDateTime(pipeline().parameters.Date_End,'MM/dd/yyyy'))",
+                                "type": "Expression"
+                            },
+                            "activities": [
+                                {
+                                    "name": "End Date Increment",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "RunSharedBranchPipeline",
+                                            "dependencyConditions": [
+                                                "Completed"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_End",
+                                        "value": {
+                                            "value": "@adddays(formatDateTime(variables('Date_Increment_Start')),1)",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Start Date Increment",
+                                    "type": "SetVariable",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Date_Increment_Start",
+                                        "value": {
+                                            "value": "@variables('Date_Increment_End')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "RunSharedBranchPipeline",
+                                    "type": "ExecutePipeline",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "Set Year",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        {
+                                            "activity": "Set Month",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        },
+                                        {
+                                            "activity": "Set Day",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "pipeline": {
+                                            "referenceName": "Master_SB_Loop",
+                                            "type": "PipelineReference"
+                                        },
+                                        "waitOnCompletion": true,
+                                        "parameters": {
+                                            "Year": {
+                                                "value": "@variables('Year')",
+                                                "type": "Expression"
+                                            },
+                                            "Month": {
+                                                "value": "@variables('Month')",
+                                                "type": "Expression"
+                                            },
+                                            "Day": {
+                                                "value": "@variables('Day2')",
+                                                "type": "Expression"
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Set Year",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "Start Date Increment",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Year",
+                                        "value": {
+                                            "value": "@formatDateTime(variables('Date_Increment_Start'),'yyyy')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Set Month",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "Start Date Increment",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Month",
+                                        "value": {
+                                            "value": "@formatDateTime(variables('Date_Increment_Start'),'MM')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                },
+                                {
+                                    "name": "Set Day",
+                                    "type": "SetVariable",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "Start Date Increment",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "variableName": "Day2",
+                                        "value": {
+                                            "value": "@formatDateTime(variables('Date_Increment_Start'),'dd')",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            ],
+                            "timeout": "7.00:00:00"
+                        }
+                    },
+                    {
+                        "name": "Start Date",
+                        "type": "SetVariable",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "variableName": "Date_Increment_End",
+                            "value": {
+                                "value": "@formatDateTime(pipeline().parameters.Date_Start)",
+                                "type": "Expression"
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Date_Start": {
+                        "type": "string",
+                        "defaultValue": "05/01/2020"
+                    },
+                    "Date_End": {
+                        "type": "string",
+                        "defaultValue": "05/03/2020"
+                    }
+                },
+                "variables": {
+                    "Date_Increment_Start": {
+                        "type": "String"
+                    },
+                    "Date_Increment_End": {
+                        "type": "String"
+                    },
+                    "Year": {
+                        "type": "String"
+                    },
+                    "Month": {
+                        "type": "String"
+                    },
+                    "Day2": {
+                        "type": "String"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-10-14T14:35:12Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Master_Rewards_Response')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "dropToDwRaw-RewardsResponseFile",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "truncate_rewards_member_response_raw_daily",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "Master_Rewards_Response_Loop",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "truncate_rewards_member_response_raw_daily",
+                        "description": "truncates two staging tables -raw and daily staging tables",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Staging].[s_truncate_rewards_member_response_raw_daily]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "s_rewards_member_response_daily",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "dropToDwRaw-RewardsResponseFile",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[Staging].[s_rewards_member_response_daily]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "s_member_response_daily",
+                        "type": "SqlServerStoredProcedure",
+                        "dependsOn": [
+                            {
+                                "activity": "s_rewards_member_response_daily",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "storedProcedureName": "[[rewards].[s_upsert_member_response_daily]"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "DataWarehouse",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "dropToRaw_Rewards_ResponseFile",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "s_member_response_daily",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "droptoRaw_Rewards_Response",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {}
+                        }
+                    },
+                    {
+                        "name": "Kobie_Transaction_Multiple_file",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [
+                            {
+                                "activity": "dropToRaw_Rewards_ResponseFile",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "PL_Kobie_Transaction_Multiple_file",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {
+                                "ClientNumber": ""
+                            }
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Rewards/Response_Master"
+                },
+                "annotations": [
+                    "deprecated"
+                ],
+                "lastPublishTime": "2022-05-17T21:11:20Z"
+            },
+            "dependsOn": []
+        }
+    ]
+}

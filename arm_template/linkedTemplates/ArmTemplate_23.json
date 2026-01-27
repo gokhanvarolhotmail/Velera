@@ -1,0 +1,2166 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_STAGE_CardUsageAnalysisPREAGG_Stage')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Stage"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TIMEPERIOD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 27,
+                        "scale": 7
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "STAGE",
+                    "table": "CARDUSAGE_ANALYSIS_PREAGG_STAGE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_ARCHIVE_CardUsageAnalysisMonthly_Archive')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Archive"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TIMEPERIOD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 27,
+                        "scale": 7
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "ARCHIVE",
+                    "table": "CARDUSAGE_ANALYSIS_MONTHLY_ARCHIVE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_STAGE_CardUsageAnalysisMonthly_Stage')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Stage"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TIMEPERIOD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 27,
+                        "scale": 7
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "STAGE",
+                    "table": "CARDUSAGE_ANALYSIS_MONTHLY_STAGE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_SEM_OnboardingAnalysis')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "snowflake",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ISSUE_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVATION_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "EXPIRATION_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "FIRST_TXN_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "ONBOARDING_ANALYSIS"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_ARCHIVE_CardUsageAnalysisPREAGG_Archive')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Archive"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TIMEPERIOD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 27,
+                        "scale": 7
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "ARCHIVE",
+                    "table": "CARDUSAGE_ANALYSIS_PREAGG_ARCHIVE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_STAGE_OnboardingAnalys_Stage')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Stage"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ISSUE_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVATION_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "EXPIRATION_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "FIRST_TXN_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "STAGE",
+                    "table": "ONBOARDING_ANALYSIS_STAGE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_SEM_CardUsageAnalysisPREAGG')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TIMEPERIOD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 27,
+                        "scale": 7
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "CARDUSAGE_ANALYSIS_PREAGG"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_ARCHIVE_OnboardingAnalysis_Archive')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Archive"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ISSUE_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVATION_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "EXPIRATION_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "FIRST_TXN_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "ARCHIVE",
+                    "table": "ONBOARDING_ANALYSIS_ARCHIVE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_COMMON_DimDateDashboard')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Common"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TIMEPERIOD",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DATE_START",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "DATE_END",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "DATE_START_PREV",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "DATE_END_PREV",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "COMMON",
+                    "table": "DIM_DATE_DASHBOARD"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_SEM_CardUsageAnalysisMonthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TIMEPERIOD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 27,
+                        "scale": 7
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "CARDUSAGE_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/common_date_dashboard1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Common"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "timeperiod",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "date_start",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "date_end",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "date_start_prev",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "date_end_prev",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "common",
+                    "table": "dim_date_dashboard"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_SEM_CARDHOLDER_DECLINE_ANALYSIS_MONTHLY')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ORIGIN_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOKEN_REQUEST_DESC",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARD_ENTRY_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDPRESENCE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RECURRING_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RESPONSE_CODE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RESPONSE_CODE_OUTCOME_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANT_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANT_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "CARDHOLDER_DECLINE_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_STAGE_CARDHOLDER_DECLINE_ANALYSIS_MONTHLY_STAGE')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Stage"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ORIGIN_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOKEN_REQUEST_DESC",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARD_ENTRY_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDPRESENCE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RECURRING_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RESPONSE_CODE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RESPONSE_CODE_OUTCOME_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANT_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANT_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "STAGE",
+                    "table": "CARDHOLDER_DECLINE_ANALYSIS_MONTHLY_STAGE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_STAGE_TransactionSpendAnalysisMonthly_STAGE')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Stage"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "STAGE",
+                    "table": "TRANSACTION_SPEND_ANALYSIS_MONTHLY_STAGE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_SEM_TransactionAnalysis_Monthly_NoAccount')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TRANSACTION_ANALYSIS_MONTHLY_NO_ACCOUNT_KEY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_YEAR",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_MONTH",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 208,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 208,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARD_ENTRY_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RECURRING_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOKEN_REQUEST_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDPRESENCE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "TRANSACTION_ANALYSIS_MONTHLY_NO_ACCOUNT"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_SEM_TRANSACTION_ANALYSIS_DAILY')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TRANSACTION_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 208,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 208,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARD_ENTRY_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RECURRING_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOKEN_REQUEST_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDPRESENCE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "TRANSACTION_ANALYSIS_DAILY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_STAGE_TransactionAnalysisMonthly_STAGE')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Stage"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARD_ENTRY_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RECURRING_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOKEN_REQUEST_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDPRESENCE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "STAGE",
+                    "table": "TRANSACTION_ANALYSIS_MONTHLY_STAGE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_SEM_Atm_Transaction_Analysis_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TERMINAL_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ON_US_DESC",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TERMINAL_KEY",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INCOME_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "ATM_TRANSACTION_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_SEM_MerchantCategoryAnalysis_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "MERCHANT_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANT_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANT_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DIGITAL_CARD_ISSUED_IND",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "MERCHANT_CATEGORY_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Snowflake_SEM_Transaction_Analysis_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TRANSACTION_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARD_ENTRY_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RECURRING_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOKEN_REQUEST_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDPRESENCE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "TRANSACTION_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

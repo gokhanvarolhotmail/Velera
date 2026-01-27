@@ -1,0 +1,1301 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_ADF_Error_Log_File')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Utilities"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_PIPE_Header_File",
+                                "type": "DatasetReference"
+                            },
+                            "name": "Source"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "linkedService": {
+                                "referenceName": "EnterpriseDataSource",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "Sink"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "deriveErrors"
+                        },
+                        {
+                            "name": "Dedupe"
+                        },
+                        {
+                            "name": "Union"
+                        },
+                        {
+                            "name": "Select"
+                        }
+                    ],
+                    "script": "parameters{\n\tDataFactoryName as string ('Test'),\n\tPipelineName as string ('Test'),\n\tPipelineRunID as string ('Test'),\n\tPipelineTriggerTime as string ('Test'),\n\tPipelineTriggeredByPipelineName as string ('Test'),\n\tErrorActivity as string ('Test'),\n\tErrorMsg as string ('Test')\n}\nsource(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Source\nSource derive(DataFactoryName = $DataFactoryName,\n\t\tPipelineName = $PipelineName,\n\t\tPipelineRunID = $PipelineRunID,\n\t\tPipelineTriggerTime = $PipelineTriggerTime,\n\t\tPipelineTriggeredByPipelineName = $PipelineTriggeredByPipelineName,\n\t\tErrorActivity = $ErrorActivity,\n\t\tErrorMsg = $ErrorMsg) ~> deriveErrors\nderiveErrors aggregate(groupBy(DataFactoryName,\n\t\tPipelineName,\n\t\tPipelineRunID,\n\t\tPipelineTriggerTime,\n\t\tPipelineTriggeredByPipelineName,\n\t\tErrorActivity,\n\t\tErrorMsg),\n\tcnt = count()) ~> Dedupe\nSelect, Source union(byName: true)~> Union\nDedupe select(mapColumn(\n\t\tDataFactoryName,\n\t\tPipelineName,\n\t\tPipelineRunID,\n\t\tPipelineTriggerTime,\n\t\tPipelineTriggeredByPipelineName,\n\t\tErrorActivity,\n\t\tErrorMsg\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select\nUnion sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delimited',\n\tfileSystem: 'audit',\n\tfolderPath: 'ADF/Error',\n\tcolumnDelimiter: '|',\n\tescapeChar: '\\\\',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: true,\n\tpartitionFileNames:['adf_pipeline_error_logging.txt'],\n\tumask: 0222,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> Sink"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_FISFeedzai_to_ConsDW')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Cooper"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ADLS_Stage_FISFeedzai",
+                                "type": "DatasetReference"
+                            },
+                            "name": "source1"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Stg_FraudTransactionScore",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sink1"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "DerivedColumn1"
+                        },
+                        {
+                            "name": "DerivedColumn3"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tFDZ_SOURCE_ID as string,\n\t\tFDZ_PARTITION_INDEX as string,\n\t\tFDZ_TENANT_KEY as string,\n\t\tFDZ_WKFL_STATE as string,\n\t\tFDZ_INTERNAL_STATE as string,\n\t\tFDZ_DIFFS as string,\n\t\tFDZ_RESULTS as string,\n\t\tFDZ_OUTCOMES as string,\n\t\tFDZ_TRIGGERED_ACTIONS as string,\n\t\tFDZ_FEEDBACKS as string,\n\t\tFDZ_UUID as string,\n\t\tFDZ_timestamp as string,\n\t\tFDZTimeStampDate as string,\n\t\tFDZ_SCHEMA_UID as string,\n\t\tmti as string,\n\t\tcard_pan as string,\n\t\tttc as string,\n\t\tatc1 as string,\n\t\tatc2 as string,\n\t\tcurrency_code as string,\n\t\tcurrency_unit as string,\n\t\tamount as string,\n\t\tcardholder_bill_amount as string,\n\t\treconciliation_currency_code as string,\n\t\treconciliation_currency_unit as string,\n\t\treconciliation_amount as string,\n\t\treconciliation_conv_rate as string,\n\t\ttransmission_datetime as string,\n\t\tcardholder_bill_conv_rate as string,\n\t\tstan as string,\n\t\tlocal_datetime as string,\n\t\tcard_effective_date as string,\n\t\tcard_expiration_date as string,\n\t\tlifecycle_id as string,\n\t\tpos_card_read_method as string,\n\t\tpos_cardholder_ver_method as string,\n\t\tpos_environment as string,\n\t\tpos_security_characteristics as string,\n\t\tcard_seq_number as string,\n\t\tfunction_code as string,\n\t\treason_code as string,\n\t\tmcc as string,\n\t\tpos_read_cap as string,\n\t\tpos_cardholder_ver_cap as string,\n\t\tpos_approval_code_len as string,\n\t\tpos_cardholder_rec_data_len as string,\n\t\tpos_acceptor_rec_data_len as string,\n\t\tpos_cardholder_disp_data_len as string,\n\t\tpos_acceptor_disp_data_len as string,\n\t\tpos_icc_data_len as string,\n\t\tpos_track3_rw as string,\n\t\tpos_card_capture_cap as string,\n\t\tpos_pin_len_cap as string,\n\t\treconciliation_date as string,\n\t\treconciliation_indicator as string,\n\t\toriginal_amount_data as string,\n\t\tacquirer_number as string,\n\t\tacquirer_id as string,\n\t\tforwarding_institution_id as string,\n\t\taccount_digital_signature as string,\n\t\tcardholder_certificate_number as string,\n\t\tacceptor_certificate_number as string,\n\t\txid as string,\n\t\tpos_track2_data as string,\n\t\tpos_track3_data as string,\n\t\tretrieval_reference_number as string,\n\t\tapproval_code as string,\n\t\taction_code as string,\n\t\tterminal_id as string,\n\t\tacceptor_id as string,\n\t\tacceptor_name as string,\n\t\tacceptor_street_addr as string,\n\t\tacceptor_city as string,\n\t\tacceptor_region as string,\n\t\tacceptor_zip as string,\n\t\tacceptor_country_code as string,\n\t\tacceptor_url as string,\n\t\tacceptor_email as string,\n\t\tpos_track1_data as string,\n\t\tamount_fees as string,\n\t\tcardholder_bill_street_addr as string,\n\t\tcardholder_bill_zip as string,\n\t\tcardholder_compress_bill_addr as string,\n\t\tcardholder_add_id_type as string,\n\t\tcardholder_add_id as string,\n\t\tavs_code as string,\n\t\ttransaction_category_code as string,\n\t\tcardholder_presence_flag as string,\n\t\tcard_presence_flag as string,\n\t\treceiving_institution_id as string,\n\t\tterminal_timezone as string,\n\t\tsecure_3d_val_code as string,\n\t\tcard_bin as string,\n\t\tcardholder_name as string,\n\t\tcard_type as string,\n\t\tcard_brand as string,\n\t\tcard_issuer as string,\n\t\tcard_country_code as string,\n\t\tcard_last4 as string,\n\t\tcard_status as string,\n\t\tcard_credit_score as string,\n\t\tcard_transaction_amount_limit as string,\n\t\tcard_credit_limit as string,\n\t\tcard_available_balance as string,\n\t\tcard_number_of_cardholders as string,\n\t\taccount_iban as string,\n\t\tcustomer_id as string,\n\t\tcustomer_name as string,\n\t\tcustomer_email as string,\n\t\tcustomer_phone as string,\n\t\tcustomer_phone_val_code as string,\n\t\tcustomer_citizen_id_number as string,\n\t\tcustomer_passport_number as string,\n\t\tcustomer_driver_license as string,\n\t\tcustomer_ssn as string,\n\t\tcustomer_tax_number as string,\n\t\tcustomer_registration_date as string,\n\t\tcustomer_street_addr as string,\n\t\tcustomer_zip as string,\n\t\tcustomer_city as string,\n\t\tcustomer_region as string,\n\t\tcustomer_country_code as string,\n\t\tcustomer_dob as string,\n\t\tcustomer_number_of_accounts as string,\n\t\tcustomer_total_balance as string,\n\t\tcustomer_total_credit_limit as string,\n\t\tcustomer_kyc_lvl as string,\n\t\tcustomer_occupation as string,\n\t\tcustomer_cards as string,\n\t\tterminal_street_addr as string,\n\t\tterminal_city as string,\n\t\tterminal_region as string,\n\t\tterminal_zip as string,\n\t\tterminal_country_code as string,\n\t\tterminal_latitude as string,\n\t\tterminal_longitude as string,\n\t\tterminal_ip as string,\n\t\tterminal_ip_latitude as string,\n\t\tterminal_ip_longitude as string,\n\t\tterminal_ip_zip as string,\n\t\tterminal_ip_city as string,\n\t\tterminal_ip_region as string,\n\t\tterminal_ip_country_code as string,\n\t\tterminal_poc_flag as string,\n\t\tacceptor_risky_flag as string,\n\t\tacceptor_risk as string,\n\t\tacceptor_visa_risk as string,\n\t\tacceptor_mastercard_risk as string,\n\t\tacceptor_phone_val_code as string,\n\t\tacceptor_latitude as string,\n\t\tacceptor_longitude as string,\n\t\tevent_external_id as string,\n\t\talert_id as string,\n\t\tdevice_id as string,\n\t\tevent_occurred_at as string,\n\t\tevent_type as string,\n\t\tevent_subtype as string,\n\t\ttransaction_status as string,\n\t\ttransaction_status_reason as string,\n\t\toob_start_date as string,\n\t\toob_comm_type as string,\n\t\toob_notes as string,\n\t\toob_end_date as string,\n\t\toob_response_type as string,\n\t\toob_feedback_notes as string,\n\t\tdispute_start_date as string,\n\t\tdispute_reason as string,\n\t\tdispute_notes as string,\n\t\tdispute_submitted_by as string,\n\t\tfeedback_end_date as string,\n\t\tdispute_refunded as string,\n\t\tfeedback_notes as string,\n\t\tfraud_label as string,\n\t\tlists_state as string,\n\t\tmc_merchant_fraud_code as string,\n\t\tevent_received_at as string,\n\t\tcustomer_number_of_cards as string,\n\t\tcustomer_currency as string,\n\t\tpos_cap_code as string,\n\t\tcard_ind as string,\n\t\tinst_id as string,\n\t\tnationalpos_state as string,\n\t\tnationalpos_county as string,\n\t\tnationalpos_country as string,\n\t\tpinexists as string,\n\t\tacquirer_ins_id as string,\n\t\ttrans_descript as string,\n\t\tretry_ind as string,\n\t\tinfo_type as string,\n\t\tcard_id as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nDerivedColumn3 derive(Der_ACCOUNT_NUM = New_card_pan,\n\t\tDer_Card = New_card_pan,\n\t\tDer_SourceId = \"Pulse.App_Event\",\n\t\tDer_CreateDate = currentUTC(),\n\t\tDer_FDZ_RESULTS = replace(FDZ_RESULTS, '[{explanations\":', '[{\"explanations\":'),\n\t\tDer_FDZ_OUTCOMES = replace(New_FDZ_OUTCOMES, '{decision\":', '{\"decision\":'),\n\t\tder_TransactionDate = toTimestamp( concat(toString(toDate(substring(New_LocalDate , 1,8) , 'yyyyMMdd') ),\" \",substring(New_LocalDate , 9,2) ,':',substring(New_LocalDate , 11,2) ,':',substring(New_LocalDate , 13,2)), 'yyyy-MM-dd HH:mm:ss'),\n\t\tDer_TransactionAMT = toDecimal(divide(toInteger(replace(replace(replace(New_amount, \"$\", \"\"), \",\", \"\"), \" \", \"\")),100), 10,2)) ~> DerivedColumn1\nsource1 derive(New_FDZ_OUTCOMES = iif ( length( card_pan) <16,FDZ_TRIGGERED_ACTIONS ,FDZ_OUTCOMES),\n\t\tNew_card_pan = iif ( length( card_pan) <16, ttc, card_pan),\n\t\tNew_LocalDate = lpad( (iif (  length( card_pan) <16,card_effective_date ,local_datetime)), 14,'20'),\n\t\tNew_amount = iif ( length( card_pan) <16, reconciliation_currency_code, amount)) ~> DerivedColumn3\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tFRAUD_TRANSACTION_SCORE_ID as integer,\n\t\tCARD_NUM as string,\n\t\tACCOUNT_NUM as string,\n\t\tTRANSACTION_DTM as timestamp,\n\t\tTRANSACTION_AMT as decimal(19,4),\n\t\tCOOPER_SCORE as string,\n\t\tFRAUD_WBE_CD as string,\n\t\tSOURCE_ID as string,\n\t\tCREATE_DTE as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCARD_NUM = Der_Card,\n\t\tACCOUNT_NUM = Der_ACCOUNT_NUM,\n\t\tTRANSACTION_DTM = der_TransactionDate,\n\t\tTRANSACTION_AMT = Der_TransactionAMT,\n\t\tCOOPER_SCORE = Der_FDZ_OUTCOMES,\n\t\tFRAUD_WBE_CD = Der_FDZ_RESULTS,\n\t\tSOURCE_ID = Der_SourceId,\n\t\tCREATE_DTE = Der_CreateDate\n\t)) ~> sink1"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_FISERVFalconFadStage_to_ConsDW')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Cooper"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ADLS_Stage_FISERVFalconFad",
+                                "type": "DatasetReference"
+                            },
+                            "name": "source1"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Stg_FraudTransactionScore",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sink1"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "DerivedColumn1"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tFFSL_ACCOUNT_NUMBER as string,\n\t\tFFSL_DATE_CCYYMMDD as string,\n\t\tFFSL_TIME_HHMMSS_N as string,\n\t\tFFSL_TRAN_AMOUNT as string,\n\t\tFFSL_FDR_PI_ID as string,\n\t\tFFSL_FRAD_CDE_49_NR as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource1 derive(Der_SourceId = \"Falcon.FalconFad\",\n\t\tDer_CreateDate = currentUTC(),\n\t\tDer_TransactionAmt = toDecimal(replace(replace(replace(FFSL_TRAN_AMOUNT, \"$\", \"\"), \",\", \"\"), \" \", \"\"), 10,2),\n\t\tDer_TransactionDate = toDate(FFSL_DATE_CCYYMMDD , 'yyyyMMdd'),\n\t\tDer_TransactionDateTime = toTimestamp(  concat( toString(toDate(FFSL_DATE_CCYYMMDD , 'yyyyMMdd') ), \" \", substring(lpad(FFSL_TIME_HHMMSS_N, 6,'0'), 1, 2) +\":\"+ substring(lpad(FFSL_TIME_HHMMSS_N, 6,'0'), 3, 2)+\":\"+ substring(lpad(FFSL_TIME_HHMMSS_N, 6,'0'), 5, 2)) , 'yyyy-MM-dd HH:mm:ss'),\n\t\tDer_FFSL_ACCOUNT_NUMBER = toString(toLong(toDecimal(FFSL_ACCOUNT_NUMBER, 38, 19))),\n\t\tDer_CardNum = toString(toLong(toDecimal(FFSL_FDR_PI_ID, 38, 19)))) ~> DerivedColumn1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tFRAUD_TRANSACTION_SCORE_ID as integer,\n\t\tCARD_NUM as string,\n\t\tACCOUNT_NUM as string,\n\t\tTRANSACTION_DTM as timestamp,\n\t\tTRANSACTION_AMT as decimal(19,4),\n\t\tCOOPER_SCORE as string,\n\t\tFRAUD_WBE_CD as string,\n\t\tSOURCE_ID as string,\n\t\tCREATE_DTE as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCARD_NUM = Der_CardNum,\n\t\tACCOUNT_NUM = Der_FFSL_ACCOUNT_NUMBER,\n\t\tTRANSACTION_DTM = Der_TransactionDateTime,\n\t\tTRANSACTION_AMT = Der_TransactionAmt,\n\t\tCOOPER_SCORE = FFSL_FRAD_CDE_49_NR,\n\t\tSOURCE_ID = Der_SourceId,\n\t\tCREATE_DTE = Der_CreateDate\n\t)) ~> sink1"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_InterchangeRawNetwork')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "FIS"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_FIXED_File",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcInterchangeRaw"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Raw_Interchange_CIRV",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkInterchangeRawCIRV"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Raw_Interchange_IPM",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkInterchangeRawIPM"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Raw_Interchange_PULS",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkInterchangeRawPULS"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Raw_Interchange_VISA",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkInterchangeRawVISA"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "surrRowID"
+                        },
+                        {
+                            "name": "ConditionalSplit1"
+                        },
+                        {
+                            "name": "deriveFileName"
+                        }
+                    ],
+                    "script": "parameters{\n\tFileName as string ('D211025.CUSACIRV.TXT')\n}\nsource(output(\n\t\tColumn as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tskipLines: 1,\n\tpartitionBy('hash', 1)) ~> srcInterchangeRaw\nderiveFileName keyGenerate(output(RowId as long),\n\tstartAt: 1L,\n\tstepValue: 1L) ~> surrRowID\nsurrRowID split(like($FileName,'%ACRS%'),\n\tlike($FileName,'%IPM%'),\n\tlike($FileName,'%PULS%'),\n\tlike($FileName,'%VDCS%')||like($FileName,'%ILNK%')||like($FileName,'%VCRS%')||like($FileName,'%PLVS%')||like($FileName,'%VISA%'),\n\tdisjoint: false) ~> ConditionalSplit1@(CIR, IPM, PULS, VISA, None)\nsrcInterchangeRaw derive(FileName = $FileName) ~> deriveFileName\nConditionalSplit1@CIR sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tRowId as long,\n\t\tmessage as string,\n\t\tFileName as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tpreSQLs:[(\"DELETE FROM [Staging].[FIS_Interchange_CIRV_RAW] where FileName like '%{$FileName}'\")],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tRowId,\n\t\tmessage = Column,\n\t\tFileName\n\t)) ~> snkInterchangeRawCIRV\nConditionalSplit1@IPM sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tRowId as long,\n\t\tmessage as string,\n\t\tFileName as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tpreSQLs:[(\"DELETE FROM [Staging].[FIS_Interchange_IPM_RAW] where FileName like '%{$FileName}'\")],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tRowId,\n\t\tmessage = Column,\n\t\tFileName\n\t)) ~> snkInterchangeRawIPM\nConditionalSplit1@PULS sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tRowId as long,\n\t\tmessage as string,\n\t\tFileName as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tpreSQLs:[(\"DELETE FROM [Staging].[FIS_Interchange_PULS_RAW] where FileName like '%{$FileName}'\")],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tRowId,\n\t\tmessage = Column,\n\t\tFileName\n\t)) ~> snkInterchangeRawPULS\nConditionalSplit1@VISA sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tRowId as long,\n\t\tmessage as string,\n\t\tFileName as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tpreSQLs:[(\"DELETE FROM [Staging].[FIS_Interchange_VISA_RAW] where FileName like '%{$FileName}'\")],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tRowId,\n\t\tmessage = Column,\n\t\tFileName\n\t)) ~> snkInterchangeRawVISA"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_Rewards_Custom_Transaction')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Rewards/DroptoDW"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ADLS_dropZone_Rewards_Custom_Transaction",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcRewardsSourceCustomTransaction"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Inbound_MemberTransaction_Raw",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sinkResponseDWRawCustomDemo"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "deriveAddingColumn"
+                        }
+                    ],
+                    "script": "parameters{\n\tfileName as string\n}\nsource(output(\n\t\tColumn_1 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> srcRewardsSourceCustomTransaction\nsrcRewardsSourceCustomTransaction derive(File_name = $fileName) ~> deriveAddingColumn\nderiveAddingColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tFileName as string,\n\t\tDataString as string,\n\t\tcreatedate as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tFileName = File_name,\n\t\tDataString = Column_1\n\t),\n\tpartitionBy('hash', 1)) ~> sinkResponseDWRawCustomDemo"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_Rewards_Account_Misc')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Rewards/DroptoDW"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ADLS_stage_BalanceStatus",
+                                "type": "DatasetReference"
+                            },
+                            "name": "BalanceSrc"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Account_Misc_Outbound",
+                                "type": "DatasetReference"
+                            },
+                            "name": "AccountMiscDWRaw"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "BalanceSelect"
+                        },
+                        {
+                            "name": "trimBlankSpacesBalanceStatus"
+                        },
+                        {
+                            "name": "FilterOutHeadingsIfExists"
+                        },
+                        {
+                            "name": "FinalSelect"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tBalanceStatus_ID as string,\n\t\tRECORD_TYPE as string,\n\t\tPRIMARY_NAME as string,\n\t\tSECONDARY_NAME as string,\n\t\tADDR_LINE_1 as string,\n\t\tADDR_LINE_2 as string,\n\t\tCITY as string,\n\t\tSTATE as string,\n\t\tZIP_CODE as string,\n\t\tSYS_BANK as string,\n\t\tPRIN_BANK as string,\n\t\tAGENT_BANK as string,\n\t\tACCT_NO as string,\n\t\tNUMBER_OF_PLASTICS_X as string,\n\t\tCYCLE_CODE as string,\n\t\tEXPIRATION_DATE as string,\n\t\tOPEN_DATE_MMYY as string,\n\t\tNEW_CARD_FLAG as string,\n\t\tEXTERNAL_STATUS as string,\n\t\tINTERNAL_STATUS as string,\n\t\tAUTH_FLAG as string,\n\t\tCREDIT_SCORE as string,\n\t\tTYPE_CR_LINE_CHNG as string,\n\t\tTYPE_OF_PLASTICS as string,\n\t\tSPOUSE_TYPE_PLASTIC as string,\n\t\tSPECIAL_FLAGS_5_THRU_8 as string,\n\t\tRENEWAL_CODE as string,\n\t\tCREDIT_LINE as string,\n\t\tAVAILABLE_CREDIT as string,\n\t\tCASH_ADVANCE_BALANCE as string,\n\t\tCREDIT_BUREAU_FLAG as string,\n\t\tTERMS_FLAG as string,\n\t\tHOLD_CODE as string,\n\t\tCROSS_REF_ACCT_NO as string,\n\t\tCROSS_REF_ACCT_NO_1 as string,\n\t\tCROSS_REF_ACCT_NO_2 as string,\n\t\tMISCELLANEOUS_FIELD_1 as string,\n\t\tMISCELLANEOUS_FIELD_2 as string,\n\t\tMISCELLANEOUS_FIELD_3 as string,\n\t\tEXP_USER_FLAGS_1_THRU_4 as string,\n\t\tFIXED_PAYMENT_AMOUNT as string,\n\t\tAUTOMATIC_PAYMENT_FLAG as string,\n\t\tANNUAL_CHARGE_DATE as string,\n\t\tANNUAL_CHARGE_FLAG as string,\n\t\tDATE_OF_CR_LINE_CHNG as string,\n\t\tCREDIT_LIFE_FLAG as string,\n\t\tHOME_TELEPHONE_NUMBER as string,\n\t\tBUSINESS_TELEPHONE_NUMBER as string,\n\t\tSOCIAL_SECURITY_NUMBER as string,\n\t\tCHECKING_ACCOUNT_NUMBER as string,\n\t\tSAVINGS_ACCOUNT_NUMBER as string,\n\t\tRECOURSE_FLAG as string,\n\t\tDUALITY_FLAG as string,\n\t\tTIMES_IN_DISPUTE as string,\n\t\tTIMES_ONE_CYCLE_DELINQ as string,\n\t\tTIMES_TWO_CYCLES_DELINQ as string,\n\t\tTIMES_THREE_CYCLES_DELINQ as string,\n\t\tLAST_PAYMENT_AMOUNT as string,\n\t\tSTATEMENT_BALANCE as string,\n\t\tSTATEMENT_DATE as string,\n\t\tDATE_FIRST_ACTIVE as string,\n\t\tDATE_OF_LAST_PAYMENT as string,\n\t\tDATE_OF_LAST_MONETARY as string,\n\t\tTYPE_OF_LAST_MONETARY as string,\n\t\tHIGH_BALANCE as string,\n\t\tPAYMENT_HISTORY as string,\n\t\tDATE_OF_LAST_NON_MONETARY as string,\n\t\tTYPE_OF_LAST_NON_MONETARY as string,\n\t\tDISPUTE_AMOUNT as string,\n\t\tDISPUTE_DAYS as string,\n\t\tDATE_STATUS_CHANGE as string,\n\t\tTIMES_OVERLIMIT as string,\n\t\tTIMES_REAGED as string,\n\t\tMINIMUM_PAYMENT_DUE as string,\n\t\tDELINQUENCY_DOLLARS as string,\n\t\tCURRENT_BALANCE as string,\n\t\tDAYS_DELINQUENT as string,\n\t\tReportDate as string,\n\t\tDATE_OF_BIRTH as string,\n\t\tSECONDARY_DATE_OF_BIRTH as string,\n\t\tWB_TRAN_TYPE as string,\n\t\tWB_PURGE_DATE as string,\n\t\tLIFE_4_CYCLE_DELQ_CT as string,\n\t\tLIFE_5_CYCLE_DELQ_CT as string,\n\t\tLIFE_6_CYCLE_DELQ_CT as string,\n\t\tLIFE_7_CYCLE_DELQ_CT as string,\n\t\tPREV_CRLINE_CHANGE_DATE as string,\n\t\tNAME_ADDR_CHG as string,\n\t\tSOLICITATION_FLAG as string,\n\t\tEMPL_ACCT_CD as string,\n\t\tANN_RATE_CASH as string,\n\t\tANN_RATE_MRCH as string,\n\t\tCURRENT_PRICING_STRATEGY as string,\n\t\tCOV_STRATEGY_ID as string,\n\t\tSECONDARY_SOC_SEC_NO as string,\n\t\tCMPN_ID as string,\n\t\tPYMN_DUE_DT as string,\n\t\tBONUS_STRATEGY as string,\n\t\tFRAUD_SCORE as string,\n\t\tFRAUD_SCORE_CHANGE_DATE as string,\n\t\tFRAUD_PORT_ID as string,\n\t\tFRAUD_ASSG_STRATEGY as string,\n\t\tFRAUD_SUSPEND_STRATEGY as string,\n\t\tFRAUD_SUSP_STRATEGY_DATE as string,\n\t\tBEHAVIOR_SCORE as string,\n\t\tCR_SCORE_DATE as string,\n\t\tPROCESSING_LEVEL as string,\n\t\tMISCELLANEOUS_FIELD_4 as string,\n\t\tMISCELLANEOUS_FIELD_5 as string,\n\t\tMISCELLANEOUS_FIELD_6 as string,\n\t\tMISCELLANEOUS_FIELD_7 as string,\n\t\tMISCELLANEOUS_FIELD_8 as string,\n\t\tMISC_FIELD_9 as string,\n\t\tMISC_FIELD_10 as string,\n\t\tMISC_FIELD_11_TX as string,\n\t\tMISC_FIELD_12_TX as string,\n\t\tMISC_FIELD_13_TX as string,\n\t\tClient as string,\n\t\tDateArchived as string,\n\t\tREISSUE_CONTROL as string,\n\t\tEM_PD_HM_ADDR_TX as string,\n\t\tEM_PD_BS_ADDR_TX as string,\n\t\tEM_SD_HM_ADDR_TX as string,\n\t\tEM_SD_BS_ADDR_TX as string,\n\t\tSEC_CODE_NUM_1 as string,\n\t\tSTATUS_REASON_CODE as string,\n\t\tMONTHS_GROSS_ACTIVE as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> BalanceSrc\nBalanceSrc select(mapColumn(\n\t\tClientNum = Client,\n\t\tReportDate,\n\t\tMiscellaneousField01 = MISCELLANEOUS_FIELD_1,\n\t\tMiscellaneousField02 = MISCELLANEOUS_FIELD_2,\n\t\tMiscellaneousField03 = MISCELLANEOUS_FIELD_3,\n\t\tMiscellaneousField04 = MISCELLANEOUS_FIELD_4,\n\t\tMiscellaneousField05 = MISCELLANEOUS_FIELD_5,\n\t\tMiscellaneousField06 = MISCELLANEOUS_FIELD_6,\n\t\tMiscellaneousField07 = MISCELLANEOUS_FIELD_7,\n\t\tMiscellaneousField08 = MISCELLANEOUS_FIELD_8,\n\t\tMiscellaneousField09 = MISC_FIELD_9,\n\t\tMiscellaneousField10 = MISC_FIELD_10,\n\t\tAccountNum = ACCT_NO,\n\t\tMiscellaneousField11 = MISC_FIELD_11_TX,\n\t\tMiscellaneousField12 = MISC_FIELD_12_TX,\n\t\tMiscellaneousField13 = MISC_FIELD_13_TX,\n\t\tBalanceStatus_ID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> BalanceSelect\nBalanceSelect derive(each(match(type=='string'), $$ = iif(toString($$)!='NULL',$$,toString(null())))) ~> trimBlankSpacesBalanceStatus\ntrimBlankSpacesBalanceStatus filter(BalanceStatus_ID != 'BalanceStatus_Daily_ArchiveID') ~> FilterOutHeadingsIfExists\nFilterOutHeadingsIfExists select(mapColumn(\n\t\tClientNum,\n\t\tReportDate,\n\t\tMiscellaneousField01,\n\t\tMiscellaneousField02,\n\t\tMiscellaneousField03,\n\t\tMiscellaneousField04,\n\t\tMiscellaneousField05,\n\t\tMiscellaneousField06,\n\t\tMiscellaneousField07,\n\t\tMiscellaneousField08,\n\t\tMiscellaneousField09,\n\t\tMiscellaneousField10,\n\t\tAccountNum,\n\t\tMiscellaneousField11,\n\t\tMiscellaneousField12,\n\t\tMiscellaneousField13\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> FinalSelect\nFinalSelect sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tfilename as string,\n\t\tData_f as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tpartitionBy('hash', 1)) ~> AccountMiscDWRaw"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_MasterCard_Stage_to_ConsDW')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Cooper"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Stage_MasterCardChargeback",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sourcefromStage"
+                        },
+                        {
+                            "linkedService": {
+                                "referenceName": "EnterpriseDataSource",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "DSFraudType"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Merchant_Type",
+                                "type": "DatasetReference"
+                            },
+                            "name": "DimMerchantType"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Stg_FraudTransaction",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sink1"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "DerivedColumn1"
+                        },
+                        {
+                            "name": "Select1"
+                        },
+                        {
+                            "name": "LKFraudDesc"
+                        },
+                        {
+                            "name": "ConditionalSplit1"
+                        },
+                        {
+                            "name": "Filter1"
+                        },
+                        {
+                            "name": "Lookup1"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tMasterCardChargeBackID as short,\n\t\tFDA_ICA as short,\n\t\tACN as integer,\n\t\tACQ_ICA as integer,\n\t\tARN as double,\n\t\tPOST_DATE as integer,\n\t\tPAN as string,\n\t\tTRAN_DATE as string,\n\t\tTRAN_AMT_USd as string,\n\t\tTRAN_TIME as string,\n\t\tTRAN_AMT_LCL as integer,\n\t\tTRAN_CUR_R as short,\n\t\tTRAN_EXP as short,\n\t\tTRAN_AMT_CHB as integer,\n\t\tTRAN_CH_CUR_R as short,\n\t\tTRAN_CH_EXP as short,\n\t\tCARD_TYPE as string,\n\t\tMERCH_NAME as string,\n\t\tID as string,\n\t\tCITY as string,\n\t\tSTATE_PROV as string,\n\t\tCOUNTRY as string,\n\t\tPOSTAL_CD as string,\n\t\tCATEGORY_CD as string,\n\t\tPOS_TML_ATT_IND as short,\n\t\tPOS_CARD_PRES as short,\n\t\tCAT_LEVEL as short,\n\t\tPOS_CD_DATA_TML_INP_CAP as short,\n\t\tELEC_COMM_SEC_LVL as string,\n\t\tPOS_ENTRY_MODE as string,\n\t\tTERM_ID as string,\n\t\tFRAUD_TYPE as integer,\n\t\tSUB_TYPE as string,\n\t\tCHG_IND as string,\n\t\tINSURANCE as string,\n\t\tSETL_DATE as string,\n\t\tAUTH_RESP as integer,\n\t\tNEW_REC_FMT_IND as string,\n\t\tDATE_REP_FRAUD as string,\n\t\tCVC_INVALID_IND as string,\n\t\tACCT_DEV_TYPE as string,\n\t\tSECURE_CODE as short,\n\t\tAVS_RESP_CODE as string,\n\t\tCARD_PRESENT as boolean,\n\t\tTERM_OPER_ENV as short,\n\t\tFileName as string,\n\t\tDateProcessed as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> sourcefromStage\nsource(output(\n\t\t{Fraud Type Code} as string,\n\t\t{Fraud Type Desc} as string\n\t),\n\tuseSchema: false,\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delimited',\n\tfileSystem: 'stage',\n\tfolderPath: 'MasterCard/ChargeBack/Lookups',\n\tfileName: 'Master Card Fraud Type Lookup.csv',\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: true) ~> DSFraudType\nsource(output(\n\t\tmerchant_type_key as long,\n\t\tmerchant_type as string,\n\t\tmerchant_group as string,\n\t\tmerchant_category_code_name as string,\n\t\tmerchant_category_group as string,\n\t\ttransaction_type as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: true) ~> DimMerchantType\nFilter1 derive(Der_CardNumber = rtrim(ltrim(toString(PAN))),\n\t\tDer_AccountNumber = ltrim(rtrim(toString(PAN))),\n\t\tDer_tranDate = (toTimestamp(concat(substring(TRAN_DATE,1,4),'-',substring(TRAN_DATE,5,2),'-',substring(TRAN_DATE,7,2),' ',\r\nsubstring(TRAN_TIME,1,2),':',substring(TRAN_TIME,3,2),':',substring(TRAN_TIME,5,2)),'yyyy-MM-dd HH:mm:ss') \r\n),\n\t\tDer_ConfirmedNotFraudInd = toBoolean('false'),\n\t\tDer_MerchantCountryCd = rtrim(ltrim(COUNTRY)),\n\t\tDer_SicCd = CATEGORY_CD,\n\t\tDer_SicDsc = \"N/A\",\n\t\tDer_SourceId = \"MC Chargeback\",\n\t\tDer_CreateDate = currentUTC(),\n\t\tDer_Tran_amt = TRAN_AMT_LCL/100.00,\n\t\tDer_MerchName = ltrim(rtrim(MERCH_NAME)),\n\t\tDer_MerchantCity = ltrim(rtrim(CITY)),\n\t\tDer_MerchantState = ltrim(rtrim(STATE_PROV)),\n\t\tDer_PostalCode = ltrim(rtrim(POSTAL_CD))) ~> DerivedColumn1\nLookup1 select(mapColumn(\n\t\tDer_CardNumber,\n\t\t{Fraud Type} = {Fraud Type Desc},\n\t\t{Merchant Name} = Der_MerchName,\n\t\t{Merch City} = Der_MerchantCity,\n\t\t{Merch State} = Der_MerchantState,\n\t\t{Postal Code} = Der_PostalCode,\n\t\tDer_AccountNumber,\n\t\tDer_tranDate,\n\t\tDer_ConfirmedNotFraudInd,\n\t\tDer_MerchantCountryCd,\n\t\tDer_SicCd,\n\t\tDer_SicDsc = merchant_group,\n\t\tDer_SourceId,\n\t\tDer_CreateDate,\n\t\tDer_Tran_amt\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select1\nDerivedColumn1, DSFraudType lookup(toString(FRAUD_TYPE) == {Fraud Type Code},\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> LKFraudDesc\nSelect1 split(not(isNull(Der_CardNumber)),\n\tdisjoint: false) ~> ConditionalSplit1@(ValidAccounts, NullAccounts)\nsourcefromStage filter(PAN!='PAN') ~> Filter1\nLKFraudDesc, DimMerchantType lookup(Der_SicCd == merchant_type,\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> Lookup1\nConditionalSplit1@ValidAccounts sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tFT_Id as long,\n\t\tCardNum as string,\n\t\tAccountNum as string,\n\t\tTransactionDate as timestamp,\n\t\tTransactionAmt as decimal(19,4),\n\t\tConfirmedNonFraudInd as boolean,\n\t\tFraudTypeDsc as string,\n\t\tMerchantName as string,\n\t\tMerchantCity as string,\n\t\tMerchantState as string,\n\t\tMerchantCountryCd as string,\n\t\tTerminalPostalCode as string,\n\t\tSicCd as string,\n\t\tSicDsc as string,\n\t\tSourceId as string,\n\t\tCreateDate as timestamp,\n\t\tFI_Transaction_Id as string,\n\t\tCase_Cls_Dte as string,\n\t\tCase_Id as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tdateFormat:'yyyy-dd-mm hh:mm:ss',\n\ttimestampFormat:'yyyy-dd-mm hh:mm:ss',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCardNum = Der_CardNumber,\n\t\tAccountNum = Der_AccountNumber,\n\t\tTransactionDate = Der_tranDate,\n\t\tTransactionAmt = Der_Tran_amt,\n\t\tConfirmedNonFraudInd = Der_ConfirmedNotFraudInd,\n\t\tFraudTypeDsc = {Fraud Type},\n\t\tMerchantName = {Merchant Name},\n\t\tMerchantCity = {Merch City},\n\t\tMerchantState = {Merch State},\n\t\tMerchantCountryCd = Der_MerchantCountryCd,\n\t\tTerminalPostalCode = {Postal Code},\n\t\tSicCd = Der_SicCd,\n\t\tSicDsc = Der_SicDsc,\n\t\tSourceId = Der_SourceId,\n\t\tCreateDate = Der_CreateDate\n\t)) ~> sink1"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_Rewards_Response_Error')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Rewards/DroptoDW"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_Rewards",
+                                "type": "DatasetReference"
+                            },
+                            "name": "RewardsSource"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Response_Member_Outbound_Error",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ResponseDWRaw"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "AddingColumn"
+                        }
+                    ],
+                    "script": "parameters{\n\tfilename as string\n}\nsource(output(\n\t\tColumn_1 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> RewardsSource\nRewardsSource derive(File_name = $filename) ~> AddingColumn\nAddingColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tfilename as string,\n\t\tData_f as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tfilename = File_name,\n\t\tData_f = Column_1\n\t),\n\tpartitionBy('hash', 1)) ~> ResponseDWRaw"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_Billing')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Biiling"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "fact_Transaction",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dwFactTrans"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Routing_Number",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dwRTN"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_PIPE_Header_File",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcICClientBlacklist"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_TSV_Header_File",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcClientExceptions"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_PIPE_Header_File",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcCooperClientBlacklist"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_PIPE_Header_File",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcSpringboardClientBlacklist"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_CSV_Header_Folder",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkConnexIC"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_CSV_Header_Folder",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkOmahaIC"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_CSV_Header_Folder",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkConnexSpringboard"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_CSV_Header_Folder",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkOmahaSpringboard"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_CSV_Header_Folder",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkConnexCooper"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_CSV_Header_Folder",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkOmahaCooper"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "TrimICClientBlacklist"
+                        },
+                        {
+                            "name": "Select"
+                        },
+                        {
+                            "name": "AggAllTransactions"
+                        },
+                        {
+                            "name": "SelectOmaha"
+                        },
+                        {
+                            "name": "SelectConnex"
+                        },
+                        {
+                            "name": "JoinRTN"
+                        },
+                        {
+                            "name": "DerivedColumn"
+                        },
+                        {
+                            "name": "deriveRTNLength"
+                        },
+                        {
+                            "name": "FilterNullRTN"
+                        },
+                        {
+                            "name": "FilterRTN"
+                        },
+                        {
+                            "name": "TrimClientException"
+                        },
+                        {
+                            "name": "JoinClientException"
+                        },
+                        {
+                            "name": "SelectClientException"
+                        },
+                        {
+                            "name": "rankRTNs"
+                        },
+                        {
+                            "name": "finalRTN"
+                        },
+                        {
+                            "name": "filterAuthorizations"
+                        },
+                        {
+                            "name": "InsightsCenter"
+                        },
+                        {
+                            "name": "Springboard"
+                        },
+                        {
+                            "name": "Cooper"
+                        },
+                        {
+                            "name": "AggAuthorizationsOnly"
+                        },
+                        {
+                            "name": "TrimCooperClientBlacklist"
+                        },
+                        {
+                            "name": "TrimSpringboardClientBlacklist"
+                        },
+                        {
+                            "name": "deriveIC"
+                        },
+                        {
+                            "name": "deriveSpringboard"
+                        },
+                        {
+                            "name": "SelectConnexSpringboard"
+                        },
+                        {
+                            "name": "FilterNullRTNSpringboard"
+                        },
+                        {
+                            "name": "SelectOmahaSpringboard"
+                        },
+                        {
+                            "name": "deriveCooper"
+                        },
+                        {
+                            "name": "SelectConnexCooper"
+                        },
+                        {
+                            "name": "SelectOmahaCooper"
+                        },
+                        {
+                            "name": "ConditionalSplit1"
+                        },
+                        {
+                            "name": "ConditionalSplit2"
+                        },
+                        {
+                            "name": "ConditionalSplit3"
+                        }
+                    ],
+                    "script": "parameters{\n\treport_date as string\n}\nsource(output(\n\t\tsource_system_key as integer,\n\t\tclient_number_fact as string,\n\t\tclient_name as string,\n\t\tauthorization_ind as boolean,\n\t\tcnt_transactions as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: (\"Select a.source_system_key,client_number as client_number_fact, client_name, authorization_ind, count(*) as cnt_transactions from [transaction].[fact_transaction] a with (nolock) INNER JOIN (select distinct client_key, bin_key, bin_type, bankidentificationnumberISO from [financialinstitution].[dim_bin] with (nolock)) b on a.bin_key = b.bin_key INNER JOIN [financialinstitution].[dim_client] c with (nolock) on b.client_key = c.client_key where DATEADD(m, DATEDIFF(m, 0, a.import_file_date_key), 0) = DATEADD(m,-1,DATEADD(m, DATEDIFF(m, 0, CONVERT(date,'{$report_date}',127)), 0)) group by a.source_system_key, client_number, client_name, authorization_ind\"),\n\tformat: 'query',\n\tstaged: false) ~> dwFactTrans\nsource(output(\n\t\tclient_number_rtn as string,\n\t\trouting_number as string,\n\t\tis_primary as boolean\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'Select distinct b.client_number as client_number_rtn, a.routing_number, is_primary from [FinancialInstitution].[dim_routing_number] a\\nINNER JOIN [FinancialInstitution].[dim_client] b\\non a.client_key = b.client_key',\n\tformat: 'query',\n\tstaged: false) ~> dwRTN\nsource(output(\n\t\tclient_number as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> srcICClientBlacklist\nsource(output(\n\t\tclient_number as string,\n\t\tsource_system_key as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> srcClientExceptions\nsource(output(\n\t\tclient_number as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> srcCooperClientBlacklist\nsource(output(\n\t\tclient_number as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> srcSpringboardClientBlacklist\nsrcICClientBlacklist derive(each(match(type=='string'), $$ = trim($$))) ~> TrimICClientBlacklist\nDerivedColumn select(mapColumn(\n\t\tclient_number = client_number_fact,\n\t\tclient_name,\n\t\tsource_system_key,\n\t\trouting_number,\n\t\tauthorization_ind,\n\t\tcnt_transactions\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> Select\nSelect aggregate(groupBy(client_number,\n\t\tclient_name),\n\tsource_system_key = min(source_system_key),\n\t\trouting_number = max(routing_number),\n\t\tcnt_transactions = sum(cnt_transactions)) ~> AggAllTransactions\nConditionalSplit1@OmahaIC select(mapColumn(\n\t\tSource,\n\t\tClient_Number = client_number,\n\t\tClient_Name = client_name,\n\t\tQTY = cnt_transactions\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectOmaha\nConditionalSplit1@ConnexIC select(mapColumn(\n\t\tSource,\n\t\tClient_Number = client_number,\n\t\tClient_Name = client_name,\n\t\tRouting_Number = routing_number,\n\t\tQTY = cnt_transactions\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectConnex\ndwFactTrans, finalRTN join(client_number_fact == client_number_rtn,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> JoinRTN\nJoinClientException derive(source_system_key = coalesce(source_system_key_exception,source_system_key)) ~> DerivedColumn\nFilterRTN derive(routing_number = lpad(routing_number,9,'0')) ~> deriveRTNLength\nSelectConnex filter(!isNull(Routing_Number)||Routing_Number!='') ~> FilterNullRTN\ndwRTN filter(!isNull(routing_number)||routing_number!='') ~> FilterRTN\nsrcClientExceptions derive(each(match(type=='string'), $$ = trim($$))) ~> TrimClientException\nJoinRTN, SelectClientException join(client_number_fact == client_number_exception,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> JoinClientException\nTrimClientException select(mapColumn(\n\t\tclient_number_exception = client_number,\n\t\tsource_system_key_exception = source_system_key\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectClientException\nderiveRTNLength window(over(client_number_rtn),\n\tdesc(is_primary, false),\n\tasc(routing_number, false),\n\trowNum = rowNumber()) ~> rankRTNs\nrankRTNs filter(rowNum==1) ~> finalRTN\nSelect filter(authorization_ind==toBoolean('true')) ~> filterAuthorizations\nAggAllTransactions, srcICClientBlacklist exists(AggAllTransactions@client_number == srcICClientBlacklist@client_number,\n\tnegate:true,\n\tbroadcast: 'auto')~> InsightsCenter\nAggAllTransactions, TrimSpringboardClientBlacklist exists(AggAllTransactions@client_number == TrimSpringboardClientBlacklist@client_number,\n\tnegate:true,\n\tbroadcast: 'auto')~> Springboard\nAggAuthorizationsOnly, TrimCooperClientBlacklist exists(AggAuthorizationsOnly@client_number == TrimCooperClientBlacklist@client_number,\n\tnegate:true,\n\tbroadcast: 'auto')~> Cooper\nfilterAuthorizations aggregate(groupBy(client_number,\n\t\tclient_name),\n\tsource_system_key = min(source_system_key),\n\t\trouting_number = max(routing_number),\n\t\tcnt_transactions = sum(cnt_transactions)) ~> AggAuthorizationsOnly\nsrcCooperClientBlacklist derive(each(match(type=='string'), $$ = trim($$))) ~> TrimCooperClientBlacklist\nsrcSpringboardClientBlacklist derive(each(match(type=='string'), $$ = trim($$))) ~> TrimSpringboardClientBlacklist\nInsightsCenter derive(Source = 'InsightsCenter') ~> deriveIC\nSpringboard derive(Source = 'Springboard') ~> deriveSpringboard\nConditionalSplit2@ConnexSpringboard select(mapColumn(\n\t\tSource,\n\t\tClient_Number = client_number,\n\t\tClient_Name = client_name,\n\t\tRouting_Number = routing_number,\n\t\tQTY = cnt_transactions\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectConnexSpringboard\nSelectConnexSpringboard filter(!isNull(Routing_Number)||Routing_Number!='') ~> FilterNullRTNSpringboard\nConditionalSplit2@OmahaSpringboard select(mapColumn(\n\t\tclient_number,\n\t\tclient_name,\n\t\tcnt_transactions,\n\t\tSource\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectOmahaSpringboard\nCooper derive(Source = 'Cooper') ~> deriveCooper\nConditionalSplit3@ConnexCooper select(mapColumn(\n\t\tclient_number,\n\t\tclient_name,\n\t\trouting_number,\n\t\tcnt_transactions,\n\t\tSource\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectConnexCooper\nConditionalSplit3@OmahaCooper select(mapColumn(\n\t\tclient_number,\n\t\tclient_name,\n\t\tcnt_transactions,\n\t\tSource\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectOmahaCooper\nderiveIC split(source_system_key == 1,\n\tsource_system_key == 2,\n\tdisjoint: false) ~> ConditionalSplit1@(ConnexIC, OmahaIC)\nderiveSpringboard split(source_system_key == 1,\n\tsource_system_key == 2,\n\tdisjoint: false) ~> ConditionalSplit2@(ConnexSpringboard, OmahaSpringboard)\nderiveCooper split(source_system_key ==1,\n\tsource_system_key == 2,\n\tdisjoint: false) ~> ConditionalSplit3@(ConnexCooper, OmahaCooper)\nFilterNullRTN sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat('Connex_IC_Billing_',replace(toString(addMonths(toDate(substring($report_date,1,7),'yyyy-MM'),-1)),'-',''),'.csv'))],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> SinkConnexIC\nSelectOmaha sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat('Omaha_IC_Billing_',replace(toString(addMonths(toDate(substring($report_date,1,7),'yyyy-MM'),-1)),'-',''),'.csv'))],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> SinkOmahaIC\nFilterNullRTNSpringboard sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat('Connex_SpringBoard_Billing_',replace(toString(addMonths(toDate(substring($report_date,1,7),'yyyy-MM'),-1)),'-',''),'.csv'))],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> SinkConnexSpringboard\nSelectOmahaSpringboard sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat('Omaha_Springboard_Billing_',replace(toString(addMonths(toDate(substring($report_date,1,7),'yyyy-MM'),-1)),'-',''),'.csv'))],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> SinkOmahaSpringboard\nSelectConnexCooper sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat('Connex_Cooper_Billing_',replace(toString(addMonths(toDate(substring($report_date,1,7),'yyyy-MM'),-1)),'-',''),'.csv'))],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> SinkConnexCooper\nSelectOmahaCooper sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat('Omaha_Cooper_Billing_',replace(toString(addMonths(toDate(substring($report_date,1,7),'yyyy-MM'),-1)),'-',''),'.csv'))],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> SinkOmahaCooper"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_DropToDWRawRewardsTransactionError')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Rewards"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_dropZone_Rewards_Transaction",
+                                "type": "DatasetReference"
+                            },
+                            "name": "RewardsSource"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Staging_Transaction_Daily_Raw_Error",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ResponseDWRaw"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "AddingColumn"
+                        }
+                    ],
+                    "script": "parameters{\n\tfileName as string\n}\nsource(output(\n\t\tColumn_1 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> RewardsSource\nRewardsSource derive(File_name = $fileName) ~> AddingColumn\nAddingColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tfilename as string,\n\t\tData_f as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tfilename = File_name,\n\t\tData_f = Column_1\n\t),\n\tpartitionBy('hash', 1)) ~> ResponseDWRaw"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Src_FDCustomerData')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "FD source data"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "all_stgFDCustomerData",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FDCustomerData"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "all_stgFDBaseData",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FDBaseData"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "all_stgFDPIRecord",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FDPIRecord"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "src_stgPI_Status",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FDPIStatus"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "src_stgCD495",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FDCD495DTL"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "src_stgCCUMSTR",
+                                "type": "DatasetReference"
+                            },
+                            "name": "CCUMSTR"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "all_stgFDAccountHierarcy",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FDAccountHierarcy"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ADLS_stage_BalanceStatus",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FDBalanceStatus"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DW_FDCustomerData",
+                                "type": "DatasetReference"
+                            },
+                            "name": "CustomerDatasink"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DW_FDPIRecord",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkFDPIRecord"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DW_FDPIStatus",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkFDPIStatus"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DW_FDCD495DTL",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkCD495DTL"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DW_CCUMSTR",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkCcuMstr"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DW_FDAccountHierarcy",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkFDAccountHierarcy"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DW_FDBalanceStatus",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SinkFDBalanceStatus"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "DW_FDBaseData",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sinkFDBaseData"
+                        }
+                    ],
+                    "transformations": [],
+                    "script": "source(output(\n\t\tCustomerDataID as string,\n\t\tCHD_ACCOUNT_NUMBER as string,\n\t\tCHD_PRINCIPAL_NAME as string,\n\t\tCHD_SPOUSE_NAME as string,\n\t\tCHD_ADDR_LINE_1 as string,\n\t\tCHD_ADDR_LINE_2 as string,\n\t\tCHD_CITY as string,\n\t\tCHD_STATE as string,\n\t\tCHD_NUMERIC_STATE as string,\n\t\tCHD_DELIVERY_POINT as string,\n\t\tCHD_PD_PREFIX as string,\n\t\tCHD_PD_SUFFIX as string,\n\t\tCHD_PD_ADDRESS_FORMAT as string,\n\t\tCHD_PD_ADDR_LINE_3 as string,\n\t\tCHD_PD_COUNTY as string,\n\t\tCHD_PD_POSTCODE as string,\n\t\tCHD_SD_PREFIX as string,\n\t\tCHD_SD_SUFFIX as string,\n\t\tCHD_SEX_CODE as string,\n\t\tCHD_SOC_SECURITY_NO as string,\n\t\tCHD_TELEPHONE_NUMBER as string,\n\t\tCHD_SECOND_TELEPHONE_NUMBER as string,\n\t\tCHD_HOME_PHONE_FORMAT as string,\n\t\tCHD_BUS_PHONE_FORMAT as string,\n\t\tCHD_MOTHERS_MAIDEN_NAME as string,\n\t\tCHD_SECONDARY_SOC_SEC_NO as string,\n\t\tCHD_DATE_LAST_ADDR_CHANGE as string,\n\t\tCHD_NAME_ADDR_CHG as string,\n\t\tCHD_ADDRESS_FLAG as string,\n\t\tCHD_HOME_PHONE_FLAG as string,\n\t\tCHD_BUSINESS_PHONE_FLAG as string,\n\t\tCHD_DECEASED_FLAG as string,\n\t\tCHD_SOLICITATION_FLAG as string,\n\t\tCHD_EMPL_ACCT_CD as string,\n\t\tCHD_ALT_CUSTOMER_NO as string,\n\t\tCHD_DATE_OF_BIRTH as string,\n\t\tCHD_SECONDARY_DATE_OF_BIRTH as string,\n\t\tFDR_Date_Processed as string,\n\t\tExtractDate as string,\n\t\tDateProcessed as string,\n\t\tReportDate as string,\n\t\tCHD_FIXD_MPD_USAG_CD as string,\n\t\tCHD_MPW_APR_OVRR_USAG_CD as string,\n\t\tCHD_MPW_APR_OVRR_USAG_DT as string,\n\t\tCHD_FIXD_MPD_OVRR_AM1 as string,\n\t\tCHD_FIXD_MPD_OVRR_DT1 as string,\n\t\tCHD_FIXD_MPD_OVRR_AM2 as string,\n\t\tCHD_FIXD_MPD_OVRR_DT2 as string,\n\t\tCHD_FIXD_MPD_OVRR_AM3 as string,\n\t\tCHD_FIXD_MPD_OVRR_DT3 as string,\n\t\tCHD_FIXD_MPD_OVRR_AM4 as string,\n\t\tCHD_FIXD_MPD_OVRR_DT4 as string,\n\t\tCHD_TSM_PRTC_IN as string,\n\t\tCHD_ZIP_CODE as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FDCustomerData\nsource(output(\n\t\tBaseDataID as string,\n\t\tCHD_NEW_FILE_TYPE as string,\n\t\tCHD_RECORD_FORMAT as string,\n\t\tCHD_BRANCH_NO as string,\n\t\tCHD_CLIENT_NUMBER as string,\n\t\tCHD_SYSTEM_NO as string,\n\t\tCHD_PRIN_BANK as string,\n\t\tCHD_AGENT_BANK as string,\n\t\tCHD_ACCOUNT_NUMBER as string,\n\t\tCHD_EXTERNAL_STATUS as string,\n\t\tCHD_INTERNAL_STATUS as string,\n\t\tCHD_PREV_EXT_STATUS as string,\n\t\tCHD_CYCLE_CODE_99 as string,\n\t\tCHD_DATE_LAST_NONMON as string,\n\t\tCHD_PREVIOUS_CYCLE_CODE_99 as string,\n\t\tCHD_CHARGE_DDA_CODE as string,\n\t\tCHD_TRANSIT_ROUTING_NO as string,\n\t\tCHD_CHECKING_ACCT_NO as string,\n\t\tCHD_SAVINGS_ACCT_NO as string,\n\t\tCHD_SEC_CODE_NUM_1 as string,\n\t\tCHD_SEC_CODE_NUM_2 as string,\n\t\tCHD_PIN_TRANSFER_FLAG as string,\n\t\tCHD_ANN_RATE_CASH as string,\n\t\tCHD_ANN_RATE_MRCH as string,\n\t\tCHD_OLD_ANN_RATE as string,\n\t\tCHD_OLD_ANN_RATE_CASH as string,\n\t\tCHD_ANN_RATE_CASH_MAX as string,\n\t\tCHD_ANN_RATE_MRCH_MAX as string,\n\t\tCHD_ANN_RATE_MRCH_FUTURE as string,\n\t\tCHD_ANN_RATE_CASH_FUTURE as string,\n\t\tCHD_MONTHLY_RATE_CASH as string,\n\t\tCHD_DAILY_RATE_CASH as string,\n\t\tCHD_MONTHLY_RATE as string,\n\t\tCHD_DAILY_RATE_MRCH as string,\n\t\tCHD_ANN_RATE_CRDINT as string,\n\t\tCHD_MONTHLY_RATE_CRDINT as string,\n\t\tCHD_DAILY_RATE_CRDINT as string,\n\t\tCHD_MTH_RATE_CASH_MAX as string,\n\t\tCHD_MTH_RATE_MRCH_MAX as string,\n\t\tCHD_ANN_RATE_CASH_MIN as string,\n\t\tCHD_ANN_RATE_MRCH_MIN as string,\n\t\tCHD_MTH_RATE_CASH_MIN as string,\n\t\tCHD_MTH_RATE_MRCH_MIN as string,\n\t\tCHD_BEHAVIOR_SCORE as string,\n\t\tCHD_PREV_BHVR_SCORE as string,\n\t\tCHD_CR_SCORE_DATE as string,\n\t\tCHD_CREDIT_SCORE as string,\n\t\tCHD_COLLECTION_CODE as string,\n\t\tCHD_COFF_REASON_CODE as string,\n\t\tCHD_RECOURSE_FLAG as string,\n\t\tCHD_RECOURSE_MERCHANT as string,\n\t\tCHD_WB_TRAN_TYPE as string,\n\t\tCHD_WB_PURGE_DATE as string,\n\t\tCHD_CREDIT_BUREAU_FLAG as string,\n\t\tCHD_COLL_PROC_FLAG as string,\n\t\tCHD_RECOVERY_IND as string,\n\t\tCHD_RENEWAL_CODE as string,\n\t\tCHD_NO_PLASTICS as string,\n\t\tCHD_TYPE_PLASTIC as string,\n\t\tCHD_SPOUSE_TYPE_PLASTIC as string,\n\t\tCHD_DUAL_TYPE_PLASTIC as string,\n\t\tCHD_DUAL_SPOUSE_TYPE_PLASTIC as string,\n\t\tCHD_NEWCARD_FLAG as string,\n\t\tCHD_ANNUAL_CHARGE_FLAG as string,\n\t\tCHD_ANNUAL_CHG_DATE as string,\n\t\tCHD_MAIL_CODE as string,\n\t\tCHD_MAIL_CODE_FLAG as string,\n\t\tCHD_OPEN_DATE as string,\n\t\tCHD_MEMBER_SINCE_DATE as string,\n\t\tCHD_EXPIRATION_DATE as string,\n\t\tCHD_REISSUE_CONTROL as string,\n\t\tCHD_DATE_LAST_PLASTIC as string,\n\t\tCHD_SMRT_CARD_ICC_CD as string,\n\t\tCHD_CREDIT_LINE as string,\n\t\tCHD_TYPE_CRED_LINE_CHG as string,\n\t\tCHD_CR_LINE_DATE as string,\n\t\tCHD_DATE_LAST_REVIEW as string,\n\t\tCHD_DATE_NEXT_REVIEW as string,\n\t\tCHD_CUST_FLG_1 as string,\n\t\tCHD_CUST_FLG_2 as string,\n\t\tCHD_CUST_FLG_3 as string,\n\t\tCHD_CUST_FLG_4 as string,\n\t\tCHD_SC_1 as string,\n\t\tCHD_SC_2 as string,\n\t\tCHD_SC_3 as string,\n\t\tCHD_SC_4 as string,\n\t\tCHD_SC_5 as string,\n\t\tCHD_SC_6 as string,\n\t\tCHD_SC_7 as string,\n\t\tCHD_SC_8 as string,\n\t\tCHD_MISCELLANEOUS_FIELD_1 as string,\n\t\tCHD_MISCELLANEOUS_FIELD_2 as string,\n\t\tCHD_MISCELLANEOUS_FIELD_3 as string,\n\t\tCHD_MISCELLANEOUS_FIELD_4 as string,\n\t\tCHD_MISCELLANEOUS_FIELD_5 as string,\n\t\tCHD_MISCELLANEOUS_FIELD_6 as string,\n\t\tCHD_MISCELLANEOUS_FIELD_7 as string,\n\t\tCHD_MISCELLANEOUS_FIELD_8 as string,\n\t\tCHD_MISC_FIELD_9 as string,\n\t\tCHD_MISC_FIELD_10 as string,\n\t\tCHD_MISC_FIELD_11_TX as string,\n\t\tCHD_MISC_FIELD_12_TX as string,\n\t\tCHD_CROSS_REFERENCE_ACCT_NO as string,\n\t\tCHD_NEW_XREF_NO_1 as string,\n\t\tCHD_NEW_XREF_NO_2 as string,\n\t\tCHD_CUST_XREF_ID as string,\n\t\tCHD_CR_LIFE_STAT_DATE as string,\n\t\tCHD_CR_LIFE_PAID_AMT as string,\n\t\tCHD_LS_TERMS_FLAG as string,\n\t\tCHD_CTD_TERMS_FLAG as string,\n\t\tCHD_TERMS_DATE as string,\n\t\tCHD_TRANSFER_FLAG as string,\n\t\tCHD_DATE_LOST_STOLEN as string,\n\t\tCHD_ACCT_TRANSFER as string,\n\t\tCHD_ACCT_XFOOT as string,\n\t\tCHD_STMT_FEE_FLAG as string,\n\t\tCHD_FIXED_PAYMENT_AMT as string,\n\t\tCHD_CASH_FIXED_PAYMENT as string,\n\t\tCHD_ANN_ACTIVITY_SUMM_FLAG as string,\n\t\tCHD_90_DAY_FLAG as string,\n\t\tCHD_DEFER_PAY_FLAG as string,\n\t\tCHD_PAY_AHEAD_FLAG as string,\n\t\tCHD_CREDIT_LIFE_FLAG_N as string,\n\t\tCHD_MAX_REBATE_AMT as string,\n\t\tCHD_DELETE_FLAG as string,\n\t\tCHD_DUALITY_FLAG as string,\n\t\tCHD_TYPE_LAST_NONMON as string,\n\t\tCHD_SPEC_STMT_FLAG as string,\n\t\tCHD_AUTOPAY_SKIP_FLAG as string,\n\t\tCHD_GROSS_ACTIVE as string,\n\t\tCHD_DEBIT_ACTIVE as string,\n\t\tCHD_BASIC_ACTIVE as string,\n\t\tCHD_AUTH_FLAG as string,\n\t\tCHD_INTEREST_SWITCH as string,\n\t\tCHD_STMT_HOLD_FLAG as string,\n\t\tCHD_MULTRAN_FLAG as string,\n\t\tCHD_CR_LIFE_STATUS as string,\n\t\tCHD_CB_SCORE as string,\n\t\tCHD_CB_ID as string,\n\t\tCHD_CB_CODE as string,\n\t\tCHD_CB_ATTR1 as string,\n\t\tCHD_CB_ATTR2 as string,\n\t\tCHD_CB_ATTR3 as string,\n\t\tCHD_CB_SCORE_DATE as string,\n\t\tCHD_CB_REASON1 as string,\n\t\tCHD_CB_REASON2 as string,\n\t\tCHD_CB_REASON3 as string,\n\t\tCHD_CB_REASON4 as string,\n\t\tCHD_MO_CHARGE_INT_ONLY as string,\n\t\tCHD_DATE_STATUS_CHG as string,\n\t\tCHD_RISK_PREDICTOR_SCORE as string,\n\t\tCHD_RISK_PREDICTOR_BUREAU as string,\n\t\tCHD_RISK_PREDICTOR_MODEL as string,\n\t\tCHD_VISA_REGION as string,\n\t\tCHD_MC_REGION as string,\n\t\tCHD_ACCT_TRANSFER_DATE as string,\n\t\tCHD_ACCT_TRANSFER_FLAG as string,\n\t\tCHD_CASH_CREDIT_LINE_CHG_DT as string,\n\t\tCHD_CASH_CREDIT_LINE_CHG_TYP as string,\n\t\tCHD_ADD_ON_RATE_FLAG as string,\n\t\tCHD_CURR_PRICING_PORTFOLIO as string,\n\t\tCHD_CURR_PRICING_STRATEGY as string,\n\t\tCHD_CURR_PRICE_STRATEGY_DATE as string,\n\t\tCHD_CURR_STRAT_CYCLE_FLAG as string,\n\t\tCHD_LS_PRCN_PORT_ID as string,\n\t\tCHD_OLD_NEXT_PRICING_STRATEGY as string,\n\t\tCHD_NEXT_PRICE_STRATEGY_DATE as string,\n\t\tCHD_OLD_NEXT_STRAT_CYCLE_FLAG as string,\n\t\tCHD_OLD_NEXT_STRT_STAGE_REASO as string,\n\t\tCHD_LS_PRICING_STRATEGY as string,\n\t\tCHD_LAST_STRATEGY_CHANGE_DATE as string,\n\t\tCHD_PROCESSING_LEVEL as string,\n\t\tCHD_UD_SOURCE_CODE as string,\n\t\tCHD_UD_APPROVAL_OFFICER_CODE as string,\n\t\tCHD_FRAUD_PORT_ID as string,\n\t\tCHD_FRAUD_ASSG_STRATEGY as string,\n\t\tCHD_FRAUD_STRAT_CHANGE_DATE as string,\n\t\tCHD_FRAUD_SUSPEND_STRATEGY as string,\n\t\tCHD_FRAUD_SUSP_STRATEGY_DATE as string,\n\t\tCHD_LAST_PLASTIC_SOURCE as string,\n\t\tCHD_FRAUD_SCORE_CHANGE_DATE as string,\n\t\tCHD_FRAUD_SCORE as string,\n\t\tCHD_DATE_LAST_ACL_LTR as string,\n\t\tCHD_DISCOUNT_CODE as string,\n\t\tCHD_NO_MAIL_FLAG as string,\n\t\tCHD_PRICING_STRATEGY_STATUS as string,\n\t\tCHD_BONUS_STRATEGY as string,\n\t\tCHD_LS_BONUS_STRATEGY as string,\n\t\tCHD_LAST_ANNUAL_CHARGE_FLAG as string,\n\t\tCHD_HIGH_BAL_LIFE as string,\n\t\tCHD_MIN_DAYS_DELQ_NR as string,\n\t\tCHD_ACS_CLNT_ID as string,\n\t\tCHD_PREV_INTERNAL_STATUS as string,\n\t\tCHD_DATE_IN_COLLECTION as string,\n\t\tCHD_START_DATE_OF_DELQ as string,\n\t\tCHD_PRIMARY_PEF as string,\n\t\tCHD_SECONDARY_PEF as string,\n\t\tCHD_COV_STRATEGY_ID as string,\n\t\tCHD_BS_REASON_CODE_1 as string,\n\t\tCHD_BS_REASON_CODE_2 as string,\n\t\tCHD_BS_REASON_CODE_3 as string,\n\t\tCHD_BS_REASON_CODE_4 as string,\n\t\tCHD_REQ_CLOSED_DATE as string,\n\t\tCHD_PREV_CRLINE_CHANGE_DATE as string,\n\t\tCHD_CRLINE_CHANGE_AMT as string,\n\t\tCHD_CASH_CRDT_LINE_AM as string,\n\t\tCHD_CASH_LINE_REVW_DT as string,\n\t\tCHD_TLP_CLT_ID as string,\n\t\tCHD_TLP_CLT_EXPR_DT as string,\n\t\tCHD_ACCT_CT as string,\n\t\tCHD_CRRN_ANNL_CASH_RT as string,\n\t\tCHD_CRRN_ANNL_MRCH_RT as string,\n\t\tCHD_HIGH_NOM_MRCH_APPLIED_RT as string,\n\t\tCHD_LOW_NOM_MRCH_APPLIED_RT as string,\n\t\tCHD_HIGH_NOM_CASH_APPLIED_RT as string,\n\t\tCHD_LOW_NOM_CASH_APPLIED_RT as string,\n\t\tCHD_EQTY_ACCT_MTRT_DT as string,\n\t\tCHD_SUB_ACCT_CD as string,\n\t\tCHD_CMPN_ID as string,\n\t\tCHD_ACCT_MRKT_STRT_NM as string,\n\t\tCHD_ACCT_MRKT_PRCS_CD as string,\n\t\tCHD_ACCT_MRKT_STRT_DT as string,\n\t\tCHD_REIS_STRT_NM as string,\n\t\tCHD_REIS_PRCS_CD as string,\n\t\tCHD_REIS_STRT_DT as string,\n\t\tCHD_ACCT_GROP_ID as string,\n\t\tCHD_PYMN_DUE_DT as string,\n\t\tCHD_NEWCRD_FLAG_RETN_DT as string,\n\t\tCHD_NEXT_CYCL_DT as string,\n\t\tCHD_LAST_MON_TRAN_CD as string,\n\t\tCHD_DALY_INTR_CALC_MTHD_CD as string,\n\t\tCHD_CR_LIFE_STATUS_DT as string,\n\t\tCHD_LAST_LTTR_ID as string,\n\t\tCHD_LAST_LTTR_DT as string,\n\t\tCHD_AVLB_CRDT_AMT as string,\n\t\tCHD_CALC_NORM_CASH_RT as string,\n\t\tCHD_CALC_NORM_MRCH_RT as string,\n\t\tCHD_CALC_NORM_CASH_MNTH_RT as string,\n\t\tCHD_CALC_NORM_MRCH_MNTH_RT as string,\n\t\tCHD_CALC_NORM_CASH_ANN_RT as string,\n\t\tCHD_CALC_NORM_MRCH_ANN_RT as string,\n\t\tCHD_PAYMENT_DUE_DAYS_NR as string,\n\t\tCHD_MISC_13_PSTN_1_10_TX as string,\n\t\tCHD_MISC_13_PSTN_11_15_TX as string,\n\t\tCHD_MISC_13_PSTN_16_20_TX as string,\n\t\tCHD_MISC_13_PSTN_21_25_TX as string,\n\t\tCHD_MISC_13_PSTN_26_TX as string,\n\t\tCHD_MISC_13_PSTN_27_TX as string,\n\t\tCHD_MISC_13_PSTN_28_TX as string,\n\t\tCHD_MISC_13_PSTN_29_TX as string,\n\t\tCHD_MISC_13_PSTN_30_TX as string,\n\t\tCHD_MISC_13_PSTN_31_TX as string,\n\t\tCHD_MISC_13_PSTN_32_TX as string,\n\t\tCHD_MISC_13_PSTN_33_TX as string,\n\t\tCHD_MISC_13_PSTN_34_TX as string,\n\t\tCHD_MISC_13_PSTN_35_TX as string,\n\t\tCHD_MISC_13_PSTN_36_TX as string,\n\t\tCHD_MISC_13_PSTN_37_TX as string,\n\t\tCHD_MISC_13_PSTN_38_TX as string,\n\t\tCHD_MISC_13_PSTN_39_TX as string,\n\t\tCHD_MISC_13_PSTN_40_TX as string,\n\t\tCHD_MISC_13_PSTN_41_TX as string,\n\t\tCHD_MISC_13_PSTN_42_TX as string,\n\t\tCHD_MISC_13_PSTN_43_TX as string,\n\t\tCHD_MISC_13_PSTN_44_TX as string,\n\t\tCHD_MISC_13_PSTN_45_TX as string,\n\t\tCHD_MISC_13_PSTN_46_TX as string,\n\t\tCHD_MISC_13_PSTN_47_TX as string,\n\t\tCHD_MISC_13_PSTN_48_TX as string,\n\t\tCHD_MISC_13_PSTN_49_TX as string,\n\t\tCHD_MISC_13_PSTN_50_TX as string,\n\t\tCHD_BHVR_SCOR_DT as string,\n\t\tCHD_DBT_ACTV_ID as string,\n\t\tCHD_CRDT_LINE_CHNG_DT as string,\n\t\tCHD_PREV_CRDT_LINE_CHNG_DT as string,\n\t\tCHD_CRDT_BUR_BKCY_DT as string,\n\t\tRoutingTransit as string,\n\t\tFDR_Date_Processed as string,\n\t\tExtractDate as string,\n\t\tDateProcessed as string,\n\t\tCHDHD_1098_YTD_INTR_THRD_AM as string,\n\t\tCHDHD_1098_YTD_INTR_TOTL_AM as string,\n\t\tCHDHD_1098_PREV_INTR_THRD_AM as string,\n\t\tCHDHD_1098_PREV_INTR_TOTL_AM as string,\n\t\tSysPrinAgent as string,\n\t\tCHD_AVOD_FINC_CHRG_AM as string,\n\t\tCHD_LFTM_CASH_AND_MRCH_AM as string,\n\t\tCHD_RECOVERY_CD as string,\n\t\tReportDate as string,\n\t\tCHD_AUTO_PAY_PNDG_IN as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FDBaseData\nsource(output(\n\t\tPI_Record_ID as string,\n\t\tPINS_GROUP_ID as string,\n\t\tPINS_OUT_KEY_SYS_BANK as string,\n\t\tPINS_OUT_KEY_PRIN_BANK as string,\n\t\tPINS_OUT_KEY_AGENT_BANK as string,\n\t\tPINS_OUT_KEY_ACCT_NO as string,\n\t\tPINS_TYPE_CD as string,\n\t\tPINS_MMBR_SQNC_NR as string,\n\t\tPINS_OUT_PI_ID as string,\n\t\tPINS_OUT_ASSG_CRTN_DT as string,\n\t\tPINS_OUT_PLST_GNRT_LAST_DT as string,\n\t\tPINS_OUT_PIN_LAST_CHNG_DT as string,\n\t\tPINS_OUT_PIN_MALR_LAST_DT as string,\n\t\tPINS_OUT_EXPR_DT as string,\n\t\tPINS_OUT_PLST_CT as string,\n\t\tPINS_OUT_PIN_VRFY_NR as string,\n\t\tPINS_OUT_PSTN_TYPE_CD as string,\n\t\tPINS_OUT_PIN_TRNS_FLAG_IN as string,\n\t\tPINS_OUT_SCRT_CD as string,\n\t\tPINS_OUT_PLST_TYPE_CD as string,\n\t\tPINS_OUT_PLST_RPLC_IN as string,\n\t\tPINS_OUT_PIN_PRHB_IN as string,\n\t\tPINS_OUT_PHTC_USE_INDC_CD as string,\n\t\tPINS_OUT_PRSN_EMBS_TX as string,\n\t\tPINS_OUT_LAST_PLST_NNMN_CD as string,\n\t\tPINS_OUT_LAST_PLST_NNMN_DT as string,\n\t\tPINS_OUT_ACCT_ACCS_TS as string,\n\t\tPINS_OUT_PCKG_ID as string,\n\t\tPINS_OUT_LAST_PLST_NNMN_TM as string,\n\t\tPINS_OUT_MNTN_TS as string,\n\t\tPINS_OUT_PI_BULK_MAIL_ID as string,\n\t\tPINS_OUT_PI_TYPE_CD as string,\n\t\tPINS_OUT_PLST_RPLC_DT as string,\n\t\tPINS_OUT_PRIR_EXPR_DT as string,\n\t\tPINS_OUT_PI_RPLC_SQNC_NR as string,\n\t\tPINS_OUT_AUTH_PRIR_EXPR_IN as string,\n\t\tPINS_OUT_PHTC_IMAG_STTS_CD as string,\n\t\treportDate as string,\n\t\tdateProcessed as string,\n\t\tFDR_DATE_PROCESSED as string,\n\t\tDBI_CLIENT_NUMBER as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FDPIRecord\nsource(output(\n\t\tPI_Status_ID as string,\n\t\tPRST_GROUP_ID as string,\n\t\tPRST_OUT_KEY_SYS_BANK as string,\n\t\tPRST_OUT_KEY_PRIN_BANK as string,\n\t\tPRST_OUT_KEY_AGENT_BANK as string,\n\t\tPRST_OUT_KEY_ACCT_NO as string,\n\t\tPRST_TYPE_CD as string,\n\t\tPRST_MMBR_SQNC_NR as string,\n\t\tPRST_OUT_PI_ID as string,\n\t\tPRST_OUT_DRVN_SIDE_CD as string,\n\t\tPRST_OUT_LOST_STLN_DT as string,\n\t\tPRST_OUT_ACTV_CD as string,\n\t\tPRST_OUT_PI_STTS_CD as string,\n\t\tPRST_OUT_STTS_RESN_CD as string,\n\t\tPRST_OUT_STTS_CHNG_DT as string,\n\t\tPRST_OUT_SYS_ID as string,\n\t\tPRST_OUT_PRIN_ID as string,\n\t\tPRST_OUT_AGNT_ID as string,\n\t\tPRST_OUT_TMPR_CD as string,\n\t\tPRST_OUT_PI_FRAD_STGY_DT as string,\n\t\tPRST_OUT_PI_FRAD_STGY_ID as string,\n\t\tPRST_OUT_TRMN_PRMP_OVRR_CD as string,\n\t\tPRST_OUT_TRAN_RSTR_CD as string,\n\t\tPRST_OUT_EXTR_CLSS_CD as string,\n\t\tPRST_OUT_PITC_EXTR_CLSS_ID as string,\n\t\treportDate as string,\n\t\tdateProcessed as string,\n\t\tFDR_DATE_PROCESSED as string,\n\t\tDBI_CLIENT_NUMBER as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FDPIStatus\nsource(output(\n\t\tCD495DTLID as string,\n\t\tINDX as string,\n\t\tID as string,\n\t\tDESCR as string,\n\t\tBSYS as string,\n\t\tBPRN as string,\n\t\tBAGT as string,\n\t\tTERMID as string,\n\t\tOPCODE as string,\n\t\tACCTNO as string,\n\t\tCUSTFG as string,\n\t\tTRANTP as string,\n\t\tTRDESC as string,\n\t\tTDDATE as string,\n\t\tTDYR as string,\n\t\tTDMO as string,\n\t\tTDDY as string,\n\t\tTDTIME as string,\n\t\tTDINPT as string,\n\t\tDateProcessed as string,\n\t\tRPTDT as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FDCD495DTL\nsource(output(\n\t\tSPAIdentifier as string,\n\t\tsys as string,\n\t\tprin as string,\n\t\tagent as string,\n\t\tcu_odindx as string,\n\t\tcardtyp as string,\n\t\tInterestRate as string,\n\t\tAnnualFee as string,\n\t\tOverlimitFee as string,\n\t\tLateFee as string,\n\t\tCwbFee as string,\n\t\tAutoDQFee as string,\n\t\tGroupNo as string,\n\t\tGroupDesc as string,\n\t\tItemizedPerAcct as string,\n\t\tPrimaryBillingSys as string,\n\t\tPlatform as string,\n\t\tSPA as string,\n\t\tDateProcessed as string,\n\t\tStatus as string,\n\t\tUniversalAddressing as string,\n\t\tSeparateEntityFlag as string,\n\t\tInternationalDateFormat as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> CCUMSTR\nsource(output(\n\t\tDurable_Key as string,\n\t\tAccount_Key_Id as string,\n\t\tAccount_Key_Internal as string,\n\t\tAccount_Number as string,\n\t\tCross_Reference_Account_Number_1 as string,\n\t\tCross_Reference_Account_Number_2 as string,\n\t\tCross_Reference_Account_Key_Internal as string,\n\t\tAccount_Open_Date as string,\n\t\tExternal_Status as string,\n\t\tAnalytics_Record_Created as string,\n\t\tActive_Flag as string,\n\t\tHierarchy_Path as string,\n\t\tHierarchy_RowNumber as string,\n\t\tOnBalStat as string,\n\t\tSSN as string,\n\t\tSSN_Mask as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FDAccountHierarcy\nsource(output(\n\t\tBalanceStatus_ID as string,\n\t\tRECORD_TYPE as string,\n\t\tPRIMARY_NAME as string,\n\t\tSECONDARY_NAME as string,\n\t\tADDR_LINE_1 as string,\n\t\tADDR_LINE_2 as string,\n\t\tCITY as string,\n\t\tSTATE as string,\n\t\tZIP_CODE as string,\n\t\tSYS_BANK as string,\n\t\tPRIN_BANK as string,\n\t\tAGENT_BANK as string,\n\t\tACCT_NO as string,\n\t\tNUMBER_OF_PLASTICS_X as string,\n\t\tCYCLE_CODE as string,\n\t\tEXPIRATION_DATE as string,\n\t\tOPEN_DATE_MMYY as string,\n\t\tNEW_CARD_FLAG as string,\n\t\tEXTERNAL_STATUS as string,\n\t\tINTERNAL_STATUS as string,\n\t\tAUTH_FLAG as string,\n\t\tCREDIT_SCORE as string,\n\t\tTYPE_CR_LINE_CHNG as string,\n\t\tTYPE_OF_PLASTICS as string,\n\t\tSPOUSE_TYPE_PLASTIC as string,\n\t\tSPECIAL_FLAGS_5_THRU_8 as string,\n\t\tRENEWAL_CODE as string,\n\t\tCREDIT_LINE as string,\n\t\tAVAILABLE_CREDIT as string,\n\t\tCASH_ADVANCE_BALANCE as string,\n\t\tCREDIT_BUREAU_FLAG as string,\n\t\tTERMS_FLAG as string,\n\t\tHOLD_CODE as string,\n\t\tCROSS_REF_ACCT_NO as string,\n\t\tCROSS_REF_ACCT_NO_1 as string,\n\t\tCROSS_REF_ACCT_NO_2 as string,\n\t\tMISCELLANEOUS_FIELD_1 as string,\n\t\tMISCELLANEOUS_FIELD_2 as string,\n\t\tMISCELLANEOUS_FIELD_3 as string,\n\t\tEXP_USER_FLAGS_1_THRU_4 as string,\n\t\tFIXED_PAYMENT_AMOUNT as string,\n\t\tAUTOMATIC_PAYMENT_FLAG as string,\n\t\tANNUAL_CHARGE_DATE as string,\n\t\tANNUAL_CHARGE_FLAG as string,\n\t\tDATE_OF_CR_LINE_CHNG as string,\n\t\tCREDIT_LIFE_FLAG as string,\n\t\tHOME_TELEPHONE_NUMBER as string,\n\t\tBUSINESS_TELEPHONE_NUMBER as string,\n\t\tSOCIAL_SECURITY_NUMBER as string,\n\t\tCHECKING_ACCOUNT_NUMBER as string,\n\t\tSAVINGS_ACCOUNT_NUMBER as string,\n\t\tRECOURSE_FLAG as string,\n\t\tDUALITY_FLAG as string,\n\t\tMONTHS_GROSS_ACTIVE as string,\n\t\tTIMES_IN_DISPUTE as string,\n\t\tTIMES_ONE_CYCLE_DELINQ as string,\n\t\tTIMES_TWO_CYCLES_DELINQ as string,\n\t\tTIMES_THREE_CYCLES_DELINQ as string,\n\t\tLAST_PAYMENT_AMOUNT as string,\n\t\tSTATEMENT_BALANCE as string,\n\t\tSTATEMENT_DATE as string,\n\t\tDATE_FIRST_ACTIVE as string,\n\t\tDATE_OF_LAST_PAYMENT as string,\n\t\tDATE_OF_LAST_MONETARY as string,\n\t\tTYPE_OF_LAST_MONETARY as string,\n\t\tHIGH_BALANCE as string,\n\t\tPAYMENT_HISTORY as string,\n\t\tDATE_OF_LAST_NON_MONETARY as string,\n\t\tTYPE_OF_LAST_NON_MONETARY as string,\n\t\tDISPUTE_AMOUNT as string,\n\t\tDISPUTE_DAYS as string,\n\t\tDATE_STATUS_CHANGE as string,\n\t\tTIMES_OVERLIMIT as string,\n\t\tTIMES_REAGED as string,\n\t\tMINIMUM_PAYMENT_DUE as string,\n\t\tDELINQUENCY_DOLLARS as string,\n\t\tCURRENT_BALANCE as string,\n\t\tDAYS_DELINQUENT as string,\n\t\tReportDate as string,\n\t\tDATE_OF_BIRTH as string,\n\t\tSECONDARY_DATE_OF_BIRTH as string,\n\t\tWB_TRAN_TYPE as string,\n\t\tWB_PURGE_DATE as string,\n\t\tLIFE_4_CYCLE_DELQ_CT as string,\n\t\tLIFE_5_CYCLE_DELQ_CT as string,\n\t\tLIFE_6_CYCLE_DELQ_CT as string,\n\t\tLIFE_7_CYCLE_DELQ_CT as string,\n\t\tPREV_CRLINE_CHANGE_DATE as string,\n\t\tNAME_ADDR_CHG as string,\n\t\tSOLICITATION_FLAG as string,\n\t\tEMPL_ACCT_CD as string,\n\t\tANN_RATE_CASH as string,\n\t\tANN_RATE_MRCH as string,\n\t\tCURRENT_PRICING_STRATEGY as string,\n\t\tCOV_STRATEGY_ID as string,\n\t\tSECONDARY_SOC_SEC_NO as string,\n\t\tCMPN_ID as string,\n\t\tPYMN_DUE_DT as string,\n\t\tBONUS_STRATEGY as string,\n\t\tFRAUD_SCORE as string,\n\t\tFRAUD_SCORE_CHANGE_DATE as string,\n\t\tFRAUD_PORT_ID as string,\n\t\tFRAUD_ASSG_STRATEGY as string,\n\t\tFRAUD_SUSPEND_STRATEGY as string,\n\t\tFRAUD_SUSP_STRATEGY_DATE as string,\n\t\tBEHAVIOR_SCORE as string,\n\t\tCR_SCORE_DATE as string,\n\t\tPROCESSING_LEVEL as string,\n\t\tMISCELLANEOUS_FIELD_4 as string,\n\t\tMISCELLANEOUS_FIELD_5 as string,\n\t\tMISCELLANEOUS_FIELD_6 as string,\n\t\tMISCELLANEOUS_FIELD_7 as string,\n\t\tMISCELLANEOUS_FIELD_8 as string,\n\t\tMISC_FIELD_9 as string,\n\t\tMISC_FIELD_10 as string,\n\t\tMISC_FIELD_11_TX as string,\n\t\tMISC_FIELD_12_TX as string,\n\t\tMISC_FIELD_13_TX as string,\n\t\tClient as string,\n\t\tDateCreated as string,\n\t\tDateUpdated as string,\n\t\tREISSUE_CONTROL as string,\n\t\tEM_PD_HM_ADDR_TX as string,\n\t\tEM_PD_BS_ADDR_TX as string,\n\t\tEM_SD_HM_ADDR_TX as string,\n\t\tEM_SD_BS_ADDR_TX as string,\n\t\tSEC_CODE_NUM_1 as string,\n\t\tSTATUS_REASON_CODE as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FDBalanceStatus\nFDCustomerData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\teach(match(true()),\n\t\t\ttrim($$) = $$)\n\t)) ~> CustomerDatasink\nFDPIRecord sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPI_Record_ID,\n\t\tPINS_GROUP_ID,\n\t\tPINS_OUT_KEY_SYS_BANK,\n\t\tPINS_OUT_KEY_PRIN_BANK,\n\t\tPINS_OUT_KEY_AGENT_BANK,\n\t\tPINS_OUT_KEY_ACCT_NO,\n\t\tPINS_TYPE_CD,\n\t\tPINS_MMBR_SQNC_NR,\n\t\tPINS_OUT_PI_ID,\n\t\tPINS_OUT_ASSG_CRTN_DT,\n\t\tPINS_OUT_PLST_GNRT_LAST_DT,\n\t\tPINS_OUT_PIN_LAST_CHNG_DT,\n\t\tPINS_OUT_PIN_MALR_LAST_DT,\n\t\tPINS_OUT_EXPR_DT,\n\t\tPINS_OUT_PLST_CT,\n\t\tPINS_OUT_PIN_VRFY_NR,\n\t\tPINS_OUT_PSTN_TYPE_CD,\n\t\tPINS_OUT_PIN_TRNS_FLAG_IN,\n\t\tPINS_OUT_SCRT_CD,\n\t\tPINS_OUT_PLST_TYPE_CD,\n\t\tPINS_OUT_PLST_RPLC_IN,\n\t\tPINS_OUT_PIN_PRHB_IN,\n\t\tPINS_OUT_PHTC_USE_INDC_CD,\n\t\tPINS_OUT_PRSN_EMBS_TX,\n\t\tPINS_OUT_LAST_PLST_NNMN_CD,\n\t\tPINS_OUT_LAST_PLST_NNMN_DT,\n\t\tPINS_OUT_ACCT_ACCS_TS,\n\t\tPINS_OUT_PCKG_ID,\n\t\tPINS_OUT_LAST_PLST_NNMN_TM,\n\t\tPINS_OUT_MNTN_TS,\n\t\tPINS_OUT_PI_BULK_MAIL_ID,\n\t\tPINS_OUT_PI_TYPE_CD,\n\t\tPINS_OUT_PLST_RPLC_DT,\n\t\tPINS_OUT_PRIR_EXPR_DT,\n\t\tPINS_OUT_PI_RPLC_SQNC_NR,\n\t\tPINS_OUT_AUTH_PRIR_EXPR_IN,\n\t\tPINS_OUT_PHTC_IMAG_STTS_CD,\n\t\treportDate,\n\t\tdateProcessed,\n\t\tFDR_DATE_PROCESSED,\n\t\tDBI_CLIENT_NUMBER\n\t)) ~> SinkFDPIRecord\nFDPIStatus sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tPI_Status_ID,\n\t\tPRST_GROUP_ID,\n\t\tPRST_OUT_KEY_SYS_BANK,\n\t\tPRST_OUT_KEY_PRIN_BANK,\n\t\tPRST_OUT_KEY_AGENT_BANK,\n\t\tPRST_OUT_KEY_ACCT_NO,\n\t\tPRST_TYPE_CD,\n\t\tPRST_MMBR_SQNC_NR,\n\t\tPRST_OUT_PI_ID,\n\t\tPRST_OUT_DRVN_SIDE_CD,\n\t\tPRST_OUT_LOST_STLN_DT,\n\t\tPRST_OUT_ACTV_CD,\n\t\tPRST_OUT_PI_STTS_CD,\n\t\tPRST_OUT_STTS_RESN_CD,\n\t\tPRST_OUT_STTS_CHNG_DT,\n\t\tPRST_OUT_SYS_ID,\n\t\tPRST_OUT_PRIN_ID,\n\t\tPRST_OUT_AGNT_ID,\n\t\tPRST_OUT_TMPR_CD,\n\t\tPRST_OUT_PI_FRAD_STGY_DT,\n\t\tPRST_OUT_PI_FRAD_STGY_ID,\n\t\tPRST_OUT_TRMN_PRMP_OVRR_CD,\n\t\tPRST_OUT_TRAN_RSTR_CD,\n\t\tPRST_OUT_EXTR_CLSS_CD,\n\t\tPRST_OUT_PITC_EXTR_CLSS_ID,\n\t\treportDate,\n\t\tdateProcessed,\n\t\tFDR_DATE_PROCESSED,\n\t\tDBI_CLIENT_NUMBER\n\t)) ~> SinkFDPIStatus\nFDCD495DTL sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tCD495DTLID,\n\t\tINDX,\n\t\tID,\n\t\tDESCR,\n\t\tBSYS,\n\t\tBPRN,\n\t\tBAGT,\n\t\tTERMID,\n\t\tOPCODE,\n\t\tACCTNO,\n\t\tCUSTFG,\n\t\tTRANTP,\n\t\tTRDESC,\n\t\tTDDATE,\n\t\tTDYR,\n\t\tTDMO,\n\t\tTDDY,\n\t\tTDTIME,\n\t\tTDINPT,\n\t\tDateProcessed,\n\t\tRPTDT\n\t)) ~> SinkCD495DTL\nCCUMSTR sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tSPAIdentifier,\n\t\tsys,\n\t\tprin,\n\t\tagent,\n\t\tcu_odindx,\n\t\tcardtyp,\n\t\tInterestRate,\n\t\tAnnualFee,\n\t\tOverlimitFee,\n\t\tLateFee,\n\t\tCwbFee,\n\t\tAutoDQFee,\n\t\tGroupNo,\n\t\tGroupDesc,\n\t\tItemizedPerAcct,\n\t\tPrimaryBillingSys,\n\t\tPlatform,\n\t\tSPA,\n\t\tDateProcessed,\n\t\tStatus,\n\t\tUniversalAddressing,\n\t\tSeparateEntityFlag,\n\t\tInternationalDateFormat\n\t)) ~> SinkCcuMstr\nFDAccountHierarcy sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tDurable_Key,\n\t\tAccount_Key_Id,\n\t\tAccount_Key_Internal,\n\t\tAccount_Number,\n\t\tCross_Reference_Account_Number_1,\n\t\tCross_Reference_Account_Number_2,\n\t\tCross_Reference_Account_Key_Internal,\n\t\tAccount_Open_Date,\n\t\tExternal_Status,\n\t\tAnalytics_Record_Created,\n\t\tActive_Flag,\n\t\tHierarchy_Path,\n\t\tHierarchy_RowNumber,\n\t\tOnBalStat,\n\t\tSSN,\n\t\tSSN_Mask\n\t)) ~> SinkFDAccountHierarcy\nFDBalanceStatus sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tBalanceStatus_ID,\n\t\tRECORD_TYPE,\n\t\tPRIMARY_NAME,\n\t\tSECONDARY_NAME,\n\t\tADDR_LINE_1,\n\t\tADDR_LINE_2,\n\t\tCITY,\n\t\tSTATE,\n\t\tZIP_CODE,\n\t\tSYS_BANK,\n\t\tPRIN_BANK,\n\t\tAGENT_BANK,\n\t\tACCT_NO,\n\t\tNUMBER_OF_PLASTICS_X,\n\t\tCYCLE_CODE,\n\t\tEXPIRATION_DATE,\n\t\tOPEN_DATE_MMYY,\n\t\tNEW_CARD_FLAG,\n\t\tEXTERNAL_STATUS,\n\t\tINTERNAL_STATUS,\n\t\tAUTH_FLAG,\n\t\tCREDIT_SCORE,\n\t\tTYPE_CR_LINE_CHNG,\n\t\tTYPE_OF_PLASTICS,\n\t\tSPOUSE_TYPE_PLASTIC,\n\t\tSPECIAL_FLAGS_5_THRU_8,\n\t\tRENEWAL_CODE,\n\t\tCREDIT_LINE,\n\t\tAVAILABLE_CREDIT,\n\t\tCASH_ADVANCE_BALANCE,\n\t\tCREDIT_BUREAU_FLAG,\n\t\tTERMS_FLAG,\n\t\tHOLD_CODE,\n\t\tCROSS_REF_ACCT_NO,\n\t\tCROSS_REF_ACCT_NO_1,\n\t\tCROSS_REF_ACCT_NO_2,\n\t\tMISCELLANEOUS_FIELD_1,\n\t\tMISCELLANEOUS_FIELD_2,\n\t\tMISCELLANEOUS_FIELD_3,\n\t\tEXP_USER_FLAGS_1_THRU_4,\n\t\tFIXED_PAYMENT_AMOUNT,\n\t\tAUTOMATIC_PAYMENT_FLAG,\n\t\tANNUAL_CHARGE_DATE,\n\t\tANNUAL_CHARGE_FLAG,\n\t\tDATE_OF_CR_LINE_CHNG,\n\t\tCREDIT_LIFE_FLAG,\n\t\tHOME_TELEPHONE_NUMBER,\n\t\tBUSINESS_TELEPHONE_NUMBER,\n\t\tSOCIAL_SECURITY_NUMBER,\n\t\tCHECKING_ACCOUNT_NUMBER,\n\t\tSAVINGS_ACCOUNT_NUMBER,\n\t\tRECOURSE_FLAG,\n\t\tDUALITY_FLAG,\n\t\tMONTHS_GROSS_ACTIVE,\n\t\tTIMES_IN_DISPUTE,\n\t\tTIMES_ONE_CYCLE_DELINQ,\n\t\tTIMES_TWO_CYCLES_DELINQ,\n\t\tTIMES_THREE_CYCLES_DELINQ,\n\t\tLAST_PAYMENT_AMOUNT,\n\t\tSTATEMENT_BALANCE,\n\t\tSTATEMENT_DATE,\n\t\tDATE_FIRST_ACTIVE,\n\t\tDATE_OF_LAST_PAYMENT,\n\t\tDATE_OF_LAST_MONETARY,\n\t\tTYPE_OF_LAST_MONETARY,\n\t\tHIGH_BALANCE,\n\t\tPAYMENT_HISTORY,\n\t\tDATE_OF_LAST_NON_MONETARY,\n\t\tTYPE_OF_LAST_NON_MONETARY,\n\t\tDISPUTE_AMOUNT,\n\t\tDISPUTE_DAYS,\n\t\tDATE_STATUS_CHANGE,\n\t\tTIMES_OVERLIMIT,\n\t\tTIMES_REAGED,\n\t\tMINIMUM_PAYMENT_DUE,\n\t\tDELINQUENCY_DOLLARS,\n\t\tCURRENT_BALANCE,\n\t\tDAYS_DELINQUENT,\n\t\tReportDate,\n\t\tDATE_OF_BIRTH,\n\t\tSECONDARY_DATE_OF_BIRTH,\n\t\tWB_TRAN_TYPE,\n\t\tWB_PURGE_DATE,\n\t\tLIFE_4_CYCLE_DELQ_CT,\n\t\tLIFE_5_CYCLE_DELQ_CT,\n\t\tLIFE_6_CYCLE_DELQ_CT,\n\t\tLIFE_7_CYCLE_DELQ_CT,\n\t\tPREV_CRLINE_CHANGE_DATE,\n\t\tNAME_ADDR_CHG,\n\t\tSOLICITATION_FLAG,\n\t\tEMPL_ACCT_CD,\n\t\tANN_RATE_CASH,\n\t\tANN_RATE_MRCH,\n\t\tCURRENT_PRICING_STRATEGY,\n\t\tCOV_STRATEGY_ID,\n\t\tSECONDARY_SOC_SEC_NO,\n\t\tCMPN_ID,\n\t\tPYMN_DUE_DT,\n\t\tBONUS_STRATEGY,\n\t\tFRAUD_SCORE,\n\t\tFRAUD_SCORE_CHANGE_DATE,\n\t\tFRAUD_PORT_ID,\n\t\tFRAUD_ASSG_STRATEGY,\n\t\tFRAUD_SUSPEND_STRATEGY,\n\t\tFRAUD_SUSP_STRATEGY_DATE,\n\t\tBEHAVIOR_SCORE,\n\t\tCR_SCORE_DATE,\n\t\tPROCESSING_LEVEL,\n\t\tMISCELLANEOUS_FIELD_4,\n\t\tMISCELLANEOUS_FIELD_5,\n\t\tMISCELLANEOUS_FIELD_6,\n\t\tMISCELLANEOUS_FIELD_7,\n\t\tMISCELLANEOUS_FIELD_8,\n\t\tMISC_FIELD_9,\n\t\tMISC_FIELD_10,\n\t\tMISC_FIELD_11_TX,\n\t\tMISC_FIELD_12_TX,\n\t\tMISC_FIELD_13_TX,\n\t\tClient,\n\t\tDateCreated,\n\t\tDateUpdated,\n\t\tREISSUE_CONTROL,\n\t\tEM_PD_HM_ADDR_TX,\n\t\tEM_PD_BS_ADDR_TX,\n\t\tEM_SD_HM_ADDR_TX,\n\t\tEM_SD_BS_ADDR_TX,\n\t\tSEC_CODE_NUM_1,\n\t\tSTATUS_REASON_CODE\n\t)) ~> SinkFDBalanceStatus\nFDBaseData sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\teach(match(true()),\n\t\t\ttrim($$) = $$)\n\t)) ~> sinkFDBaseData"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_SBInterchange')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "this Df is pulling the data from Raw(ADLS) to stage table for interchange and adding a file_name column to the stage.",
+                "folder": {
+                    "name": "Shared Branch/DropToDW"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ADLS_Raw_SharedBranch_Interchange",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SBSource"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_shared_branch_interchange_stage",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SBDWRaw"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "AddingColumn"
+                        }
+                    ],
+                    "script": "parameters{\n\tfileName as string\n}\nsource(output(\n\t\t{SETTLE PROC ID} as string,\n\t\t{SETTLE INSTITUTION ID} as string,\n\t\t{SETTLE INSTITUTION NAME} as string,\n\t\t{SETTLE INSTITUTION ADDRESS} as string,\n\t\t{ACQUIRER PROC ID} as string,\n\t\t{FORWARDING INSTITUTION ID} as string,\n\t\t{FORWARDING INSTITUTION NAME} as string,\n\t\t{ACQUIRER INSTITUTION ID} as string,\n\t\t{PSEUDO TERMINAL NO} as string,\n\t\t{ACQUIRER BRANCH ADDRESS} as string,\n\t\t{CARD ACCPETOR TERM ID} as string,\n\t\tPAN as string,\n\t\t{SWITCH TIMESTAMP} as string,\n\t\t{LOCAL TIMESTAMP} as string,\n\t\t{ACTUAL SEQUENCE NO} as string,\n\t\t{TRACE NO} as string,\n\t\t{SETTLEMENT AMOUNT} as string,\n\t\t{ACCOUNT QUALIFIER INDICATOR} as string,\n\t\t{DDSI TRANSACTION TYPE} as string,\n\t\t{TRANSACTION DISPOSITION} as string,\n\t\t{TRACE ACQUIRER DATA} as string,\n\t\t{ISS NTWK ID} as string,\n\t\t{ACQ NTWK ID} as string,\n\t\t{PROCESS CODE} as string,\n\t\t{TRANSACTION CATEGORY} as string,\n\t\t{FEE BILLING COMBO TG CG CT} as string,\n\t\t{FEE BILLING COMBO DESCRIPTION} as string,\n\t\t{INTERCHANGE FEES} as string,\n\t\t{ACQ SWITCH FEES} as string,\n\t\t{ISS SWITCH FEES} as string,\n\t\t{KYID   } as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SBSource\nSBSource derive(File_name = $fileName) ~> AddingColumn\nAddingColumn sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tSETTLE_PROC_ID = {SETTLE PROC ID},\n\t\tSETTLE_INSTITUTION_ID = {SETTLE INSTITUTION ID},\n\t\tSETTLE_INSTITUTION_NAME = {SETTLE INSTITUTION NAME},\n\t\tSETTLE_INSTITUTION_ADDRESS = {SETTLE INSTITUTION ADDRESS},\n\t\tACQUIRER_PROC_ID = {ACQUIRER PROC ID},\n\t\tFORWARDING_INSTITUTION_ID = {FORWARDING INSTITUTION ID},\n\t\tFORWARDING_INSTITUTION_NAME = {FORWARDING INSTITUTION NAME},\n\t\tACQUIRER_INSTITUTION_ID = {ACQUIRER INSTITUTION ID},\n\t\tPSEUDO_TERMINAL_NO = {PSEUDO TERMINAL NO},\n\t\tACQUIRER_BRANCH_ADDRESS = {ACQUIRER BRANCH ADDRESS},\n\t\tCARD_ACCPETOR_TERM_ID = {CARD ACCPETOR TERM ID},\n\t\tPAN,\n\t\tSWITCH_TIMESTAMP = {SWITCH TIMESTAMP},\n\t\tLOCAL_TIMESTAMP = {LOCAL TIMESTAMP},\n\t\tACTUAL_SEQUENCE_NO = {ACTUAL SEQUENCE NO},\n\t\tTRACE_NO = {TRACE NO},\n\t\tSETTLEMENT_AMOUNT = {SETTLEMENT AMOUNT},\n\t\tACCOUNT_QUALIFIER_INDICATOR = {ACCOUNT QUALIFIER INDICATOR},\n\t\tDDSI_TRANSACTION_TYPE = {DDSI TRANSACTION TYPE},\n\t\tTRANSACTION_DISPOSITION = {TRANSACTION DISPOSITION},\n\t\tTRACE_ACQUIRER_DATA = {TRACE ACQUIRER DATA},\n\t\tISS_NTWK_ID = {ISS NTWK ID},\n\t\tACQ_NTWK_ID = {ACQ NTWK ID},\n\t\tPROCESS_CODE = {PROCESS CODE},\n\t\tTRANSACTION_CATEGORY = {TRANSACTION CATEGORY},\n\t\tFEE_BILLING_COMBO_TG_CG_CT = {FEE BILLING COMBO TG CG CT},\n\t\tFEE_BILLING_COMBO_DESCRIPTION = {FEE BILLING COMBO DESCRIPTION},\n\t\tINTERCHANGE_FEES = {INTERCHANGE FEES},\n\t\tACQ_SWITCH_FEES = {ACQ SWITCH FEES},\n\t\tISS_SWITCH_FEES = {ISS SWITCH FEES},\n\t\tKYID = {KYID   },\n\t\tFile_Name = File_name\n\t),\n\tpartitionBy('hash', 1)) ~> SBDWRaw"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_DCI_CardIssuance_ASQL_SF')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "DCI"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASQL_AppODS_DCI",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcCardIssuance"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_SF_Application_DB_DCI",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkCardIssuance"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "filterModifyDte"
+                        },
+                        {
+                            "name": "alterUpsert"
+                        },
+                        {
+                            "name": "deriveLoadDte"
+                        }
+                    ],
+                    "scriptLines": [
+                        "parameters{",
+                        "     par_modifyDte as string",
+                        "}",
+                        "source(output(",
+                        "          DigitalCardIssuanceId as integer,",
+                        "          ClientNum as string,",
+                        "          CardNum as string,",
+                        "          CardAccessedDte as date,",
+                        "          IssueDte as timestamp,",
+                        "          CardActivationDte as date,",
+                        "          CardExpirationDte as string,",
+                        "          source_system_key as integer,",
+                        "          CreateDte as timestamp,",
+                        "          ModifyDte as timestamp",
+                        "     ),",
+                        "     allowSchemaDrift: true,",
+                        "     validateSchema: false,",
+                        "     isolationLevel: 'READ_UNCOMMITTED',",
+                        "     query: 'SELECT  [DigitalCardIssuanceId]\\n      ,[ClientNum]\\n      ,[CardNum]\\n      ,[CardAccessedDte]\\n      ,[IssueDte]\\n      ,[CardActivationDte]\\n      ,EOMONTH(cast(LEFT(CardExpirationDte,2)+\\'/01\\'+\\'/\\'+\\'20\\'+SUBSTRING(CardExpirationDte,3,2) as date)) as CardExpirationDte\\n      ,[source_system_key]\\n      ,[CreateDte]\\n      ,[ModifyDte]\\n  FROM [dci].[DigitalCardIssuance]\\n  where (cast(left(CardExpirationDte, 2) as int) between 1 and 12)\\n   and [ClientNum] <> \\'0000\\'\\n  and len(trim([CardExpirationDte])) = 4',",
+                        "     format: 'query') ~> srcCardIssuance",
+                        "srcCardIssuance filter(toString(ModifyDte)>$par_modifyDte) ~> filterModifyDte",
+                        "deriveLoadDte alterRow(upsertIf(true())) ~> alterUpsert",
+                        "filterModifyDte derive(LOADDTE = currentUTC()) ~> deriveLoadDte",
+                        "alterUpsert sink(allowSchemaDrift: true,",
+                        "     validateSchema: false,",
+                        "     deletable:false,",
+                        "     insertable:false,",
+                        "     updateable:false,",
+                        "     upsertable:true,",
+                        "     keys:['DIGITALCARDISSUANCEID'],",
+                        "     format: 'table',",
+                        "     skipDuplicateMapInputs: true,",
+                        "     skipDuplicateMapOutputs: true,",
+                        "     stageInsert: true,",
+                        "     mapColumn(",
+                        "          DIGITALCARDISSUANCEID = DigitalCardIssuanceId,",
+                        "          CLIENTNUM = ClientNum,",
+                        "          CARDNUM = CardNum,",
+                        "          CARDACCESSEDTE = CardAccessedDte,",
+                        "          ISSUEDTE = IssueDte,",
+                        "          CARDACTIVATIONDTE = CardActivationDte,",
+                        "          SOURCE_SYSTEM_KEY = source_system_key,",
+                        "          CREATEDTE = CreateDte,",
+                        "          MODIFYDTE = ModifyDte,",
+                        "          LOADDTE,",
+                        "          CARDEXPIRATIONDTE = CardExpirationDte",
+                        "     )) ~> snkCardIssuance"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_DCI_PTMO_ASQL_SF')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "DCI"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASQL_AppODS_DCI",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcPMTO"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_SF_Application_DB_DCI",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkPTMO",
+                            "description": "Export data to DS_SF_Application_DB_PUSHTOMERCHOPERATIONS"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "filterCREATEDON"
+                        },
+                        {
+                            "name": "deriveLoadDte"
+                        },
+                        {
+                            "name": "AlterUpsert"
+                        }
+                    ],
+                    "scriptLines": [
+                        "parameters{",
+                        "     par_CREATEDON as string",
+                        "}",
+                        "source(output(",
+                        "          PushToMerchOperationsId as integer,",
+                        "          VendorRecordId as integer,",
+                        "          MerchantSiteHostname as string,",
+                        "          MetaKey as string,",
+                        "          FiName as string,",
+                        "          BankIdentificationNumber as string,",
+                        "          TerminationType as string,",
+                        "          Status as string,",
+                        "          StatusMessage as string,",
+                        "          Cuid as string,",
+                        "          AccountCustomerKey as string,",
+                        "          CardCustomerKey as string,",
+                        "          Par as string,",
+                        "          PlaceCardOnSingleSiteJobId as integer,",
+                        "          FinancialInstitutionId as integer,",
+                        "          MerchantSiteId as integer,",
+                        "          BinId as integer,",
+                        "          Html as string,",
+                        "          QueueName as string,",
+                        "          TerminatingState as string,",
+                        "          TerminatingStateStatus as string,",
+                        "          FiLookupKey as string,",
+                        "          IsExpectedFailure as boolean,",
+                        "          EmailSent as boolean,",
+                        "          CompletedOn as date,",
+                        "          CreatedOn as date,",
+                        "          LastUpdatedOn as date",
+                        "     ),",
+                        "     allowSchemaDrift: true,",
+                        "     validateSchema: false,",
+                        "     waterMarkColumn: 'CreatedOn',",
+                        "     isolationLevel: 'READ_UNCOMMITTED',",
+                        "     format: 'table',",
+                        "     mode: 'read') ~> srcPMTO",
+                        "srcPMTO filter(toString(CreatedOn)>$par_CREATEDON) ~> filterCREATEDON",
+                        "filterCREATEDON derive(LoadDte = currentUTC()) ~> deriveLoadDte",
+                        "deriveLoadDte alterRow(upsertIf(true())) ~> AlterUpsert",
+                        "AlterUpsert sink(allowSchemaDrift: true,",
+                        "     validateSchema: false,",
+                        "     deletable:false,",
+                        "     insertable:false,",
+                        "     updateable:false,",
+                        "     upsertable:true,",
+                        "     keys:['PUSHTOMERCHOPERATIONSID'],",
+                        "     format: 'table',",
+                        "     skipDuplicateMapInputs: true,",
+                        "     skipDuplicateMapOutputs: true,",
+                        "     stageInsert: true,",
+                        "     mapColumn(",
+                        "          PUSHTOMERCHOPERATIONSID = PushToMerchOperationsId,",
+                        "          VENDORRECORDID = VendorRecordId,",
+                        "          MERCHANTSITEHOSTNAME = MerchantSiteHostname,",
+                        "          METAKEY = MetaKey,",
+                        "          FINAME = FiName,",
+                        "          BANKIDENTIFICATIONNUMBER = BankIdentificationNumber,",
+                        "          TERMINATIONTYPE = TerminationType,",
+                        "          STATUS = Status,",
+                        "          STATUSMESSAGE = StatusMessage,",
+                        "          CUID = Cuid,",
+                        "          ACCOUNTCUSTOMERKEY = AccountCustomerKey,",
+                        "          CARDCUSTOMERKEY = CardCustomerKey,",
+                        "          PAR = Par,",
+                        "          PLACECARDONSINGLESITEJOBID = PlaceCardOnSingleSiteJobId,",
+                        "          FINANCIALINSTITUTIONID = FinancialInstitutionId,",
+                        "          MERCHANTSITEID = MerchantSiteId,",
+                        "          BINID = BinId,",
+                        "          HTML = Html,",
+                        "          QUEUENAME = QueueName,",
+                        "          TERMINATINGSTATE = TerminatingState,",
+                        "          TERMINATINGSTATESTATUS = TerminatingStateStatus,",
+                        "          FILOOKUPKEY = FiLookupKey,",
+                        "          ISEXPECTEDFAILURE = IsExpectedFailure,",
+                        "          EMAILSENT = EmailSent,",
+                        "          COMPLETEDON = CompletedOn,",
+                        "          CREATEDON = CreatedOn,",
+                        "          LASTUPDATEDON = LastUpdatedOn,",
+                        "          LOADDTE = LoadDte",
+                        "     )) ~> snkPTMO"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_DCI_PTWRD_ASQL_SF')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "DCI"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASQL_AppODS_DCI",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcPushToWalletReportData"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_SF_Application_DB_DCI",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkPushToWalletReportData"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "filterCreateDte",
+                            "description": "Filtering rows using expressions on columns 'CreateDte'"
+                        },
+                        {
+                            "name": "alterUpsert"
+                        },
+                        {
+                            "name": "deriveLoadDte"
+                        }
+                    ],
+                    "scriptLines": [
+                        "parameters{",
+                        "     par_CreateDte as string",
+                        "}",
+                        "source(output(",
+                        "          ID as string,",
+                        "          WalletPanNumber as string,",
+                        "          ClientNumber as string,",
+                        "          WalletType as string,",
+                        "          WalletID as string,",
+                        "          WalletDeviceID as string,",
+                        "          CreateDte as timestamp",
+                        "     ),",
+                        "     allowSchemaDrift: true,",
+                        "     validateSchema: false,",
+                        "     waterMarkColumn: 'CreateDte',",
+                        "     isolationLevel: 'READ_UNCOMMITTED',",
+                        "     format: 'table',",
+                        "     mode: 'read') ~> srcPushToWalletReportData",
+                        "srcPushToWalletReportData filter(toString(CreateDte)>$par_CreateDte) ~> filterCreateDte",
+                        "deriveLoadDte alterRow(upsertIf(true())) ~> alterUpsert",
+                        "filterCreateDte derive(LOADDTE = currentUTC()) ~> deriveLoadDte",
+                        "alterUpsert sink(allowSchemaDrift: true,",
+                        "     validateSchema: false,",
+                        "     deletable:false,",
+                        "     insertable:false,",
+                        "     updateable:false,",
+                        "     upsertable:true,",
+                        "     keys:['ID'],",
+                        "     format: 'table',",
+                        "     skipDuplicateMapInputs: true,",
+                        "     skipDuplicateMapOutputs: true,",
+                        "     stageInsert: true,",
+                        "     mapColumn(",
+                        "          ID,",
+                        "          WALLETPANNUMBER = WalletPanNumber,",
+                        "          CLIENTNUMBER = ClientNumber,",
+                        "          WALLETTYPE = WalletType,",
+                        "          WALLETID = WalletID,",
+                        "          WALLETDEVICEID = WalletDeviceID,",
+                        "          CREATEDTE = CreateDte,",
+                        "          LOADDTE",
+                        "     )) ~> snkPushToWalletReportData"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_ConfirmedFraudReportStage_to_ConsDW')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Cooper"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_Stage_ConfirmedFraudReport",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SourcerfromStage",
+                            "description": "Import data from DS_ABLB_Stage_FISConfirmedFraudReport "
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ASDW_Stg_FraudTransaction",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sink1"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "DerivedColumn1"
+                        },
+                        {
+                            "name": "Filter1"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tReportID as string,\n\t\tRunDate as string,\n\t\tPlatform as string,\n\t\t{Credit Union Name} as string,\n\t\tClientNumber as string,\n\t\tCard_Number as string,\n\t\tAccountNumber as string,\n\t\t{Case Opened Date} as string,\n\t\tDateLostStolen as string,\n\t\t{Date of Transaction} as string,\n\t\t{Time of transaction} as string,\n\t\t{Transaction Amount} as string,\n\t\t{Authorization Amount} as string,\n\t\tAuthResponseCode as string,\n\t\tResponseCode as string,\n\t\t{Transaction Outcome} as string,\n\t\t{TransactionOutcome Desc} as string,\n\t\tMCC as string,\n\t\t{Merchant Name} as string,\n\t\t{Merchant Identifier} as string,\n\t\t{Merchant city} as string,\n\t\t{Merchant State} as string,\n\t\t{Merchant Country} as string,\n\t\tPosEntryMode as string,\n\t\t{Electronic Commerce Outcome Code} as string,\n\t\t{Card Type} as string,\n\t\t{IVR MCI IND} as string,\n\t\t{Case ID} as string,\n\t\t{Case Item} as string,\n\t\tLossType as string,\n\t\tCaseType as string,\n\t\t{Case Status} as string,\n\t\t{Closed Date} as string,\n\t\t{Closed Code} as string,\n\t\t{User Name} as string,\n\t\t{Post Code} as string,\n\t\tTransactionDtm as string,\n\t\tFraudTypeDsc as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> SourcerfromStage\nFilter1 derive(Der_CardNum = AccountNumber,\n\t\tDer_ConfirmedNotFraudInd = toBoolean('false'),\n\t\tDer_SourceId = \"Fraud Report\",\n\t\tDer_CreateDate = currentUTC(),\n\t\tDer_TransactionAmt = toDouble({Transaction Amount}),\n\t\tDer_TransactionDate = TransactionDtm) ~> DerivedColumn1\nSourcerfromStage filter(AccountNumber!='AccountNumber') ~> Filter1\nDerivedColumn1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tFT_Id as long,\n\t\tCardNum as string,\n\t\tAccountNum as string,\n\t\tTransactionDate as timestamp,\n\t\tTransactionAmt as decimal(19,4),\n\t\tConfirmedNonFraudInd as boolean,\n\t\tFraudTypeDsc as string,\n\t\tMerchantName as string,\n\t\tMerchantCity as string,\n\t\tMerchantState as string,\n\t\tMerchantCountryCd as string,\n\t\tTerminalPostalCode as string,\n\t\tSicCd as string,\n\t\tSicDsc as string,\n\t\tSourceId as string,\n\t\tCreateDate as timestamp,\n\t\tFI_Transaction_Id as string,\n\t\tCase_Cls_Dte as string,\n\t\tCase_Id as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tAccountNum = AccountNumber,\n\t\tCardNum = Card_Number,\n\t\tTransactionDate = TransactionDtm,\n\t\tTransactionAmt = {Transaction Amount},\n\t\tConfirmedNonFraudInd = Der_ConfirmedNotFraudInd,\n\t\tFraudTypeDsc,\n\t\tMerchantName = {Merchant Name},\n\t\tMerchantCity = {Merchant city},\n\t\tMerchantState = {Merchant State},\n\t\tMerchantCountryCd = {Merchant Country},\n\t\tTerminalPostalCode = {Post Code},\n\t\tSourceId = Der_SourceId,\n\t\tCreateDate = Der_CreateDate\n\t),\n\tpartitionBy('hash', 1)) ~> sink1"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CUSCSB_EOM_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "Oracle_SharedBranch_EOM1",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Month",
+                        "interval": 1,
+                        "startTime": "2020-08-02T15:00:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "monthDays": [
+                                2
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/spDelete_Duplicates_trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "sp_Delete_Duplicate_Dimension_Records",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Week",
+                        "interval": 1,
+                        "startTime": "2020-11-23T19:00:00Z",
+                        "timeZone": "UTC",
+                        "schedule": {
+                            "weekDays": [
+                                "Monday"
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_monthly_DropTempTables')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_sp_Drop_Temp_Tables",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Month",
+                        "interval": 1,
+                        "startTime": "2021-05-21T18:08:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                20
+                            ],
+                            "monthDays": [
+                                3
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_daily_BIN_Research')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_BIN_Research",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-05-27T19:54:00",
+                        "timeZone": "Central Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                3
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

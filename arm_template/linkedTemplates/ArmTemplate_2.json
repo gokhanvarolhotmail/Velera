@@ -1,0 +1,458 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        },
+        "Consolidation_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'Consolidation'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=Consolidation"
+        },
+        "EnterpriseDataSource_accountKey": {
+            "type": "secureString",
+            "metadata": "Secure string for 'accountKey' of 'EnterpriseDataSource'"
+        },
+        "EnterpriseDataSourceDev_accountKey": {
+            "type": "secureString",
+            "metadata": "Secure string for 'accountKey' of 'EnterpriseDataSourceDev'"
+        },
+        "DataWarehouse_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'DataWarehouse'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ConsolidatedDW"
+        },
+        "Chargebacks_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'Chargebacks'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=Chargebacks"
+        },
+        "MerchantandCardholder_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'MerchantandCardholder'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=MerchantandCardholder"
+        },
+        "SmartGrowthBlobStore_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'SmartGrowthBlobStore'"
+        },
+        "COOPSB_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'COOPSB'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=COOPSB"
+        },
+        "SB_Apps_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'SB_Apps'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=SB_Apps"
+        },
+        "CUSCComplete_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'CUSCComplete'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=\"CUSC Complete\""
+        },
+        "CUSCEOM1_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'CUSCEOM1'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=CUSCEOM1"
+        },
+        "CUSCEOM2_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'CUSCEOM2'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=CUSCEOM2"
+        },
+        "RewardsDB_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'RewardsDB'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=Rewards"
+        },
+        "ApplicationODS_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'ApplicationODS'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ApplicationODS"
+        },
+        "secureftp_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'secureftp'"
+        },
+        "snowflake_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'snowflake'"
+        },
+        "SnowflakeDev_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'SnowflakeDev'"
+        },
+        "LS_SF_CONSOLIDATE_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'LS_SF_CONSOLIDATE'"
+        },
+        "EnterpriseDataSourceDevBlobStore_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'EnterpriseDataSourceDevBlobStore'"
+        },
+        "EnterpriseDataSource_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://enterprisedatasourceprod.dfs.core.windows.net"
+        },
+        "EnterpriseDataSourceDev_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://enterprisedatasourceprod.dfs.core.windows.net"
+        },
+        "secureftp_properties_typeProperties_host": {
+            "type": "string",
+            "defaultValue": "secureftp.themembersgroup.com"
+        },
+        "secureftp_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "FTPFromAzure"
+        },
+        "snowflake_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "CONSOLIDATE"
+        },
+        "snowflake_properties_typeProperties_role": {
+            "type": "string",
+            "defaultValue": "SVC_ETL_ADF"
+        },
+        "AzureBlobStorage_SnowFlake_sasUri": {
+            "type": "secureString",
+            "metadata": "Secure string for 'sasUri' of 'AzureBlobStorage_SnowFlake'"
+        },
+        "SnowflakeDev_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "CONSOLIDATE"
+        },
+        "SnowflakeDev_properties_typeProperties_role": {
+            "type": "string",
+            "defaultValue": "SVC_ETL_ADF"
+        },
+        "LS_SF_CONSOLIDATE_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "CONSOLIDATE"
+        },
+        "LS_SF_CONSOLIDATE_properties_typeProperties_role": {
+            "type": "string",
+            "defaultValue": "SVC_ETL_ADF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/Consolidation')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('Consolidation_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/EnterpriseDataSource')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobFS",
+                "typeProperties": {
+                    "url": "[parameters('EnterpriseDataSource_properties_typeProperties_url')]",
+                    "accountKey": {
+                        "type": "SecureString",
+                        "value": "[parameters('EnterpriseDataSource_accountKey')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/EnterpriseDataSourceDev')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobFS",
+                "typeProperties": {
+                    "url": "[parameters('EnterpriseDataSourceDev_properties_typeProperties_url')]",
+                    "accountKey": {
+                        "type": "SecureString",
+                        "value": "[parameters('EnterpriseDataSourceDev_accountKey')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DataWarehouse')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDW",
+                "typeProperties": {
+                    "connectionString": "[parameters('DataWarehouse_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Chargebacks')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('Chargebacks_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/MerchantandCardholder')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('MerchantandCardholder_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SmartGrowthBlobStore')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [
+                    "SmartGrowth"
+                ],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "connectionString": "[parameters('SmartGrowthBlobStore_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/COOPSB')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('COOPSB_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SB_Apps')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('SB_Apps_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CUSCComplete')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This connection is to the CUSC Complete Database. This is part of the Complete Database application.",
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('CUSCComplete_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CUSCEOM1')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This is reference To CUSCEOM1 database",
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('CUSCEOM1_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CUSCEOM2')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('CUSCEOM2_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RewardsDB')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "linked service for SQL DB Rewards",
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('RewardsDB_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ApplicationODS')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureSqlDatabase",
+                "typeProperties": {
+                    "connectionString": "[parameters('ApplicationODS_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/secureftp')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "Sftp",
+                "typeProperties": {
+                    "host": "[parameters('secureftp_properties_typeProperties_host')]",
+                    "port": 22,
+                    "skipHostKeyValidation": true,
+                    "authenticationType": "Basic",
+                    "userName": "[parameters('secureftp_properties_typeProperties_userName')]",
+                    "password": {
+                        "type": "SecureString",
+                        "value": "[parameters('secureftp_password')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/snowflake')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "connection to the Snowflake Consolidate db.",
+                "annotations": [],
+                "type": "SnowflakeV2",
+                "typeProperties": {
+                    "authenticationType": "Basic",
+                    "accountIdentifier": "coopsfprod.east-us-2.azure",
+                    "user": "SVC_ETL_ADF",
+                    "database": "[parameters('snowflake_properties_typeProperties_database')]",
+                    "warehouse": "DATA_INGESTION",
+                    "role": "[parameters('snowflake_properties_typeProperties_role')]",
+                    "password": {
+                        "type": "SecureString",
+                        "value": "[parameters('snowflake_password')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureBlobStorage_SnowFlake')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "sasUri": "[parameters('AzureBlobStorage_SnowFlake_sasUri')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SnowflakeDev')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "connection to the Snowflake Consolidate db.",
+                "annotations": [],
+                "type": "SnowflakeV2",
+                "typeProperties": {
+                    "authenticationType": "Basic",
+                    "accountIdentifier": "coopsfprod.east-us-2.azure",
+                    "user": "SVC_ETL_ADF",
+                    "database": "[parameters('SnowflakeDev_properties_typeProperties_database')]",
+                    "warehouse": "DATA_INGESTION",
+                    "role": "[parameters('SnowflakeDev_properties_typeProperties_role')]",
+                    "password": {
+                        "type": "SecureString",
+                        "value": "[parameters('SnowflakeDev_password')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/LS_SF_CONSOLIDATE')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "connection to the Snowflake Consolidate db.",
+                "annotations": [],
+                "type": "SnowflakeV2",
+                "typeProperties": {
+                    "authenticationType": "Basic",
+                    "accountIdentifier": "coopsfprod.east-us-2.azure",
+                    "user": "SVC_ETL_ADF",
+                    "database": "[parameters('LS_SF_CONSOLIDATE_properties_typeProperties_database')]",
+                    "warehouse": "DATA_INGESTION",
+                    "role": "[parameters('LS_SF_CONSOLIDATE_properties_typeProperties_role')]",
+                    "password": {
+                        "type": "SecureString",
+                        "value": "[parameters('LS_SF_CONSOLIDATE_password')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/EnterpriseDataSourceDevBlobStore')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobStorage",
+                "typeProperties": {
+                    "connectionString": "[parameters('EnterpriseDataSourceDevBlobStore_connectionString')]"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

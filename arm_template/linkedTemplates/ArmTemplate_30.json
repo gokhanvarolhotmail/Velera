@@ -1,0 +1,5336 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/stg_BillingClientBlacklist')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "billing_client_blacklist.csv",
+                        "folderPath": "Reference/Billing",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "client_number",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_out_billing_folder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Outbound"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Billing/InsightsCenter",
+                        "fileSystem": "outbound"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_XLSX_InvalidBIN')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "Excel",
+                "typeProperties": {
+                    "sheetName": "Sheet1",
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "invalid_BIN_entry.xlsx",
+                        "folderPath": "Coop/Audit/BIN",
+                        "fileSystem": "drop-zone"
+                    },
+                    "firstRowAsHeader": true
+                },
+                "schema": [
+                    {
+                        "name": "BIN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnterUserName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Description",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_InvalidBINs')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Audit"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "ROWID",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "EnterUserName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Description",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Audit",
+                    "table": "BIN_invalid"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SRC_InvalidBIN_Binary')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Coop/Audit/BIN",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SNK_InvalidBIN_Binary')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "year": {
+                        "type": "string"
+                    },
+                    "month": {
+                        "type": "string"
+                    },
+                    "day": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@concat('Audit/BIN/',dataset().year,'/',dataset().month,'/',dataset().day)",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_snk_NeitherBilling_IC')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Outbound"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Billing/InsightsCenter",
+                        "fileSystem": "outbound"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_snk_ConnexBilling_IC')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Outbound"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Billing/InsightsCenter",
+                        "fileSystem": "outbound"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_stgBillingException')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "billing_client_exceptions.csv",
+                        "folderPath": "Reference/Billing",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "\t",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "client_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_snk_OmahaBilling_IC')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Outbound"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Billing/InsightsCenter",
+                        "fileSystem": "outbound"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Stg_FraudTransaction')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "FT_Id",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "CardNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TransactionDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "TransactionAmt",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "ConfirmedNonFraudInd",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "FraudTypeDsc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MerchantName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MerchantCity",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MerchantState",
+                        "type": "char"
+                    },
+                    {
+                        "name": "MerchantCountryCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "TerminalPostalCode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SicCd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SicDsc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SourceId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "FI_Transaction_Id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Case_Cls_Dte",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Case_Id",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "transaction",
+                    "table": "Stg_FraudTransaction"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Stage_FiservSpendtrend')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "UpdatedSpendTrend.csv",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Fiserv/SpendTrend/Current",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Party Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Hierarchy Detail 1 Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Hierarchy Detail 2 Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Hierarchy Detail 3 Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Hierarchy Detail 4 Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Account Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Authorization Amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Authorization Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVS Response Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Card Activated Terminal Indicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Card Capability Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cash Back Indicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Chargeback Reason Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Counterfeit Type Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Customer Identification Method Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Create Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Device Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Entered Account Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Entry Mode Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "External Status Change Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "First Data Industry Transaction Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "First Use Fraud Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fraud Area Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fraud Completion Status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fraud First Reported Time",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Lost Stolen Type Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Category Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Country Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Postal Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POS Cardholder Present Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POS Terminal Attendance Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Presentation Instrument Lost Stolen Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Set Fraud Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Terminal Capability Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Posting Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Source Identifier Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Authorization Time",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Authorization Timestamp",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Authorization Fraud Action Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Authorization Fraud Queue Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Authorization Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Auth Count in 24 Hours",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fraud Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Previous Fraud Score",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Stage_FISConfirmedFraud')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "UpdatedConfirmedFraud.csv",
+                            "type": "Expression"
+                        },
+                        "folderPath": "FIS/ConfirmedFraud/Current",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Transaction Tag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Frd Desc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Institution Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FI Card Port",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Account Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Trn Dt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fraud Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PAD Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Pad Response",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Original Decision Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Decision Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RealTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Sic Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SIC Description",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Original Merchant Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Zip Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Country",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Country Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Trn Typ",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Crd Psnt Ind",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POS Entry Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVV Verify Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PIN Verify Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Avs Response",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Token/Provision",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ECI Ind",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CAVV/UCAF Result",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Prod Case Rules Fired",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Prod Real Time Rules Fired",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Test Case Rules Fired",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Test Real Time Rules Fired",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Case Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Credit(C) or Debit(D)",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cus Birth Dt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cus City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cus State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cus Zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Decline Reason Cd",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CrdAcctID/MercID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Terminal Id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Travel/VIP Usr Ind 4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Compromise Usr Dat 3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VAA MCEMS Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "STAR Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cas Sta",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Case Cls Dt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPER Frd Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPER Frd Scr Cd",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fi Transaction Id",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_Sem_FraudHeatmap')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "FACTFRAUDTRANSACTIONID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENTNUM",
+                        "type": "VARCHAR",
+                        "precision": 4,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENTNAME",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDNUM",
+                        "type": "VARCHAR",
+                        "precision": 19,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNTNUM",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTIONDATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTIONAMT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CONFIRMEDNONFRAUDIND",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "FRAUDTYPEDSC",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANTNAME",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANTCITY",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANTSTATE",
+                        "type": "VARCHAR",
+                        "precision": 2,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANTCOUNTRYCD",
+                        "type": "VARCHAR",
+                        "precision": 3,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANTCOUNTRY",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TERMINALPOSTALCODE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SICCD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SICDSC",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCEID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATEDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "FRAUDHEATMAP"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Stage_VisaChargeback')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "UpdatedVisa.csv",
+                        "folderPath": "VISA/ChargeBack/Current",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Member",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fraud RPT Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ROL Case #",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Card/Account Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Acct Seq#",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fraud Type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Notification Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Tran Amt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Curr Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Tran Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Acquirer Ref # or ACQ BIN/RRN/STAN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merch City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merch State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Ntwk ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MCC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Member Case #",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Report Type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cardholder Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cardholder City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CH State/Province",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CH Postal Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Country",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Valid From Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Card Mailing Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Card Mailing City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "State/Province",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Postal Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Tran ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Token",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merch Notified",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Vw_FraudHeatMap')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "FraudTransactionId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "ClientNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "AccountNum",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TransactionDate",
+                        "type": "date"
+                    },
+                    {
+                        "name": "TransactionAmt",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "ConfirmedNonFraudInd",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 0
+                    },
+                    {
+                        "name": "FraudTypeDsc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MerchantName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MerchantCity",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MerchantState",
+                        "type": "char"
+                    },
+                    {
+                        "name": "MerchantCountryCd",
+                        "type": "char"
+                    },
+                    {
+                        "name": "MerchantCountry",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TerminalPostalCode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SicCd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SicDsc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SourceId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_FraudHeatMap"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/drpToRawFiles_VisaChargeBack')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic Raw"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('Visa/ChargeBack/',substring(dataset().outputdirectorypath,7,4),'/',substring(dataset().outputdirectorypath,11,2),'/',substring(dataset().outputdirectorypath,13,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "raw",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FISDebitTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransmissionDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransmissionTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountCardholderBillingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConversionRateSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConversionRateCardholderBill",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TimeLocalTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateLocalTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateExpiration",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateConversion",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateCapture",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquiringInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumberExtendedCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ForwardingInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardSequenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NetworkInternationalID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServicePINCaptureCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionProcessingFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionProcessingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementProcessingFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementProcessingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquiringInstitutionIDCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ForwardingInstitutionIDCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumberExtended",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackTwoData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RetrievalReferenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationIDResponseID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ServiceRestrictionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorTerminalIdentificationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorIdentificationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameLocation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameStateProvince",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalResponseData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackOneData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalPrivateData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesFeeType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesFeeFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesDecimalization",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesFeeType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesFeeFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesDecimalization",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationLifeCycle",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataCounty",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataZip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeByteMap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeReversal",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeAdvice",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerTransportData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerTransportData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataByteMap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataTermNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataIssuerNetworkID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataAcquirerNetworkID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataProc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataAuthorizationTimeout",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExtendedPaymentCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReceivingInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NetworkManagementInformationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MessageNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MessageNumberLast",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateAction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataMessageID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTraceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTransmissionMMDD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTransmissionHHMMSS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataAcquirerInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataForwardingInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FileUpdateCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FileSecurityCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ResponseIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ServiceIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionFeeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementFeeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Payee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReceivingInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIDOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIDTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionDescriptionReimbursementAttribute",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingAgentInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CountryCodeAuthorizingAgentCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountQualifiersOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountQualifiersTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SponsorBankID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSCheckAuthorizationFormat",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSCheckAuthorizationData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDNameOfUserFile",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ISOMessageType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneZeroMMDD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneZeroHHMMSS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneFive",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneSix",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerIssuerIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreditDebitIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDSITransactionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDISResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDSINationalPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerReconciliationTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerReconciliationTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerConversionRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerConversionRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCurrencyCodeReconciliation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyCodeReconciliation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerAmountReconciliationFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerAmountReconciliationFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerAmountReconciliationFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerAmountReconciliationFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TicketNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CompletionAmountCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCompletionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyCompletionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdjustmentTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BatchDebitIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BanknetReferenceDataTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ChargeIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyConversionFeeInCardbillCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyConversionFeeInSettlementCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyConversionFeeInCardbillCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCrossborderTransactionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCrossborderCurrencyIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCrossborderTransactionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCrossborderCurrencyIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthCharacteristicIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VISAAVSResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalHotelExtraCharge",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalNoShowIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalHotelStartDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaChargebackRightsIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaFeeProgramIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaMOTOEcomm",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaMultiClearingSeq",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPurchaseIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRequestedPaymentService",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRestrictedTicketIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaSpecialConditionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaUnattendedAccTermIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarrierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaDepartureDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaDestinationCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaOriginationCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPassengerName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaAcquiringBusinessID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceEnvironment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceTerminalCapability",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaReasonCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCardholderIDMethod",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRetrievalRefNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaSystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaAcquiringInstitutionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPINCaptureCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCATTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardElectronicCommerceIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPINInvalidIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceAttendedTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceCardholderPresentIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceCardPresentIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceDataCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFunctionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardAcquirerReferenceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionLifeCycleID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardMessageNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionDestinationInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTerminalType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardReversalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCurrencyExponent",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTicketNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCarrierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTotalFare",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCityOfOriginAirportCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCityOfDestinationAirportCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRenterName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCheckInArrivalDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFolioNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalAgreementNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRoomRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTotalRoomTax",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRestrictedTicketIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProgramRegistrationID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardSettlementDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardSettlementIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCardAcceptorPhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardUsageCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPassengerName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalIndicatorRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardNoShowIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPaypassIndicatorAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFileTransmissionDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionDescription",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCustomerCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTravelDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFlightNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCustomerServicePhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardDepartureDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPropertyPhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardBillingAdjustment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProgramCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardMessageTypeIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardAcquirerInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINExists",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdjustmentComment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingSystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingLocalTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingRetrievalReferenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingCardAcceptorID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingCardAcceptorTerminalID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardBusActivity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ContactlessDoneIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ATCValidationResultCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POICurrencyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POIAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementCurrencyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementAmountSign",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AFTFeeAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AFTFeeIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RetailIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProgramIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EncryptionKeyID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAssuranceLevel",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenRequestorID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAccountNumberAccountRange",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenExpirationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardDataInputCap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardDataInputMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RouteTransitAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RouteTransitIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumberIssuer",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/all_dzVisaChargeBack')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Visa/ChargeBack",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FISDebitTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransmissionDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransmissionTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountCardholderBillingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConversionRateSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConversionRateCardholderBill",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TimeLocalTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateLocalTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateExpiration",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateConversion",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateCapture",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquiringInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumberExtendedCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ForwardingInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardSequenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NetworkInternationalID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServicePINCaptureCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionProcessingFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionProcessingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementProcessingFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementProcessingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquiringInstitutionIDCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ForwardingInstitutionIDCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumberExtended",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackTwoData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RetrievalReferenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationIDResponseID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ServiceRestrictionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorTerminalIdentificationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorIdentificationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameLocation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameStateProvince",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalResponseData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackOneData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalPrivateData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesFeeType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesFeeFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesDecimalization",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesFeeType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesFeeFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesDecimalization",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationLifeCycle",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataCounty",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataZip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeByteMap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeReversal",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeAdvice",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerTransportData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerTransportData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataByteMap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataTermNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataIssuerNetworkID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataAcquirerNetworkID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataProc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataAuthorizationTimeout",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExtendedPaymentCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReceivingInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NetworkManagementInformationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MessageNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MessageNumberLast",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateAction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataMessageID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTraceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTransmissionMMDD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTransmissionHHMMSS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataAcquirerInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataForwardingInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FileUpdateCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FileSecurityCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ResponseIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ServiceIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionFeeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementFeeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Payee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReceivingInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIDOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIDTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionDescriptionReimbursementAttribute",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingAgentInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CountryCodeAuthorizingAgentCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountQualifiersOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountQualifiersTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SponsorBankID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSCheckAuthorizationFormat",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSCheckAuthorizationData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDNameOfUserFile",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ISOMessageType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneZeroMMDD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneZeroHHMMSS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneFive",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneSix",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerIssuerIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreditDebitIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDSITransactionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDISResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDSINationalPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerReconciliationTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerReconciliationTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerConversionRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerConversionRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCurrencyCodeReconciliation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyCodeReconciliation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerAmountReconciliationFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerAmountReconciliationFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerAmountReconciliationFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerAmountReconciliationFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TicketNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CompletionAmountCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCompletionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyCompletionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdjustmentTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BatchDebitIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BanknetReferenceDataTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ChargeIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyConversionFeeInCardbillCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyConversionFeeInSettlementCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyConversionFeeInCardbillCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCrossborderTransactionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCrossborderCurrencyIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCrossborderTransactionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCrossborderCurrencyIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthCharacteristicIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VISAAVSResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalHotelExtraCharge",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalNoShowIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalHotelStartDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaChargebackRightsIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaFeeProgramIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaMOTOEcomm",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaMultiClearingSeq",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPurchaseIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRequestedPaymentService",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRestrictedTicketIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaSpecialConditionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaUnattendedAccTermIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarrierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaDepartureDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaDestinationCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaOriginationCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPassengerName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaAcquiringBusinessID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceEnvironment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceTerminalCapability",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaReasonCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCardholderIDMethod",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRetrievalRefNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaSystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaAcquiringInstitutionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPINCaptureCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCATTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardElectronicCommerceIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPINInvalidIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceAttendedTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceCardholderPresentIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceCardPresentIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceDataCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFunctionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardAcquirerReferenceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionLifeCycleID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardMessageNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionDestinationInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTerminalType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardReversalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCurrencyExponent",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTicketNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCarrierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTotalFare",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCityOfOriginAirportCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCityOfDestinationAirportCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRenterName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCheckInArrivalDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFolioNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalAgreementNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRoomRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTotalRoomTax",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRestrictedTicketIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProgramRegistrationID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardSettlementDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardSettlementIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCardAcceptorPhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardUsageCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPassengerName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalIndicatorRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardNoShowIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPaypassIndicatorAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFileTransmissionDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionDescription",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCustomerCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTravelDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFlightNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCustomerServicePhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardDepartureDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPropertyPhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardBillingAdjustment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProgramCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardMessageTypeIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardAcquirerInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINExists",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdjustmentComment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingSystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingLocalTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingRetrievalReferenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingCardAcceptorID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingCardAcceptorTerminalID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardBusActivity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ContactlessDoneIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ATCValidationResultCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POICurrencyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POIAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementCurrencyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementAmountSign",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AFTFeeAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AFTFeeIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RetailIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProgramIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EncryptionKeyID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAssuranceLevel",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenRequestorID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAccountNumberAccountRange",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenExpirationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardDataInputCap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardDataInputMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RouteTransitAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RouteTransitIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumberIssuer",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dzVisaChargeBack_Meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Visa/ChargeBack",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FISDebitTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransmissionDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransmissionTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountCardholderBillingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConversionRateSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConversionRateCardholderBill",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TimeLocalTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateLocalTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateExpiration",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateConversion",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateCapture",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquiringInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumberExtendedCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ForwardingInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardSequenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NetworkInternationalID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PointOfServicePINCaptureCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionProcessingFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountTransactionProcessingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementProcessingFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AmountSettlementProcessingFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquiringInstitutionIDCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ForwardingInstitutionIDCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumberExtended",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackTwoData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RetrievalReferenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationIDResponseID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ServiceRestrictionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorTerminalIdentificationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorIdentificationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameLocation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameStateProvince",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardAcceptorNameCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalResponseData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackOneData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalPrivateData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeTransaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeSettlement",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyCodeCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAccountTypeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountTypeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsCurrencyCodeThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsIndicatorThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalAmountsAmountThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesFeeType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesFeeFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesDecimalization",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalFeesSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesFeeType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesFeeFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesDecimalization",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesTransactionFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesSettlementFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementFeesSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationLifeCycle",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataCounty",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataZip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalPointOfServiceGeographicDataCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeByteMap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeReversal",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdviceReversalReasonCodeAdvice",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerTransportData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerTransportData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataByteMap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataTermNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataIssuerNetworkID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataAcquirerNetworkID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataProc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserDataAuthorizationTimeout",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExtendedPaymentCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReceivingInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementInstitutionCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NetworkManagementInformationCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MessageNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MessageNumberLast",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateAction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataMessageID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTraceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTransmissionMMDD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataTransmissionHHMMSS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataAcquirerInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalDataForwardingInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FileUpdateCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FileSecurityCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ResponseIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ServiceIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionFeeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsTransactionFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementFeeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReplacementAmountsSettlementFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Payee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SettlementInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReceivingInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIDOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIDTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionDescriptionReimbursementAttribute",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingAgentInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CountryCodeAuthorizingAgentCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountQualifiersOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountQualifiersTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SponsorBankID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSCheckAuthorizationFormat",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSCheckAuthorizationData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDNameOfUserFile",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ISOMessageType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneZeroMMDD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneZeroHHMMSS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneFive",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MileStoneSix",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerIssuerIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreditDebitIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDSITransactionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDISResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDSINationalPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerReconciliationTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerReconciliationTransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerConversionRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerConversionRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCurrencyCodeReconciliation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyCodeReconciliation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerAmountReconciliationFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerAmountReconciliationFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerAmountReconciliationFeeSignType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerAmountReconciliationFee",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TicketNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CompletionAmountCardholderBilling",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCompletionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyCompletionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdjustmentTraceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BatchDebitIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BanknetReferenceDataTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ChargeIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyConversionFeeInCardbillCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrencyConversionFeeInSettlementCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCurrencyConversionFeeInCardbillCurrency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCrossborderTransactionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AcquirerCrossborderCurrencyIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCrossborderTransactionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IssuerCrossborderCurrencyIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthCharacteristicIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VISAAVSResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalHotelExtraCharge",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalNoShowIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarRentalHotelStartDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaChargebackRightsIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaFeeProgramIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaMOTOEcomm",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaMultiClearingSeq",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPurchaseIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRequestedPaymentService",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRestrictedTicketIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaSpecialConditionIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaUnattendedAccTermIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCarrierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaDepartureDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaDestinationCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaOriginationCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPassengerName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaAcquiringBusinessID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceEnvironment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceTerminalCapability",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaReasonCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaCardholderIDMethod",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaRetrievalRefNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaSystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaAcquiringInstitutionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPointOfServiceConditionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaPINCaptureCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VisaTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCATTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardElectronicCommerceIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPINInvalidIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceAttendedTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceCardholderPresentIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceCardPresentIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPointOfServiceDataCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFunctionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardAcquirerReferenceData",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionLifeCycleID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardMessageNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionDestinationInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTerminalType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardReversalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCurrencyExponent",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTicketNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCarrierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTotalFare",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCityOfOriginAirportCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCityOfDestinationAirportCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRenterName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCheckInArrivalDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFolioNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalAgreementNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRoomRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTotalRoomTax",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRestrictedTicketIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProgramRegistrationID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardSettlementDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardSettlementIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCardAcceptorPhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardUsageCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPassengerName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalIndicatorRate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardNoShowIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPaypassIndicatorAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFileTransmissionDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTransactionDescription",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCustomerCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardTravelDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardFlightNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardRentalReturnDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardCustomerServicePhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardDepartureDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardPropertyPhoneNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardBillingAdjustment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProgramCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardMessageTypeIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardProcessingCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardAcquirerInstitutionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINExists",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdjustmentComment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingSystemTraceAuditNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingLocalTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingRetrievalReferenceNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingCardAcceptorID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizingCardAcceptorTerminalID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterCardBusActivity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ContactlessDoneIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ATCValidationResultCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POICurrencyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POIAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementCurrencyCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POISettlementAmountSign",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AFTFeeAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AFTFeeIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RetailIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProgramIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EncryptionKeyID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAssuranceLevel",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenRequestorID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenAccountNumberAccountRange",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenExpirationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PaymentTokenTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardDataInputCap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardDataInputMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RouteTransitAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionAcquirer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RouteTransitIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumberIssuer",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/all_dzFISConfirmedFraud')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string",
+                        "defaultValue": "SpendTrend_20201031.csv"
+                    }
+                },
+                "folder": {
+                    "name": "Drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "FIS/ConfirmedFraud",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FISDebitTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Tag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Frd Desc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Institution Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FI Card Port",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Account Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Trn Dt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fraud Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Original Decision Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Decision Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Real Time",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Sic Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SIC Description",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Zip Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Country",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Country Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Trn Typ",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POS Entry Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVV Verify Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PIN Verify Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Avs Response",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CAVV UCAF Result",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Prod Case Rules Fired",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Prod Real Time Rules Fired",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Case Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Credit(C) or Debit(D)",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Usr Dat 1 Decline Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CrdAcctID Usr Dat 5",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Travel VIP Usr Ind 4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Compromise Usr Dat 3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Vaascore Usr Dat 2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "STAR Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cls Cd",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cas Cls Dt",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        }
+    ]
+}

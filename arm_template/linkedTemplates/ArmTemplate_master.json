@@ -1,0 +1,2279 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        },
+        "Consolidation_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'Consolidation'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=Consolidation"
+        },
+        "EnterpriseDataSource_accountKey": {
+            "type": "secureString",
+            "metadata": "Secure string for 'accountKey' of 'EnterpriseDataSource'"
+        },
+        "EnterpriseDataSourceDev_accountKey": {
+            "type": "secureString",
+            "metadata": "Secure string for 'accountKey' of 'EnterpriseDataSourceDev'"
+        },
+        "DataWarehouse_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'DataWarehouse'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ConsolidatedDW"
+        },
+        "Chargebacks_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'Chargebacks'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=Chargebacks"
+        },
+        "MerchantandCardholder_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'MerchantandCardholder'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=MerchantandCardholder"
+        },
+        "SmartGrowthBlobStore_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'SmartGrowthBlobStore'"
+        },
+        "COOPSB_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'COOPSB'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=COOPSB"
+        },
+        "SB_Apps_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'SB_Apps'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=SB_Apps"
+        },
+        "SharedBranchDM_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'SharedBranchDM'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=SharedBranchDM"
+        },
+        "Consolidated_DW_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'Consolidated_DW'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ConsolidatedDW"
+        },
+        "CUSCComplete_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'CUSCComplete'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=\"CUSC Complete\""
+        },
+        "CUSCEOM1_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'CUSCEOM1'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=CUSCEOM1"
+        },
+        "CUSCEOM2_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'CUSCEOM2'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=CUSCEOM2"
+        },
+        "RewardsDB_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'RewardsDB'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=Rewards"
+        },
+        "ApplicationODS_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'ApplicationODS'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ApplicationODS"
+        },
+        "secureftp_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'secureftp'"
+        },
+        "snowflake_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'snowflake'"
+        },
+        "SnowflakeDev_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'SnowflakeDev'"
+        },
+        "SBEAccountManagement_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'SBEAccountManagement'"
+        },
+        "SBEAccountManagement_DR_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'SBEAccountManagement_DR'"
+        },
+        "LS_SF_CONSOLIDATE_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'LS_SF_CONSOLIDATE'"
+        },
+        "EnterpriseDataSourceDevBlobStore_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'EnterpriseDataSourceDevBlobStore'"
+        },
+        "LS_Mcycle_SqlPool_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_Mcycle_SqlPool'",
+            "defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ConsolidatedDW"
+        },
+        "LS_SF_Application_DB_password": {
+            "type": "secureString",
+            "metadata": "Secure string for 'password' of 'LS_SF_Application_DB'"
+        },
+        "LS_ASQM_ExtendedPayment_connectionString": {
+            "type": "secureString",
+            "metadata": "Secure string for 'connectionString' of 'LS_ASQM_ExtendedPayment'"
+        },
+        "EnterpriseDataSource_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://enterprisedatasourceprod.dfs.core.windows.net"
+        },
+        "EnterpriseDataSourceDev_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://enterprisedatasourceprod.dfs.core.windows.net"
+        },
+        "secureftp_properties_typeProperties_host": {
+            "type": "string",
+            "defaultValue": "secureftp.themembersgroup.com"
+        },
+        "secureftp_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "FTPFromAzure"
+        },
+        "snowflake_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "CONSOLIDATE"
+        },
+        "snowflake_properties_typeProperties_role": {
+            "type": "string",
+            "defaultValue": "SVC_ETL_ADF"
+        },
+        "AzureBlobStorage_SnowFlake_sasUri": {
+            "type": "secureString",
+            "metadata": "Secure string for 'sasUri' of 'AzureBlobStorage_SnowFlake'"
+        },
+        "SnowflakeDev_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "CONSOLIDATE"
+        },
+        "SnowflakeDev_properties_typeProperties_role": {
+            "type": "string",
+            "defaultValue": "SVC_ETL_ADF"
+        },
+        "LS_SF_CONSOLIDATE_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "CONSOLIDATE"
+        },
+        "LS_SF_CONSOLIDATE_properties_typeProperties_role": {
+            "type": "string",
+            "defaultValue": "SVC_ETL_ADF"
+        },
+        "LS_SF_Application_DB_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "APPLICATION_DB"
+        },
+        "LS_SF_Application_DB_properties_typeProperties_role": {
+            "type": "string",
+            "defaultValue": "SVC_ETL_ADF"
+        },
+        "AltCustIdentification_trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "CustExpand_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "BalanceStatus_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "Email_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "ExpAddr_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "PIRecord_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "PIStatus_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "RawBlobTrigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "drptoRawSmartGrowth_trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FISATMList_trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "drptoRaw_PymtTokenReq_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FDATMList_trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FDParReference_trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FISInterchangeLegacy_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "tr_SpringBoardExpansion_DailyOnce_Pipelines_properties_pl_master_Springboard_PopulateAccountLookup_parameters_Mcycle_run": {
+            "type": "int",
+            "defaultValue": 0
+        },
+        "Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FilePath": {
+            "type": "string",
+            "defaultValue": "@join(skip(split(triggerBody().folderPath,'/'),1),'/')"
+        },
+        "Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "Raw_Stage_TBL_CD495DTL_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_BIN_Invalid_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardSpend_months": {
+            "type": "int",
+            "defaultValue": 12
+        },
+        "TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardActivate_months": {
+            "type": "int",
+            "defaultValue": 12
+        },
+        "TR_Event_DropToRaw_properties_PL_DropToRaw_File_parameters_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_DropToRaw_properties_PL_DropToRaw_File_parameters_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_Event_DropToRaw_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_Monthly_Populate_WBE_scorebands_properties_PL_Populate_WBE_scorebands_parameters_pStartTime": {
+            "type": "string",
+            "defaultValue": "@trigger().scheduledTime"
+        },
+        "TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_endDate": {
+            "type": "string",
+            "defaultValue": "@trigger().startTime"
+        },
+        "TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_startDate": {
+            "type": "string",
+            "defaultValue": "@trigger().startTime"
+        },
+        "TR_monthly_PL_Billing_properties_PL_Billing_parameters_report_date": {
+            "type": "string",
+            "defaultValue": "@trigger().scheduledTime"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Source": {
+            "type": "string",
+            "defaultValue": "Coop"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Object": {
+            "type": "string",
+            "defaultValue": "COOPER/CardTransaction"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilename": {
+            "type": "string",
+            "defaultValue": "UpdatedFeedzai.csv"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destContainer": {
+            "type": "string",
+            "defaultValue": "stage"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilePath": {
+            "type": "string",
+            "defaultValue": "Coop/COOPER/CardTransaction/Currentcsv"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_fileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_fileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_Rewards_Custom_Demographics_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_card_status_change_date": {
+            "type": "object",
+            "defaultValue": null
+        },
+        "TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_clientnumber": {
+            "type": "object",
+            "defaultValue": null
+        },
+        "TR_Process_user_properties_PL_Process_User_parameters_par_source": {
+            "type": "string",
+            "defaultValue": "Reference"
+        },
+        "TR_Process_user_properties_PL_Process_User_parameters_par_object": {
+            "type": "string",
+            "defaultValue": "User"
+        },
+        "TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceContainer": {
+            "type": "string",
+            "defaultValue": "raw"
+        },
+        "TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceDirectory": {
+            "type": "string",
+            "defaultValue": "Reference/BinType"
+        },
+        "TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceContainer": {
+            "type": "string",
+            "defaultValue": "raw"
+        },
+        "TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceDirectory": {
+            "type": "string",
+            "defaultValue": "Reference/CoreBin"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_fileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_Daily_IC_Demographic_Semantic_Load_properties_PL_Master_Semantic_Loads_Demographics_SF_parameters_report_date": {
+            "type": "string",
+            "defaultValue": "@trigger().scheduledTime"
+        },
+        "TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_evn_Copy_RewardsDemoResponseDaily_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_evn_Copy_RewardsKobieTransOutbound_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "TR_evn_Copy_RewardsKobieDemoOutbound_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "Tr_Daily_Populate_DetectionRate_ConsDW_Snowfalke_properties_PL_Populate_DetectionRate_parameters_starttime": {
+            "type": "string",
+            "defaultValue": "@trigger().scheduledTime"
+        },
+        "containerUri": {
+            "type": "string",
+            "metadata": "URI to storage account containing linked ARM templates"
+        },
+        "containerSasToken": {
+            "type": "string",
+            "metadata": "Sas token to storage account containing linked ARM templates"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_0",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_0')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_2",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "Consolidation_connectionString": {
+                        "value": "[parameters('Consolidation_connectionString')]"
+                    },
+                    "EnterpriseDataSource_accountKey": {
+                        "value": "[parameters('EnterpriseDataSource_accountKey')]"
+                    },
+                    "EnterpriseDataSourceDev_accountKey": {
+                        "value": "[parameters('EnterpriseDataSourceDev_accountKey')]"
+                    },
+                    "DataWarehouse_connectionString": {
+                        "value": "[parameters('DataWarehouse_connectionString')]"
+                    },
+                    "Chargebacks_connectionString": {
+                        "value": "[parameters('Chargebacks_connectionString')]"
+                    },
+                    "MerchantandCardholder_connectionString": {
+                        "value": "[parameters('MerchantandCardholder_connectionString')]"
+                    },
+                    "SmartGrowthBlobStore_connectionString": {
+                        "value": "[parameters('SmartGrowthBlobStore_connectionString')]"
+                    },
+                    "COOPSB_connectionString": {
+                        "value": "[parameters('COOPSB_connectionString')]"
+                    },
+                    "SB_Apps_connectionString": {
+                        "value": "[parameters('SB_Apps_connectionString')]"
+                    },
+                    "CUSCComplete_connectionString": {
+                        "value": "[parameters('CUSCComplete_connectionString')]"
+                    },
+                    "CUSCEOM1_connectionString": {
+                        "value": "[parameters('CUSCEOM1_connectionString')]"
+                    },
+                    "CUSCEOM2_connectionString": {
+                        "value": "[parameters('CUSCEOM2_connectionString')]"
+                    },
+                    "RewardsDB_connectionString": {
+                        "value": "[parameters('RewardsDB_connectionString')]"
+                    },
+                    "ApplicationODS_connectionString": {
+                        "value": "[parameters('ApplicationODS_connectionString')]"
+                    },
+                    "secureftp_password": {
+                        "value": "[parameters('secureftp_password')]"
+                    },
+                    "snowflake_password": {
+                        "value": "[parameters('snowflake_password')]"
+                    },
+                    "SnowflakeDev_password": {
+                        "value": "[parameters('SnowflakeDev_password')]"
+                    },
+                    "LS_SF_CONSOLIDATE_password": {
+                        "value": "[parameters('LS_SF_CONSOLIDATE_password')]"
+                    },
+                    "EnterpriseDataSourceDevBlobStore_connectionString": {
+                        "value": "[parameters('EnterpriseDataSourceDevBlobStore_connectionString')]"
+                    },
+                    "EnterpriseDataSource_properties_typeProperties_url": {
+                        "value": "[parameters('EnterpriseDataSource_properties_typeProperties_url')]"
+                    },
+                    "EnterpriseDataSourceDev_properties_typeProperties_url": {
+                        "value": "[parameters('EnterpriseDataSourceDev_properties_typeProperties_url')]"
+                    },
+                    "secureftp_properties_typeProperties_host": {
+                        "value": "[parameters('secureftp_properties_typeProperties_host')]"
+                    },
+                    "secureftp_properties_typeProperties_userName": {
+                        "value": "[parameters('secureftp_properties_typeProperties_userName')]"
+                    },
+                    "snowflake_properties_typeProperties_database": {
+                        "value": "[parameters('snowflake_properties_typeProperties_database')]"
+                    },
+                    "snowflake_properties_typeProperties_role": {
+                        "value": "[parameters('snowflake_properties_typeProperties_role')]"
+                    },
+                    "AzureBlobStorage_SnowFlake_sasUri": {
+                        "value": "[parameters('AzureBlobStorage_SnowFlake_sasUri')]"
+                    },
+                    "SnowflakeDev_properties_typeProperties_database": {
+                        "value": "[parameters('SnowflakeDev_properties_typeProperties_database')]"
+                    },
+                    "SnowflakeDev_properties_typeProperties_role": {
+                        "value": "[parameters('SnowflakeDev_properties_typeProperties_role')]"
+                    },
+                    "LS_SF_CONSOLIDATE_properties_typeProperties_database": {
+                        "value": "[parameters('LS_SF_CONSOLIDATE_properties_typeProperties_database')]"
+                    },
+                    "LS_SF_CONSOLIDATE_properties_typeProperties_role": {
+                        "value": "[parameters('LS_SF_CONSOLIDATE_properties_typeProperties_role')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_1')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_3",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "LS_Mcycle_SqlPool_connectionString": {
+                        "value": "[parameters('LS_Mcycle_SqlPool_connectionString')]"
+                    },
+                    "LS_SF_Application_DB_password": {
+                        "value": "[parameters('LS_SF_Application_DB_password')]"
+                    },
+                    "SharedBranchDM_connectionString": {
+                        "value": "[parameters('SharedBranchDM_connectionString')]"
+                    },
+                    "Consolidated_DW_connectionString": {
+                        "value": "[parameters('Consolidated_DW_connectionString')]"
+                    },
+                    "SBEAccountManagement_connectionString": {
+                        "value": "[parameters('SBEAccountManagement_connectionString')]"
+                    },
+                    "SBEAccountManagement_DR_connectionString": {
+                        "value": "[parameters('SBEAccountManagement_DR_connectionString')]"
+                    },
+                    "LS_ASQM_ExtendedPayment_connectionString": {
+                        "value": "[parameters('LS_ASQM_ExtendedPayment_connectionString')]"
+                    },
+                    "LS_SF_Application_DB_properties_typeProperties_database": {
+                        "value": "[parameters('LS_SF_Application_DB_properties_typeProperties_database')]"
+                    },
+                    "LS_SF_Application_DB_properties_typeProperties_role": {
+                        "value": "[parameters('LS_SF_Application_DB_properties_typeProperties_role')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_2')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_4",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_3')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_5",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_5.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_4')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_6",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_6.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_5')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_7",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_7.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_6')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_8",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_8.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_7')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_9",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_9.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_8')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_10",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_10.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_9')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_11",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_11.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_10')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_12",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_12.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_11')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_13",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_13.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_12')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_14",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_14.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_13')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_15",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_15.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_14')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_16",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_16.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_15')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_17",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_17.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_16')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_18",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_18.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_17')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_19",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_19.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_18')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_20",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_20.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_19')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_21",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_21.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_20')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_22",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_22.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_21')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_23",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_23.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_22')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_24",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_24.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_23')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_25",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_25.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_24')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_26",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_26.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_25')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_27",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_27.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_26')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_28",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_28.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_27')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_29",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_29.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_28')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_30",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_30.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_29')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_31",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_31.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_30')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_32",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_32.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_31')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_33",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_33.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_32')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_34",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_34.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_33')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_35",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_35.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_34')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_36",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_36.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_35')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_37",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_37.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_36')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_38",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_38.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_37')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_39",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_39.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_38')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_40",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_40.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_39')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_41",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_41.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_40')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_42",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_42.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_41')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_43",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_43.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_42')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_44",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_44.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_43')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_45",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_45.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_44')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_46",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_46.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_45')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_47",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_47.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_46')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_48",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_48.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_47')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_49",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_49.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_48')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_50",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_50.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_49')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_51",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_51.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_50')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_52",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_52.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_51')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_53",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_53.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_52')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_54",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_54.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_53')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_55",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_55.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_54')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_56",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_56.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "AltCustIdentification_trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('AltCustIdentification_trigger_properties_typeProperties_scope')]"
+                    },
+                    "CustExpand_Trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('CustExpand_Trigger_properties_typeProperties_scope')]"
+                    },
+                    "BalanceStatus_Trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('BalanceStatus_Trigger_properties_typeProperties_scope')]"
+                    },
+                    "Email_Trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('Email_Trigger_properties_typeProperties_scope')]"
+                    },
+                    "ExpAddr_Trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('ExpAddr_Trigger_properties_typeProperties_scope')]"
+                    },
+                    "PIRecord_Trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('PIRecord_Trigger_properties_typeProperties_scope')]"
+                    },
+                    "PIStatus_Trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('PIStatus_Trigger_properties_typeProperties_scope')]"
+                    },
+                    "RawBlobTrigger_properties_typeProperties_scope": {
+                        "value": "[parameters('RawBlobTrigger_properties_typeProperties_scope')]"
+                    },
+                    "drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FolderPath": {
+                        "value": "[parameters('drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FolderPath')]"
+                    },
+                    "drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FileName": {
+                        "value": "[parameters('drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FileName')]"
+                    },
+                    "drptoRawSmartGrowth_trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('drptoRawSmartGrowth_trigger_properties_typeProperties_scope')]"
+                    },
+                    "droptoRaw_FISATMList_trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('droptoRaw_FISATMList_trigger_properties_typeProperties_scope')]"
+                    },
+                    "drptoRaw_PymtTokenReq_Trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('drptoRaw_PymtTokenReq_Trigger_properties_typeProperties_scope')]"
+                    },
+                    "droptoRaw_FDATMList_trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('droptoRaw_FDATMList_trigger_properties_typeProperties_scope')]"
+                    },
+                    "droptoRaw_FDParReference_trigger_properties_typeProperties_scope": {
+                        "value": "[parameters('droptoRaw_FDParReference_trigger_properties_typeProperties_scope')]"
+                    },
+                    "TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardSpend_months": {
+                        "value": "[parameters('TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardSpend_months')]"
+                    },
+                    "TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardActivate_months": {
+                        "value": "[parameters('TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardActivate_months')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_55')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_57",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_57.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Source": {
+                        "value": "[parameters('Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Source')]"
+                    },
+                    "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Object": {
+                        "value": "[parameters('Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Object')]"
+                    },
+                    "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilename": {
+                        "value": "[parameters('Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilename')]"
+                    },
+                    "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destContainer": {
+                        "value": "[parameters('Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destContainer')]"
+                    },
+                    "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilePath": {
+                        "value": "[parameters('Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilePath')]"
+                    },
+                    "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+                        "value": "[parameters('TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath')]"
+                    },
+                    "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+                        "value": "[parameters('TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath')]"
+                    },
+                    "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_fileName": {
+                        "value": "[parameters('TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_fileName')]"
+                    },
+                    "TR_Event_GZIP_FISDemographics_Daily_properties_typeProperties_scope": {
+                        "value": "[parameters('TR_Event_GZIP_FISDemographics_Daily_properties_typeProperties_scope')]"
+                    },
+                    "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+                        "value": "[parameters('TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_srcFolderPath')]"
+                    },
+                    "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+                        "value": "[parameters('TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_snkFolderPath')]"
+                    },
+                    "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_fileName": {
+                        "value": "[parameters('TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_fileName')]"
+                    },
+                    "TR_Event_GZIP_FISDemographics_Monthly_properties_typeProperties_scope": {
+                        "value": "[parameters('TR_Event_GZIP_FISDemographics_Monthly_properties_typeProperties_scope')]"
+                    },
+                    "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+                        "value": "[parameters('TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath')]"
+                    },
+                    "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+                        "value": "[parameters('TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath')]"
+                    },
+                    "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_fileName": {
+                        "value": "[parameters('TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_fileName')]"
+                    },
+                    "TR_Event_GZIP_FISTransaction_Daily_properties_typeProperties_scope": {
+                        "value": "[parameters('TR_Event_GZIP_FISTransaction_Daily_properties_typeProperties_scope')]"
+                    },
+                    "Tr_Daily_Populate_DetectionRate_ConsDW_Snowfalke_properties_PL_Populate_DetectionRate_parameters_starttime": {
+                        "value": "[parameters('Tr_Daily_Populate_DetectionRate_ConsDW_Snowfalke_properties_PL_Populate_DetectionRate_parameters_starttime')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_56')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_58",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_58.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_57')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_59",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_59.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_58')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_60",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_60.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_59')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_61",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_61.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_60')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_62",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_62.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_61')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_63",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_63.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_62')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_64",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_64.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "droptoRaw_FISInterchangeLegacy_properties_typeProperties_scope": {
+                        "value": "[parameters('droptoRaw_FISInterchangeLegacy_properties_typeProperties_scope')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_63')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_65",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_65.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FilePath": {
+                        "value": "[parameters('Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FilePath')]"
+                    },
+                    "Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FileName": {
+                        "value": "[parameters('Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FileName')]"
+                    },
+                    "Raw_Stage_TBL_CD495DTL_properties_typeProperties_scope": {
+                        "value": "[parameters('Raw_Stage_TBL_CD495DTL_properties_typeProperties_scope')]"
+                    },
+                    "TR_evn_BIN_Invalid_properties_typeProperties_scope": {
+                        "value": "[parameters('TR_evn_BIN_Invalid_properties_typeProperties_scope')]"
+                    },
+                    "TR_monthly_PL_Billing_properties_PL_Billing_parameters_report_date": {
+                        "value": "[parameters('TR_monthly_PL_Billing_properties_PL_Billing_parameters_report_date')]"
+                    },
+                    "TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_card_status_change_date": {
+                        "value": "[parameters('TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_card_status_change_date')]"
+                    },
+                    "TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_clientnumber": {
+                        "value": "[parameters('TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_clientnumber')]"
+                    },
+                    "TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceContainer": {
+                        "value": "[parameters('TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceContainer')]"
+                    },
+                    "TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceDirectory": {
+                        "value": "[parameters('TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceDirectory')]"
+                    },
+                    "TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceContainer": {
+                        "value": "[parameters('TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceContainer')]"
+                    },
+                    "TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceDirectory": {
+                        "value": "[parameters('TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceDirectory')]"
+                    },
+                    "TR_Daily_IC_Demographic_Semantic_Load_properties_PL_Master_Semantic_Loads_Demographics_SF_parameters_report_date": {
+                        "value": "[parameters('TR_Daily_IC_Demographic_Semantic_Load_properties_PL_Master_Semantic_Loads_Demographics_SF_parameters_report_date')]"
+                    },
+                    "TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FolderPath": {
+                        "value": "[parameters('TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FolderPath')]"
+                    },
+                    "TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FileName": {
+                        "value": "[parameters('TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FileName')]"
+                    },
+                    "TR_evn_Copy_RewardsDemoResponseDaily_properties_typeProperties_scope": {
+                        "value": "[parameters('TR_evn_Copy_RewardsDemoResponseDaily_properties_typeProperties_scope')]"
+                    },
+                    "TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath": {
+                        "value": "[parameters('TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath')]"
+                    },
+                    "TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName": {
+                        "value": "[parameters('TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName')]"
+                    },
+                    "TR_evn_Copy_RewardsKobieTransOutbound_properties_typeProperties_scope": {
+                        "value": "[parameters('TR_evn_Copy_RewardsKobieTransOutbound_properties_typeProperties_scope')]"
+                    },
+                    "TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath": {
+                        "value": "[parameters('TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath')]"
+                    },
+                    "TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName": {
+                        "value": "[parameters('TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName')]"
+                    },
+                    "TR_evn_Copy_RewardsKobieDemoOutbound_properties_typeProperties_scope": {
+                        "value": "[parameters('TR_evn_Copy_RewardsKobieDemoOutbound_properties_typeProperties_scope')]"
+                    },
+                    "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FolderPath": {
+                        "value": "[parameters('Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FolderPath')]"
+                    },
+                    "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FileName": {
+                        "value": "[parameters('Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FileName')]"
+                    },
+                    "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_typeProperties_scope": {
+                        "value": "[parameters('Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_typeProperties_scope')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_64')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_66",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_66.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_65')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_67",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_67.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_66')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_68",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_68.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "tr_SpringBoardExpansion_DailyOnce_Pipelines_properties_pl_master_Springboard_PopulateAccountLookup_parameters_Mcycle_run": {
+                        "value": "[parameters('tr_SpringBoardExpansion_DailyOnce_Pipelines_properties_pl_master_Springboard_PopulateAccountLookup_parameters_Mcycle_run')]"
+                    },
+                    "TR_Event_DropToRaw_properties_PL_DropToRaw_File_parameters_FolderPath": {
+                        "value": "[parameters('TR_Event_DropToRaw_properties_PL_DropToRaw_File_parameters_FolderPath')]"
+                    },
+                    "TR_Event_DropToRaw_properties_PL_DropToRaw_File_parameters_FileName": {
+                        "value": "[parameters('TR_Event_DropToRaw_properties_PL_DropToRaw_File_parameters_FileName')]"
+                    },
+                    "TR_Event_DropToRaw_properties_typeProperties_scope": {
+                        "value": "[parameters('TR_Event_DropToRaw_properties_typeProperties_scope')]"
+                    },
+                    "TR_Monthly_Populate_WBE_scorebands_properties_PL_Populate_WBE_scorebands_parameters_pStartTime": {
+                        "value": "[parameters('TR_Monthly_Populate_WBE_scorebands_properties_PL_Populate_WBE_scorebands_parameters_pStartTime')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_67')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_69",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_69.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "TR_Process_user_properties_PL_Process_User_parameters_par_source": {
+                        "value": "[parameters('TR_Process_user_properties_PL_Process_User_parameters_par_source')]"
+                    },
+                    "TR_Process_user_properties_PL_Process_User_parameters_par_object": {
+                        "value": "[parameters('TR_Process_user_properties_PL_Process_User_parameters_par_object')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_68')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_70",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_70.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_69')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_71",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_71.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_endDate": {
+                        "value": "[parameters('TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_endDate')]"
+                    },
+                    "TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_startDate": {
+                        "value": "[parameters('TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_startDate')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_70')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_72",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_72.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "TR_evn_Rewards_Custom_Demographics_properties_typeProperties_scope": {
+                        "value": "[parameters('TR_evn_Rewards_Custom_Demographics_properties_typeProperties_scope')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_71')]"
+            ]
+        },
+        {
+            "name": "EnterpriseDataSourceProdDF_ArmTemplate_73",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2024-03-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_73.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'EnterpriseDataSourceProdDF_ArmTemplate_72')]"
+            ]
+        }
+    ]
+}

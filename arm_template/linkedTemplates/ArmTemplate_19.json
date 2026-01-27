@@ -1,0 +1,1267 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/drpToRawFiles_Oracle_SBTransactions2')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic Raw"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('FIS/SBTransactions/',substring(utcnow(),0,2),substring(dataset().outputdirectorypath,1,2),'/',substring(dataset().outputdirectorypath,3,2),'/',substring(dataset().outputdirectorypath,5,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "raw",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "\t",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dzOracleSBTransactions_meta2')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "FIS/SBTransactions",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "\t",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/sem_TransactionAnalysis_Monthly_NoAccount1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "transaction_analysis_monthly_no_account_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "settlement_year",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "settlement_month",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "transaction_analysis_monthly_no_account"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/vw_TransactionsAnalysis_Monthly_NoAccount1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "account_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "transaction_name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "transaction_group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bin_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_cd",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "settlement_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "settlement_year",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "settlement_month",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "card_entry_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "token_request_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CardPresence_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "recurring_Desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "sum_transaction_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "sum_interchange_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_transaction_analysis_monthly_no_account"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dest_staging_User_MerchantandCardholder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "MerchantandCardholder",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "ClientID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BINID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "UserName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "user"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dest_Staging_User_Consolidation')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DB"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "ClientID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BINID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "UserName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "user"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Zelle_Member_Delete')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone/Zelle_drop"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "FIS/Zelle/MEMBERS",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DD553_RAW')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "RowId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "message",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FileName",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "DD553_RAW"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DD553_FORMATTED')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Dimensions"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "HDR_RDF_RCRD_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "HDR_RDF_CLNT_N",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "HDR_RDF_CYCL_DT",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "HDR_RDF_RUN_DT",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "HDR_RDF_RUN_TM",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "RDF_RCRD_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ENTERED_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_TRAN_DT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_TRAN_AMT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_TRAN_CUR",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_BIN_NO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_MERCH_ACCT_NO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_MCC",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ACQR_FRDAB",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ATERM_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_TERM_SEQ_NO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_FDR_TRAN_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_TRAN_TM",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_STTL_AM",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_STTL_CUR",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_MRCH_NM",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ACQR_NTWK_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ISSR_FRDABA",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_STERM_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_SWTC_SEQ_NO",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "RDF_REF_NO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_STTL_DT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_SURCHARGE_AM",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_STTL_CNVR_RT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_MRCH_ADDR",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ISS_NTWK_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_POS_ENTRY_MD",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_PRCSR_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_POS_CNDN_CD",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_FROM_ACCT_NO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_FROM_ACCT_TYPE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_MSSG_CD",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_PRCS_CD",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_AUTH_CD",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_MRCH_CITY",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_MRCH_ST",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADJ_TRAN_AMT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_PIN_VRFY_RSPN_CD",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADJ_TRAN_FEE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_TO_ACCT_NO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_TO_ACCT_TYPE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADVC_RVRS_RSN_CD",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_LINE_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_FDR_TRAC_NO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADJ_STTL_AMT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADJ_STTL_FEE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ACCT_TYP_CD_1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_AM_TYP_CD_1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_CRRN_CD_1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_CD_1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ACCT_TYP_CD_2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_AM_TYP_CD_2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_CRRN_CD_2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_CD_2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ACCT_TYP_CD_3",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_AM_TYP_CD_3",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_CRRN_CD_3",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_CD_3",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_3",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ACCT_TYP_CD_4",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_AM_TYP_CD_4",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_CRRN_CD_4",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_CD_4",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_4",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ACCT_TYP_CD_5",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_AM_TYP_CD_5",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_CRRN_CD_5",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_CD_5",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_5",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ACCT_TYP_CD_6",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_AM_TYP_CD_6",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_CRRN_CD_6",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_CD_6",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_ADDT_AM_6",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_LOG_TM",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_SYS_TM",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_LOG_DT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_EXP_DT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDF_SETTL_FEE_AM",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FileName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Processed",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "ROWID",
+                        "type": "bigint",
+                        "precision": 19
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "DD553_FORMATTED"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dropZoneDD553_meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Fiserv/DD553_FTP",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SharedBranch_Delete')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone/Zelle_drop"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "FIS/SBTransactions",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Zelle_PMTREQ_Delete')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone/Zelle_drop"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "FIS/Zelle/PMTREQ",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dwAuditUpdatedTransactions')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Audit"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "transaction_key",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "column_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "old_value",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "new_value",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "create_date",
+                        "type": "datetime2",
+                        "scale": 7
+                    },
+                    {
+                        "name": "file_name",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Audit",
+                    "table": "updated_transactions"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dest_staging_User_MerchantandCardholder1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "MerchantandCardholder",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "ClientID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BINID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "UserName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "user"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/snk_rawUser_processed1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw/Reference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Reference/User/processed",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dest_Staging_User_Consolidation1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "ClientID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BINID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "UserName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "user"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/snk_rawUser1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw/Reference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Reference/User",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_drpUser1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Coop/User",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Response_CodeDW')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Response code DW",
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "PT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "INST_NAME",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "INST_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "INTERCEPT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "SET_PROC",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TERM_BG",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ENFORM_DATE",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "response_code"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FinancialInstitution_SQLDW')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "local_routing_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "isobin",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "bin_routing_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network_id",
+                        "type": "char"
+                    },
+                    {
+                        "name": "financial_institution_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "address",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "phone",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "city",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "state",
+                        "type": "char"
+                    },
+                    {
+                        "name": "zip",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "institution",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "load_by",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "financial_institution"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

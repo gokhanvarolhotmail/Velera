@@ -1,0 +1,760 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        },
+        "AltCustIdentification_trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "CustExpand_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "BalanceStatus_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "Email_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "ExpAddr_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "PIRecord_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "PIStatus_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "RawBlobTrigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FolderPath": {
+            "type": "string",
+            "defaultValue": "@triggerBody().folderPath"
+        },
+        "drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FileName": {
+            "type": "string",
+            "defaultValue": "@triggerBody().fileName"
+        },
+        "drptoRawSmartGrowth_trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FISATMList_trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "drptoRaw_PymtTokenReq_Trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FDATMList_trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FDParReference_trigger_properties_typeProperties_scope": {
+            "type": "string",
+            "defaultValue": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardSpend_months": {
+            "type": "int",
+            "defaultValue": 12
+        },
+        "TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardActivate_months": {
+            "type": "int",
+            "defaultValue": 12
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/MoveToSharedBranchDM')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "DS_ABLB_CSV_Header_File",
+                                "type": "DatasetReference"
+                            },
+                            "name": "rawUser"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Client",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dimClient"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dest_staging_User_SharedBranch",
+                                "type": "DatasetReference"
+                            },
+                            "name": "stagingUser"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "Join"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tClientID as string,\n\t\tBINID as string,\n\t\tUserName as string,\n\t\tBIN as string,\n\t\tUserID as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> rawUser\nsource(output(\n\t\tclient_number as string,\n\t\tclient_name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select distinct client_number, client_name\\nfrom FinancialInstitution.dim_client',\n\tformat: 'query',\n\tstaged: false) ~> dimClient\nrawUser, dimClient join(ClientID == client_number,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'right')~> Join\nJoin sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tUserID as integer,\n\t\tClientID as string,\n\t\tBINID as string,\n\t\tUserName as string,\n\t\tBIN as string,\n\t\tClientName as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tUserID,\n\t\tClientID,\n\t\tBINID,\n\t\tUserName,\n\t\tBIN,\n\t\tClientName = client_name\n\t)) ~> stagingUser"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_SB_Summary_Monthly')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Data flow to create Shared Branch monthly Summary data",
+                "folder": {
+                    "name": "Shared Branch/SEM"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "ASDW_vw_shared_branch_summary_monthly",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcSBsummarymonthly"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ASDW_CUSC_acquirer",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcAcquirerCU"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "ASQL_sbdm_staging_SB_summary_monthly",
+                                "type": "DatasetReference"
+                            },
+                            "name": "tgtSBsummarymonthlyStage"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "joinwithacquireCU"
+                        },
+                        {
+                            "name": "DerivedAddr6"
+                        },
+                        {
+                            "name": "DerivedColumnAddress"
+                        },
+                        {
+                            "name": "DerivedColumnNetwork"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tcalendar_date as date,\n\t\tcalendar_num_date as long,\n\t\tIssuer_ISO as string,\n\t\taccount_qualifier as string,\n\t\tprocessing_code as string,\n\t\tprocessing_code_desc as string,\n\t\tprocessing_code_type as string,\n\t\tproduct_id as string,\n\t\tproduct_type as string,\n\t\tissuer_client_id as string,\n\t\tacquirer_client_id as string,\n\t\tissuer_name as string,\n\t\tacquirer_name as string,\n\t\tacquiring_institution_rt_number as string,\n\t\tauthorizing_institution_rt_number as string,\n\t\tissuer_network_id as string,\n\t\tacquirer_network_id as string,\n\t\tnetwork as string,\n\t\tacquirer_branch_street as string,\n\t\tacquirer_branch_city as string,\n\t\tacquirer_branch_state as string,\n\t\tacquirer_branch_country as string,\n\t\tbranch_address as string,\n\t\tapproved_amt as decimal(38,2),\n\t\tcnt_approved as integer,\n\t\trejected_amt as decimal(38,2),\n\t\tcnt_rejected as integer,\n\t\ttransaction_amt as decimal(38,2),\n\t\tcnt_transactions as integer,\n\t\tinterchange_fee_amt as decimal(38,5),\n\t\tacq_switch_fee_amt as decimal(38,5),\n\t\tiss_switch_fee_amt as decimal(38,5),\n\t\tFee_Billing_Combo_TG_CG_CT as string,\n\t\tFee_Billing_Combo_Description as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> srcSBsummarymonthly\nsource(output(\n\t\tPseudo_Terminal as string,\n\t\tsix_A_branch_street as string,\n\t\tA_CU_Name as string,\n\t\tA_branch_street as string,\n\t\tA_branch_city as string,\n\t\tA_branch_state as string,\n\t\tA_branch_country as string,\n\t\tA_network_id as string,\n\t\tproduct_type as string,\n\t\tacquirer_RT as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select a.[Pseudo_Terminal], a.[six_A_branch_street], a.[A_CU_Name], a.[A_branch_street], a.[A_branch_city], a.[A_branch_state], a.[A_branch_country], \\na.[A_network_id], a.[product_type], a.[acquirer_RT]\\nfrom [SB].[CUSC_acquirer] a\\nleft join (SELECT Pseudo_Terminal, six_A_branch_street\\n-- Identify Duplicate records by Terminal ID and first 6 char of Branch address\\n-- Avoid joining these Terminal IDs while processing SharedBranch Summary data. These may not be duplicate branches\\nFROM [SB].[CUSC_acquirer]\\nGROUP BY Pseudo_Terminal, six_A_branch_street HAVING COUNT(1) >1) dup\\non a.Pseudo_Terminal = dup.Pseudo_Terminal\\nand a.six_A_branch_street = dup.six_A_branch_street\\nwhere dup.Pseudo_Terminal is null',\n\tformat: 'query',\n\tstaged: false) ~> srcAcquirerCU\nDerivedAddr6, srcAcquirerCU join(product_id == Pseudo_Terminal\n\t&& six_addr == six_A_branch_street,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> joinwithacquireCU\nsrcSBsummarymonthly derive(six_addr = trim(coalesce(lower(trim(left(acquirer_branch_street,6))), '')),\n\t\teach(match(type=='string'), $$ = trim($$))) ~> DerivedAddr6\njoinwithacquireCU derive(d_acquirer_branch_city = case(A_branch_city == '' , \r\nacquirer_branch_city, \r\nisNull(A_branch_city), \r\nacquirer_branch_city, \r\nA_branch_city),\n\t\td_acquirer_branch_state = case(A_branch_state == '' , \r\nacquirer_branch_state, \r\nisNull(A_branch_state), \r\nacquirer_branch_state, \r\nA_branch_state),\n\t\td_acquirer_branch_street = case(A_branch_street == '' ,  \r\nacquirer_branch_street,  \r\nisNull(A_branch_street),  \r\nacquirer_branch_street,  \r\nA_branch_street),\n\t\td_acquirer_branch_country = case(A_branch_country == '' , \r\nacquirer_branch_country, \r\nisNull(A_branch_country), \r\nacquirer_branch_country, \r\nA_branch_country),\n\t\td_acquirer_name = case(acquirer_name == '' , case(isNull(A_CU_Name), 'Unknown', A_CU_Name) , \r\nacquirer_name == 'Unknown', case(isNull(A_CU_Name), 'Unknown', A_CU_Name), \r\nacquirer_name),\n\t\td_acquiring_institution_rt_number = case(acquirer_RT == '' , \r\nacquiring_institution_rt_number, \r\nisNull(acquirer_RT), \r\nacquiring_institution_rt_number, \r\nacquirer_RT),\n\t\td_product_type = case(srcAcquirerCU@product_type == '' , \r\nDerivedAddr6@product_type, \r\nisNull(srcAcquirerCU@product_type), \r\nDerivedAddr6@product_type, \r\nsrcAcquirerCU@product_type),\n\t\td_acquirer_network_id = case(A_network_id == '' , \r\nacquirer_network_id, \r\nisNull(A_network_id), \r\nacquirer_network_id, \r\nA_network_id),\n\t\td_acquirer_id = product_id,\n\t\td_branch_address = case(isNull(A_branch_street), \r\nbranch_address,\r\ntrim(concat(A_branch_street, ', ', A_branch_city, ', ', A_branch_state, ', ', A_branch_country))\r\n)) ~> DerivedColumnAddress\nDerivedColumnAddress derive(d_network = case(issuer_network_id==d_acquirer_network_id,\r\n'Local',\r\n'National')) ~> DerivedColumnNetwork\nDerivedColumnNetwork sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tcalender_date as date,\n\t\tcalender_num_date as long,\n\t\tIssuer_ISO as string,\n\t\taccount_qualifier as string,\n\t\tprocessing_code as string,\n\t\tprocessing_code_desc as string,\n\t\tprocessing_code_type as string,\n\t\tproduct_id as string,\n\t\tproduct_type as string,\n\t\tissuer_client_id as string,\n\t\tacquirer_client_id as string,\n\t\tissuer_name as string,\n\t\tacquirer_name as string,\n\t\tacquirer_id as string,\n\t\tacquiring_institution_rt_number as string,\n\t\tauthorizing_institution_rt_number as string,\n\t\tissuer_network_id as string,\n\t\tacquirer_network_id as string,\n\t\tnetwork as string,\n\t\tacquirer_branch_street as string,\n\t\tacquirer_branch_city as string,\n\t\tacquirer_branch_state as string,\n\t\tacquirer_branch_country as string,\n\t\tbranch_address as string,\n\t\tapproved_amt as decimal(19,4),\n\t\tcnt_approved as integer,\n\t\trejected_amt as decimal(19,4),\n\t\tcnt_rejected as integer,\n\t\ttransaction_amt as decimal(19,4),\n\t\tcnt_transactions as integer,\n\t\tinterchange_fee_amt as decimal(19,4),\n\t\tacq_switch_fee_amt as decimal(19,4),\n\t\tiss_switch_fee_amt as decimal(19,4),\n\t\tFee_Billing_Combo_TG_CG_CT as string,\n\t\tFee_Billing_Combo_Description as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tcalender_date = calendar_date,\n\t\tcalender_num_date = calendar_num_date,\n\t\tIssuer_ISO,\n\t\taccount_qualifier,\n\t\tprocessing_code,\n\t\tprocessing_code_desc,\n\t\tprocessing_code_type,\n\t\tproduct_id,\n\t\tproduct_type = d_product_type,\n\t\tissuer_client_id,\n\t\tacquirer_client_id,\n\t\tissuer_name,\n\t\tacquirer_name = d_acquirer_name,\n\t\tacquirer_id = d_acquirer_id,\n\t\tauthorizing_institution_rt_number,\n\t\tacquiring_institution_rt_number = d_acquiring_institution_rt_number,\n\t\tissuer_network_id,\n\t\tacquirer_network_id = d_acquirer_network_id,\n\t\tnetwork = d_network,\n\t\tacquirer_branch_city = d_acquirer_branch_city,\n\t\tacquirer_branch_state = d_acquirer_branch_state,\n\t\tacquirer_branch_street = d_acquirer_branch_street,\n\t\tacquirer_branch_country = d_acquirer_branch_country,\n\t\tbranch_address = d_branch_address,\n\t\tapproved_amt,\n\t\tcnt_approved,\n\t\trejected_amt,\n\t\tcnt_rejected,\n\t\ttransaction_amt,\n\t\tcnt_transactions,\n\t\tinterchange_fee_amt,\n\t\tacq_switch_fee_amt,\n\t\tiss_switch_fee_amt,\n\t\tFee_Billing_Combo_TG_CG_CT,\n\t\tFee_Billing_Combo_Description\n\t)) ~> tgtSBsummarymonthlyStage"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DF_SB_Summary_Daily')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Data flow to create Shared Branch daily Summary data",
+                "folder": {
+                    "name": "Shared Branch/SEM"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "ASDW_vw_shared_branch_summary_daily",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcSBsummarydaily"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "ASDW_CUSC_acquirer",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcAcquirerCU"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "ASQL_sbdm_staging_SB_summary_daily",
+                                "type": "DatasetReference"
+                            },
+                            "name": "tgtSBsummarydailyStage"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "joinwithacquireCU"
+                        },
+                        {
+                            "name": "DerivedAddr6"
+                        },
+                        {
+                            "name": "DerivedColumnAddress"
+                        },
+                        {
+                            "name": "DerivedColumnNetwork"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tcalendar_date as date,\n\t\tcalendar_num_date as long,\n\t\tIssuer_ISO as string,\n\t\taccount_qualifier as string,\n\t\tprocessing_code as string,\n\t\tprocessing_code_desc as string,\n\t\tprocessing_code_type as string,\n\t\tproduct_id as string,\n\t\tproduct_type as string,\n\t\tissuer_client_id as string,\n\t\tacquirer_client_id as string,\n\t\tissuer_name as string,\n\t\tacquirer_name as string,\n\t\tacquiring_institution_rt_number as string,\n\t\tauthorizing_institution_rt_number as string,\n\t\tissuer_network_id as string,\n\t\tacquirer_network_id as string,\n\t\tnetwork as string,\n\t\tacquirer_branch_street as string,\n\t\tacquirer_branch_city as string,\n\t\tacquirer_branch_state as string,\n\t\tacquirer_branch_country as string,\n\t\tbranch_address as string,\n\t\tapproved_amt as decimal(38,2),\n\t\tcnt_approved as integer,\n\t\trejected_amt as decimal(38,2),\n\t\tcnt_rejected as integer,\n\t\ttransaction_amt as decimal(38,2),\n\t\tcnt_transactions as integer,\n\t\tinterchange_fee_amt as decimal(38,5),\n\t\tacq_switch_fee_amt as decimal(38,5),\n\t\tiss_switch_fee_amt as decimal(38,5),\n\t\tFee_Billing_Combo_TG_CG_CT as string,\n\t\tFee_Billing_Combo_Description as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinferDriftedColumnTypes: true,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> srcSBsummarydaily\nsource(output(\n\t\tPseudo_Terminal as string,\n\t\tsix_A_branch_street as string,\n\t\tA_CU_Name as string,\n\t\tA_branch_street as string,\n\t\tA_branch_city as string,\n\t\tA_branch_state as string,\n\t\tA_branch_country as string,\n\t\tA_network_id as string,\n\t\tproduct_type as string,\n\t\tacquirer_RT as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select a.[Pseudo_Terminal], a.[six_A_branch_street], a.[A_CU_Name], a.[A_branch_street], a.[A_branch_city], a.[A_branch_state], a.[A_branch_country], \\na.[A_network_id], a.[product_type], a.[acquirer_RT]\\nfrom [SB].[CUSC_acquirer] a\\nleft join (SELECT Pseudo_Terminal, six_A_branch_street\\n-- Identify Duplicate records by Terminal ID and first 6 char of Branch address\\n-- Avoid joining these Terminal IDs while processing SharedBranch Summary data. These may not be duplicate branches\\nFROM [SB].[CUSC_acquirer]\\nGROUP BY Pseudo_Terminal, six_A_branch_street HAVING COUNT(1) >1) dup\\non a.Pseudo_Terminal = dup.Pseudo_Terminal\\nand a.six_A_branch_street = dup.six_A_branch_street\\nwhere dup.Pseudo_Terminal is null',\n\tformat: 'query',\n\tstaged: false) ~> srcAcquirerCU\nDerivedAddr6, srcAcquirerCU join(product_id == Pseudo_Terminal\n\t&& six_addr == six_A_branch_street,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> joinwithacquireCU\nsrcSBsummarydaily derive(six_addr = trim(coalesce(lower(trim(left(acquirer_branch_street,6))), ''))) ~> DerivedAddr6\njoinwithacquireCU derive(d_acquirer_branch_city = case(A_branch_city == '' , \r\nacquirer_branch_city, \r\nisNull(A_branch_city), \r\nacquirer_branch_city, \r\nA_branch_city),\n\t\td_acquirer_branch_state = case(A_branch_state == '' , \r\nacquirer_branch_state, \r\nisNull(A_branch_state), \r\nacquirer_branch_state, \r\nA_branch_state),\n\t\td_acquirer_branch_country = case(A_branch_country == '' , \r\nacquirer_branch_country, \r\nisNull(A_branch_country), \r\nacquirer_branch_country, \r\nA_branch_country),\n\t\td_acquirer_name = case(acquirer_name == '' , case(isNull(A_CU_Name), 'Unknown', A_CU_Name) , \r\nacquirer_name == 'Unknown', case(isNull(A_CU_Name), 'Unknown', A_CU_Name), \r\nacquirer_name),\n\t\td_acquiring_institution_rt_number = case(acquirer_RT == '' , \r\nacquiring_institution_rt_number, \r\nisNull(acquirer_RT), \r\nacquiring_institution_rt_number, \r\nacquirer_RT),\n\t\td_product_type = case(srcAcquirerCU@product_type == '' , \r\nsrcSBsummarydaily@product_type, \r\nisNull(srcAcquirerCU@product_type), \r\nsrcSBsummarydaily@product_type, \r\nsrcAcquirerCU@product_type),\n\t\td_acquirer_network_id = case(A_network_id == '' , \r\nacquirer_network_id, \r\nisNull(A_network_id), \r\nacquirer_network_id, \r\nA_network_id),\n\t\td_acquirer_branch_street = case(A_branch_street == '' ,  \r\nacquirer_branch_street,  \r\nisNull(A_branch_street),  \r\nacquirer_branch_street,  \r\nA_branch_street),\n\t\td_acquirer_id = product_id,\n\t\td_branch_address = case(isNull(A_branch_street), \r\nbranch_address,\r\ntrim(concat(A_branch_street, ', ', A_branch_city, ', ', A_branch_state, ', ', A_branch_country))\r\n)) ~> DerivedColumnAddress\nDerivedColumnAddress derive(d_network = case(issuer_network_id==d_acquirer_network_id,\r\n'Local',\r\n'National')) ~> DerivedColumnNetwork\nDerivedColumnNetwork sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tcalender_date as date,\n\t\tcalender_num_date as long,\n\t\tIssuer_ISO as string,\n\t\taccount_qualifier as string,\n\t\tprocessing_code as string,\n\t\tprocessing_code_desc as string,\n\t\tprocessing_code_type as string,\n\t\tproduct_id as string,\n\t\tproduct_type as string,\n\t\tissuer_client_id as string,\n\t\tacquirer_client_id as string,\n\t\tissuer_name as string,\n\t\tacquirer_name as string,\n\t\tacquirer_id as string,\n\t\tacquiring_institution_rt_number as string,\n\t\tauthorizing_institution_rt_number as string,\n\t\tissuer_network_id as string,\n\t\tacquirer_network_id as string,\n\t\tnetwork as string,\n\t\tacquirer_branch_street as string,\n\t\tacquirer_branch_city as string,\n\t\tacquirer_branch_state as string,\n\t\tacquirer_branch_country as string,\n\t\tbranch_address as string,\n\t\tapproved_amt as decimal(19,4),\n\t\tcnt_approved as integer,\n\t\trejected_amt as decimal(19,4),\n\t\tcnt_rejected as integer,\n\t\ttransaction_amt as decimal(19,4),\n\t\tcnt_transactions as integer,\n\t\tinterchange_fee_amt as decimal(19,4),\n\t\tacq_switch_fee_amt as decimal(19,4),\n\t\tiss_switch_fee_amt as decimal(19,4),\n\t\tFee_Billing_Combo_TG_CG_CT as string,\n\t\tFee_Billing_Combo_Description as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\tpreSQLs:['ALTER INDEX ALL ON staging.shared_branch_summary_daily DISABLE;'],\n\tpostSQLs:['ALTER INDEX ALL ON staging.shared_branch_summary_daily REBUILD;'],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tcalender_date = calendar_date,\n\t\tcalender_num_date = calendar_num_date,\n\t\tIssuer_ISO,\n\t\taccount_qualifier,\n\t\tprocessing_code,\n\t\tprocessing_code_desc,\n\t\tprocessing_code_type,\n\t\tproduct_id,\n\t\tproduct_type = d_product_type,\n\t\tissuer_client_id,\n\t\tacquirer_client_id,\n\t\tissuer_name,\n\t\tacquirer_name = d_acquirer_name,\n\t\tacquirer_id = d_acquirer_id,\n\t\tacquiring_institution_rt_number = d_acquiring_institution_rt_number,\n\t\tauthorizing_institution_rt_number,\n\t\tissuer_network_id,\n\t\tacquirer_network_id = d_acquirer_network_id,\n\t\tnetwork = d_network,\n\t\tacquirer_branch_street = d_acquirer_branch_street,\n\t\tacquirer_branch_city = d_acquirer_branch_city,\n\t\tacquirer_branch_state = d_acquirer_branch_state,\n\t\tacquirer_branch_country = d_acquirer_branch_country,\n\t\tbranch_address = d_branch_address,\n\t\tapproved_amt,\n\t\tcnt_approved,\n\t\trejected_amt,\n\t\tcnt_rejected,\n\t\ttransaction_amt,\n\t\tcnt_transactions,\n\t\tinterchange_fee_amt,\n\t\tacq_switch_fee_amt,\n\t\tiss_switch_fee_amt,\n\t\tFee_Billing_Combo_TG_CG_CT,\n\t\tFee_Billing_Combo_Description\n\t)) ~> tgtSBsummarydailyStage"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/MoveToSharedBranchStaging')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "snk_rawUser",
+                                "type": "DatasetReference"
+                            },
+                            "name": "source1"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Client",
+                                "type": "DatasetReference"
+                            },
+                            "name": "source2"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dest_staging_User_SharedBranch",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sink1"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "Join1"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tClientID as string,\n\t\tBINID as string,\n\t\tUserName as string,\n\t\tBIN as string,\n\t\tUserID as integer\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> source1\nsource(output(\n\t\tclient_number as string,\n\t\tclient_name as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'select distinct client_number, client_name\\nfrom FinancialInstitution.dim_client',\n\tformat: 'query',\n\tstaged: false) ~> source2\nsource1, source2 join(ClientID == client_number,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'both')~> Join1\nJoin1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tUserID as integer,\n\t\tClientID as string,\n\t\tBINID as string,\n\t\tUserName as string,\n\t\tBIN as string,\n\t\tClientName as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClientName = client_name,\n\t\tUserID,\n\t\tBINID,\n\t\tUserName,\n\t\tBIN,\n\t\tClientID\n\t)) ~> sink1"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/AltCustIdentification_trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_FDAltCustIdentification",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Fiserv/AltCustIdentification/",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('AltCustIdentification_trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CustExpand_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_FDCustExpanded",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Fiserv/CustExpanded/",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('CustExpand_Trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/BalanceStatus_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_FDBalanceStatus",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Fiserv/BalanceStatus/",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('BalanceStatus_Trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Email_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_FDEmail",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Fiserv/Email/",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('Email_Trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ExpAddr_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_FDExpAddr",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Fiserv/ExpAddr/",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('ExpAddr_Trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/PIRecord_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_FDPI_Record",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Fiserv/PI_Record/",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('PIRecord_Trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/PIStatus_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_FDPI_Status",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Fiserv/PI_Status/",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('PIStatus_Trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RawBlobTrigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "RawToSmartGrowth",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/raw/blobs/",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('RawBlobTrigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/drptoRawSmartGrowth_trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Stopped",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "drptoRawSmartGrowth",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "FolderPath": "[parameters('drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FolderPath')]",
+                            "FileName": "[parameters('drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FileName')]"
+                        }
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/",
+                    "blobPathEndsWith": "sv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('drptoRawSmartGrowth_trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/droptoRaw_FISATMList_trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_FISATMList",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/FIS/ATM",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('droptoRaw_FISATMList_trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/drptoRaw_PymtTokenReq_Trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_PaymentTokenRequest",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Coop/PaymentTypeRequestor",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('drptoRaw_PymtTokenReq_Trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/droptoRaw_FDATMList_trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_FDATMList",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Fiserv/ATM",
+                    "blobPathEndsWith": ".csv",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('droptoRaw_FDATMList_trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/droptoRaw_FDParReference_trigger')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "droptoRaw_FDParReference",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "BlobEventsTrigger",
+                "typeProperties": {
+                    "blobPathBeginsWith": "/drop-zone/blobs/Fiserv/ParIDReference",
+                    "ignoreEmptyBlobs": true,
+                    "scope": "[parameters('droptoRaw_FDParReference_trigger_properties_typeProperties_scope')]",
+                    "events": [
+                        "Microsoft.Storage.BlobCreated"
+                    ]
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_PB_Datasets_Azure_to_SF')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_Populate_PB_Datasets_Azure_to_SF",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-08-19T00:31:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "minutes": [
+                                0
+                            ],
+                            "hours": [
+                                7
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_semPeerBenchmarking_SF')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Daily 6AM",
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_populate_semPeerBenchmarking_SF",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {
+                            "par_CardSpend_months": "[parameters('TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardSpend_months')]",
+                            "par_CardActivate_months": "[parameters('TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardActivate_months')]"
+                        }
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-08-27T06:00:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {}
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/TR_Daily_IC_Demo_Data')]",
+            "type": "Microsoft.DataFactory/factories/triggers",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Scheduled for everyday at 7am EST",
+                "annotations": [],
+                "runtimeState": "Started",
+                "pipelines": [
+                    {
+                        "pipelineReference": {
+                            "referenceName": "PL_IC_Demo_Data",
+                            "type": "PipelineReference"
+                        },
+                        "parameters": {}
+                    }
+                ],
+                "type": "ScheduleTrigger",
+                "typeProperties": {
+                    "recurrence": {
+                        "frequency": "Day",
+                        "interval": 1,
+                        "startTime": "2021-11-16T18:46:00",
+                        "timeZone": "Eastern Standard Time",
+                        "schedule": {
+                            "hours": [
+                                7
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

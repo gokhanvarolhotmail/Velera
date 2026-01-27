@@ -1,0 +1,336 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "value": "EnterpriseDataSourceProdDF"
+        },
+        "Consolidation_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=Consolidation"
+        },
+        "EnterpriseDataSource_accountKey": {
+            "value": ""
+        },
+        "EnterpriseDataSourceDev_accountKey": {
+            "value": ""
+        },
+        "DataWarehouse_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ConsolidatedDW"
+        },
+        "Chargebacks_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=Chargebacks"
+        },
+        "MerchantandCardholder_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=MerchantandCardholder"
+        },
+        "SmartGrowthBlobStore_connectionString": {
+            "value": ""
+        },
+        "COOPSB_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=COOPSB"
+        },
+        "SB_Apps_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=SB_Apps"
+        },
+        "SharedBranchDM_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=SharedBranchDM"
+        },
+        "Consolidated_DW_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ConsolidatedDW"
+        },
+        "CUSCComplete_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=\"CUSC Complete\""
+        },
+        "CUSCEOM1_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=CUSCEOM1"
+        },
+        "CUSCEOM2_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=CUSCEOM2"
+        },
+        "RewardsDB_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=Rewards"
+        },
+        "ApplicationODS_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ApplicationODS"
+        },
+        "secureftp_password": {
+            "value": ""
+        },
+        "snowflake_password": {
+            "value": ""
+        },
+        "SnowflakeDev_password": {
+            "value": ""
+        },
+        "SBEAccountManagement_connectionString": {
+            "value": ""
+        },
+        "SBEAccountManagement_DR_connectionString": {
+            "value": ""
+        },
+        "LS_SF_CONSOLIDATE_password": {
+            "value": ""
+        },
+        "EnterpriseDataSourceDevBlobStore_connectionString": {
+            "value": ""
+        },
+        "LS_Mcycle_SqlPool_connectionString": {
+            "value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=a0pdcons01.database.windows.net;Initial Catalog=ConsolidatedDW"
+        },
+        "LS_SF_Application_DB_password": {
+            "value": ""
+        },
+        "LS_ASQM_ExtendedPayment_connectionString": {
+            "value": ""
+        },
+        "EnterpriseDataSource_properties_typeProperties_url": {
+            "value": "https://enterprisedatasourceprod.dfs.core.windows.net"
+        },
+        "EnterpriseDataSourceDev_properties_typeProperties_url": {
+            "value": "https://enterprisedatasourceprod.dfs.core.windows.net"
+        },
+        "secureftp_properties_typeProperties_host": {
+            "value": "secureftp.themembersgroup.com"
+        },
+        "secureftp_properties_typeProperties_userName": {
+            "value": "FTPFromAzure"
+        },
+        "snowflake_properties_typeProperties_database": {
+            "value": "CONSOLIDATE"
+        },
+        "snowflake_properties_typeProperties_role": {
+            "value": "SVC_ETL_ADF"
+        },
+        "AzureBlobStorage_SnowFlake_sasUri": {
+            "value": ""
+        },
+        "SnowflakeDev_properties_typeProperties_database": {
+            "value": "CONSOLIDATE"
+        },
+        "SnowflakeDev_properties_typeProperties_role": {
+            "value": "SVC_ETL_ADF"
+        },
+        "LS_SF_CONSOLIDATE_properties_typeProperties_database": {
+            "value": "CONSOLIDATE"
+        },
+        "LS_SF_CONSOLIDATE_properties_typeProperties_role": {
+            "value": "SVC_ETL_ADF"
+        },
+        "LS_SF_Application_DB_properties_typeProperties_database": {
+            "value": "APPLICATION_DB"
+        },
+        "LS_SF_Application_DB_properties_typeProperties_role": {
+            "value": "SVC_ETL_ADF"
+        },
+        "AltCustIdentification_trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "CustExpand_Trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "BalanceStatus_Trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "Email_Trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "ExpAddr_Trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "PIRecord_Trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "PIStatus_Trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "RawBlobTrigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "drptoRawSmartGrowth_trigger_properties_drptoRawSmartGrowth_parameters_FileName": {
+            "value": "@triggerBody().fileName"
+        },
+        "drptoRawSmartGrowth_trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FISATMList_trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "drptoRaw_PymtTokenReq_Trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FDATMList_trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FDParReference_trigger_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "droptoRaw_FISInterchangeLegacy_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "tr_SpringBoardExpansion_DailyOnce_Pipelines_properties_pl_master_Springboard_PopulateAccountLookup_parameters_Mcycle_run": {
+            "value": 0
+        },
+        "Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FilePath": {
+            "value": "@join(skip(split(triggerBody().folderPath,'/'),1),'/')"
+        },
+        "Raw_Stage_TBL_CD495DTL_properties_Raw_CD495DTL_to_ConsDW_trigger_parameters_FileName": {
+            "value": "@triggerBody().fileName"
+        },
+        "Raw_Stage_TBL_CD495DTL_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_BIN_Invalid_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardSpend_months": {
+            "value": 12
+        },
+        "TR_semPeerBenchmarking_SF_properties_PL_populate_semPeerBenchmarking_SF_parameters_par_CardActivate_months": {
+            "value": 12
+        },
+        "TR_Event_DropToRaw_properties_PL_DropToRaw_File_parameters_FolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "TR_Event_DropToRaw_properties_PL_DropToRaw_File_parameters_FileName": {
+            "value": "@triggerBody().fileName"
+        },
+        "TR_Event_DropToRaw_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_Monthly_Populate_WBE_scorebands_properties_PL_Populate_WBE_scorebands_parameters_pStartTime": {
+            "value": "@trigger().scheduledTime"
+        },
+        "TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_endDate": {
+            "value": "@trigger().startTime"
+        },
+        "TR_Daily_FIS_RawNetworkFileLoad_properties_PL_InterchangeRawNetwork_Container_parameters_par_startDate": {
+            "value": "@trigger().startTime"
+        },
+        "TR_monthly_PL_Billing_properties_PL_Billing_parameters_report_date": {
+            "value": "@trigger().scheduledTime"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Source": {
+            "value": "Coop"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_Object": {
+            "value": "COOPER/CardTransaction"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilename": {
+            "value": "UpdatedFeedzai.csv"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destContainer": {
+            "value": "stage"
+        },
+        "Tr_Daily_RawtoStage_Feedzai_properties_PL_RawToStage_FeedzAI_parameters_par_destFilePath": {
+            "value": "Coop/COOPER/CardTransaction/Currentcsv"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_PL_CopyGZipFile_parameters_par_fileName": {
+            "value": "@triggerBody().fileName"
+        },
+        "TR_Event_GZIP_FISDemographics_Daily_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_PL_CopyGZipFile_parameters_par_fileName": {
+            "value": "@triggerBody().fileName"
+        },
+        "TR_Event_GZIP_FISDemographics_Monthly_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_Rewards_Custom_Demographics_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_card_status_change_date": {
+            "value": null
+        },
+        "TR_weekly_Kobie_Demographics_properties_PL_Kobie_Demographics_Multiple_file_parameters_clientnumber": {
+            "value": null
+        },
+        "TR_Process_user_properties_PL_Process_User_parameters_par_source": {
+            "value": "Reference"
+        },
+        "TR_Process_user_properties_PL_Process_User_parameters_par_object": {
+            "value": "User"
+        },
+        "TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceContainer": {
+            "value": "raw"
+        },
+        "TR_Weekly_FIS_BinType_properties_process_BinType_FIS_parameters_par_SourceDirectory": {
+            "value": "Reference/BinType"
+        },
+        "TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceContainer": {
+            "value": "raw"
+        },
+        "TR_Daily_Fiserv_BinType_properties_process_BinType_Fiserv_parameters_par_SourceDirectory": {
+            "value": "Reference/CoreBin"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_srcFolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_snkFolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_PL_CopyGZipFile_parameters_par_fileName": {
+            "value": "@triggerBody().fileName"
+        },
+        "TR_Event_GZIP_FISTransaction_Daily_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_Daily_IC_Demographic_Semantic_Load_properties_PL_Master_Semantic_Loads_Demographics_SF_parameters_report_date": {
+            "value": "@trigger().scheduledTime"
+        },
+        "TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "TR_evn_Copy_RewardsDemoResponseDaily_properties_PL_Copy_RewardsDemoResponseDaily_parameters_par_FileName": {
+            "value": "@triggerBody().fileName"
+        },
+        "TR_evn_Copy_RewardsDemoResponseDaily_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "TR_evn_Copy_RewardsKobieTransOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName": {
+            "value": "@triggerBody().fileName"
+        },
+        "TR_evn_Copy_RewardsKobieTransOutbound_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "TR_evn_Copy_RewardsKobieDemoOutbound_properties_PL_Copy_RewardsKobieOutbound_parameters_par_FileName": {
+            "value": "@triggerBody().fileName"
+        },
+        "TR_evn_Copy_RewardsKobieDemoOutbound_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FolderPath": {
+            "value": "@triggerBody().folderPath"
+        },
+        "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_PL_Copy_FIS_Network_Interchange_Validation_parameters_par_FileName": {
+            "value": "@triggerBody().fileName"
+        },
+        "Tr_evn_Copy_FIS_Network_Interchange_Validation_properties_typeProperties_scope": {
+            "value": "/subscriptions/662e240f-6ddf-4916-a4ff-b5e97b3aeb7e/resourceGroups/EnterpriseDataSourceProdRG/providers/Microsoft.Storage/storageAccounts/enterprisedatasourceprod"
+        },
+        "Tr_Daily_Populate_DetectionRate_ConsDW_Snowfalke_properties_PL_Populate_DetectionRate_parameters_starttime": {
+            "value": "@trigger().scheduledTime"
+        }
+    }
+}

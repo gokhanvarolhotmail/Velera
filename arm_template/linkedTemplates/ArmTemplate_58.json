@@ -1,0 +1,1998 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimAccountGeography')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This will populate DimAccountGeograpy in the member schema in Azure SQ DW. This will populate DimAccountGeograpy in the member schema in Azure SQ DW. We updated this table to include Account Address Line One, Account Address Line Two, as well as changed the hashkeys to Sha1. July 20th, 2020",
+                "activities": [
+                    {
+                        "name": "populate_DimAccountGeography",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimAccountGeography",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FISDebitDemographic": {},
+                                    "dimAccountGeography": {},
+                                    "RefAccountRegionReference": {},
+                                    "SnkdimAccountGeography": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage/testrun"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimAccountGeography-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 5,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-06-04T20:36:53Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_ClientDimensions')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Get Metadata1",
+                        "type": "GetMetadata",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "src_drpClientBin_meta",
+                                "type": "DatasetReference",
+                                "parameters": {}
+                            },
+                            "fieldList": [
+                                "childItems"
+                            ],
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": true,
+                                "enablePartitionDiscovery": false
+                            },
+                            "formatSettings": {
+                                "type": "BinaryReadSettings"
+                            }
+                        }
+                    },
+                    {
+                        "name": "ForEach1",
+                        "type": "ForEach",
+                        "dependsOn": [
+                            {
+                                "activity": "Get Metadata1",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "userProperties": [],
+                        "typeProperties": {
+                            "items": {
+                                "value": "@activity('Get Metadata1').output.childitems",
+                                "type": "Expression"
+                            },
+                            "isSequential": true,
+                            "activities": [
+                                {
+                                    "name": "ArchiveFile",
+                                    "type": "Copy",
+                                    "dependsOn": [],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "source": {
+                                            "type": "BinarySource",
+                                            "storeSettings": {
+                                                "type": "AzureBlobFSReadSettings",
+                                                "recursive": true,
+                                                "wildcardFolderPath": "Coop/ClientBin",
+                                                "wildcardFileName": {
+                                                    "value": "@item().name",
+                                                    "type": "Expression"
+                                                },
+                                                "deleteFilesAfterCompletion": true
+                                            },
+                                            "formatSettings": {
+                                                "type": "BinaryReadSettings"
+                                            }
+                                        },
+                                        "sink": {
+                                            "type": "BinarySink",
+                                            "storeSettings": {
+                                                "type": "AzureBlobFSWriteSettings"
+                                            }
+                                        },
+                                        "enableStaging": false
+                                    },
+                                    "inputs": [
+                                        {
+                                            "referenceName": "src_drpClientBin_meta",
+                                            "type": "DatasetReference",
+                                            "parameters": {}
+                                        }
+                                    ],
+                                    "outputs": [
+                                        {
+                                            "referenceName": "snk_ClientBin",
+                                            "type": "DatasetReference",
+                                            "parameters": {}
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "populateClientDim",
+                                    "type": "ExecuteDataFlow",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "ArchiveFile",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataflow": {
+                                            "referenceName": "populate_DimClient",
+                                            "type": "DataFlowReference",
+                                            "parameters": {},
+                                            "datasetParameters": {
+                                                "client": {
+                                                    "file_container": "source-coop",
+                                                    "file_directory": "Core",
+                                                    "file_name": {
+                                                        "value": "@item().name",
+                                                        "type": "Expression"
+                                                    }
+                                                },
+                                                "DWClient": {},
+                                                "ClientDimension": {}
+                                            }
+                                        },
+                                        "staging": {
+                                            "linkedService": {
+                                                "referenceName": "EnterpriseDataSource",
+                                                "type": "LinkedServiceReference"
+                                            },
+                                            "folderPath": "staging/workspace"
+                                        },
+                                        "compute": {
+                                            "coreCount": 8,
+                                            "computeType": "General"
+                                        },
+                                        "traceLevel": "Fine"
+                                    }
+                                },
+                                {
+                                    "name": "populateBinandRTN",
+                                    "type": "ExecuteDataFlow",
+                                    "dependsOn": [
+                                        {
+                                            "activity": "populateClientDim",
+                                            "dependencyConditions": [
+                                                "Succeeded"
+                                            ]
+                                        }
+                                    ],
+                                    "policy": {
+                                        "timeout": "7.00:00:00",
+                                        "retry": 0,
+                                        "retryIntervalInSeconds": 30,
+                                        "secureOutput": false,
+                                        "secureInput": false
+                                    },
+                                    "userProperties": [],
+                                    "typeProperties": {
+                                        "dataflow": {
+                                            "referenceName": "populate_DimBinandRTN",
+                                            "type": "DataFlowReference",
+                                            "parameters": {},
+                                            "datasetParameters": {
+                                                "client": {
+                                                    "file_container": "source-coop",
+                                                    "file_directory": "Core",
+                                                    "file_name": {
+                                                        "value": "@item().name",
+                                                        "type": "Expression"
+                                                    }
+                                                },
+                                                "DWClient": {},
+                                                "dimRTN": {},
+                                                "dimBIN": {},
+                                                "RTNDimension": {},
+                                                "BinDimension": {}
+                                            }
+                                        },
+                                        "staging": {
+                                            "linkedService": {
+                                                "referenceName": "EnterpriseDataSource",
+                                                "type": "LinkedServiceReference"
+                                            },
+                                            "folderPath": "staging/workspace/dimclient"
+                                        },
+                                        "compute": {
+                                            "coreCount": 8,
+                                            "computeType": "General"
+                                        },
+                                        "traceLevel": "Fine"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions/Static Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-08-18T22:19:19Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimAccount')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimAccount",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimAccount",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FISDebitDemographic": {},
+                                    "DwDimAccount": {},
+                                    "FactTransactions": {},
+                                    "dwDimBin": {},
+                                    "SnkDimAccount": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/FIS/Demographics"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimAccount-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 5,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-06-04T20:36:53Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CrossCycle_Adjustments')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "CrossCycle_Adjustments",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "CrossCycle_Adjustments",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "CrossCycle": {
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "CCUMSTR": {},
+                                    "TransactionCriteria": {},
+                                    "sink1": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            },
+                            "staging": {},
+                            "integrationRuntime": {
+                                "referenceName": "CrossCycle-8Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "DeleteDrop_CrossCycle",
+                        "type": "Delete",
+                        "dependsOn": [
+                            {
+                                "activity": "CrossCycle_Adjustments",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_CrossCycle",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "enableLogging": false,
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": false
+                            }
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FirstData"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:26:27Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ChargeOff')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "ChargeOff",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "ChargeOff",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "ChargeOffSource": {
+                                        "filename": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "CCUMSTR": {},
+                                    "TransactionCriteria": {},
+                                    "sink1": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            },
+                            "staging": {},
+                            "integrationRuntime": {
+                                "referenceName": "ChargeOff-8Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "DeleteDrop_ChargeOff",
+                        "type": "Delete",
+                        "dependsOn": [
+                            {
+                                "activity": "ChargeOff",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_ChargeOff",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "filename": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "enableLogging": false,
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": false
+                            }
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FirstData"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:25:03Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimNetwork')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimNetwork",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 5,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimNetwork",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "ConformedTransactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        },
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "srcDimNetwork": {},
+                                    "SourceSystem": {},
+                                    "DimNetwork": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimNetwork-16Cores-16TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-03-08T23:57:57Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CD031')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "CD031",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "CD031",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "CD031Source": {
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "FDCriteria": {},
+                                    "CCUMSTR": {},
+                                    "ConformedTransactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "DeleteDrop_CD031",
+                        "type": "Delete",
+                        "dependsOn": [
+                            {
+                                "activity": "CD031",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_CD031",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "enableLogging": false,
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": false
+                            }
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FirstData"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:23:33Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FIS_Transactions')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "FISTransactions",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 5,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "FISTransactions",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "FISTransaction": {
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "FISTransactionCriteria": {},
+                                    "dimTxnName": {},
+                                    "refInterchange": {},
+                                    "ConformedTransactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "dwAuditInterchangeLegacy": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "stage/FIS/Transactions"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "FISTrans-Compute-16Cores-30TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "DeleteDropFile",
+                        "type": "Delete",
+                        "dependsOn": [
+                            {
+                                "activity": "FISTransactions",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "all_dropFISTransactions",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "enableLogging": false,
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": false
+                            }
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FIS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-06-30T20:45:06Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_UserTableTableau_copy1')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "User",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DWDimUser",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "Usercsv": {},
+                                    "sink1": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSourceDev",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-06-04T23:27:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DD031')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "DD031",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "DD031",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "DD31Source": {
+                                        "fileName": "@pipeline().parameters.fileName"
+                                    },
+                                    "FDCriteria": {},
+                                    "CCUMSTR": {},
+                                    "ConformedTransactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            },
+                            "staging": {},
+                            "integrationRuntime": {
+                                "referenceName": "DD031-Compute-16Cores-30TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "DeleteDrop_DD031",
+                        "type": "Delete",
+                        "dependsOn": [
+                            {
+                                "activity": "DD031",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_DD031",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "enableLogging": false,
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": false
+                            }
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FirstData"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:28:35Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populateFactNewAccountArchive')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "  ",
+                "activities": [
+                    {
+                        "name": "populate_FactNewAccountArchive",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_FactNewAccountArchive",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FISDebitDemographic": {
+                                        "filename": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "DWFactNewAccountArchive": {},
+                                    "SnkFactNewAccountArchive": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSourceDev",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/test_referencedata"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Facts"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-06-04T23:27:42Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimCustomer')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimCustomer",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimCustomer",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "FISDebitDemographic": {},
+                                    "DWdimCustomer": {},
+                                    "SnkDimCustomer": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/test_referencedata"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimCustomer-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 5,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-06-04T20:36:53Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimResponseCode')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimResponseCode",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 5,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimResponseCode",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "ConformedTransactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        },
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "SourceSystem": {},
+                                    "srcdimResponseCode": {},
+                                    "dimResponseCode": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimResponseCode-8Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-03-08T23:57:57Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimMerchantTerminal')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimMerchantTerminalGeography",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 5,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimMerchantTerminalGeography",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "ConformedTransactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        },
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "SrcDWDimSourceSystem": {},
+                                    "SrcDWDimMerchantTerminalGeography": {},
+                                    "LoadDWDimMerchantTerminalGeography": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimMerchTerm-16Cores-15-TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-03-08T23:57:57Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CycleToDate_Adjustments')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "CycleToDate_Adjustments",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "CycleToDate_Adjustments",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "CycleToDate": {
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "CCUMSTR": {},
+                                    "FDTransactionCriteria": {},
+                                    "sink1": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            },
+                            "staging": {},
+                            "integrationRuntime": {
+                                "referenceName": "CycleToDate-8Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    },
+                    {
+                        "name": "DeleteDrop_CycleToDate",
+                        "type": "Delete",
+                        "dependsOn": [
+                            {
+                                "activity": "CycleToDate_Adjustments",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_CycleToDate",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "@pipeline().parameters.fileName",
+                                        "type": "Expression"
+                                    }
+                                }
+                            },
+                            "enableLogging": false,
+                            "storeSettings": {
+                                "type": "AzureBlobFSReadSettings",
+                                "recursive": false
+                            }
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FirstData"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:27:36Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_InterchangeLegacy')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "createFinalInterchange",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "createFinalInterchange",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "srcNetwork": {},
+                                    "srcMainInterchange": {},
+                                    "srcTxnName": {},
+                                    "srcMerchType": {},
+                                    "srcCardEntry": {},
+                                    "srcAmountSettled": {},
+                                    "srcBIN": {},
+                                    "finalInterchangeFile": {}
+                                }
+                            },
+                            "staging": {},
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "FIS"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-10-13T14:55:58Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_FactTransactions')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_FactTransactions",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [
+                            {
+                                "activity": "delete_previous_loads",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 5,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_FactTransactions",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    },
+                                    "run_id": {
+                                        "value": "'@{concat(pipeline().RunId,pipeline().TriggerTime)}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "Transactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        },
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "dimSourceSystem": {},
+                                    "srcDimBin": {},
+                                    "FactTransaction": {},
+                                    "AuditLog": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "factTrans-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "None",
+                            "cacheSinks": {
+                                "firstRowOnly": true
+                            }
+                        }
+                    },
+                    {
+                        "name": "delete_previous_loads",
+                        "type": "ExecutePipeline",
+                        "dependsOn": [],
+                        "policy": {
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "pipeline": {
+                                "referenceName": "sp_Delete_Previous_Loads",
+                                "type": "PipelineReference"
+                            },
+                            "waitOnCompletion": true,
+                            "parameters": {
+                                "fileName": {
+                                    "value": "@pipeline().parameters.fileName",
+                                    "type": "Expression"
+                                },
+                                "import_file_date": {
+                                    "value": "@concat(pipeline().parameters.Directory_Year,'-',pipeline().parameters.Directory_Month,'-',pipeline().parameters.Directory_Day)",
+                                    "type": "Expression"
+                                },
+                                "source_system_key": {
+                                    "value": "@if(startswith(pipeline().parameters.fileName,'FIS'),1,2)",
+                                    "type": "Expression"
+                                }
+                            }
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Facts"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-07-01T23:14:09Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimCardEntry')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "populate_DimCardEntry",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 5,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "populate_DimCardEntry",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "ConformedTransactions": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        },
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "srcDimCardEntry": {},
+                                    "SourceSystem": {},
+                                    "DimCardEntry": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/workspace"
+                            },
+                            "integrationRuntime": {
+                                "referenceName": "dimCardEntry-16Cores-15TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2022-03-08T23:57:57Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FD_Transactions')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "FDTransactions",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "FDTransactions",
+                                "type": "DataFlowReference",
+                                "parameters": {
+                                    "fileName": {
+                                        "value": "'@{pipeline().parameters.fileName}'",
+                                        "type": "Expression"
+                                    }
+                                },
+                                "datasetParameters": {
+                                    "MonetaryDetailTransactions": {
+                                        "fileName": {
+                                            "value": "@pipeline().parameters.fileName",
+                                            "type": "Expression"
+                                        }
+                                    },
+                                    "CCUMSTR": {},
+                                    "FDCriteria": {},
+                                    "sink1": {
+                                        "Directory_Year": {
+                                            "value": "@pipeline().parameters.Directory_Year",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Month": {
+                                            "value": "@pipeline().parameters.Directory_Month",
+                                            "type": "Expression"
+                                        },
+                                        "Directory_Day": {
+                                            "value": "@pipeline().parameters.Directory_Day",
+                                            "type": "Expression"
+                                        }
+                                    }
+                                }
+                            },
+                            "staging": {},
+                            "integrationRuntime": {
+                                "referenceName": "FDTrans-Compute-16Cores-30TTL",
+                                "type": "IntegrationRuntimeReference"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "concurrency": 10,
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "parameters": {
+                    "Directory_Year": {
+                        "type": "string"
+                    },
+                    "Directory_Month": {
+                        "type": "string"
+                    },
+                    "Directory_Day": {
+                        "type": "string"
+                    },
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FirstData"
+                },
+                "annotations": [],
+                "lastPublishTime": "2021-11-08T23:18:01Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_CardEntryMethod')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "initialLoad_CardEntryMethod",
+                        "type": "ExecuteDataFlow",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "dataflow": {
+                                "referenceName": "initialLoad_CardEntryMethod",
+                                "type": "DataFlowReference",
+                                "parameters": {},
+                                "datasetParameters": {
+                                    "DimCardEntryMethod": {},
+                                    "CardEntryMethod": {},
+                                    "snkDimCardEntryMethod": {}
+                                }
+                            },
+                            "staging": {
+                                "linkedService": {
+                                    "referenceName": "EnterpriseDataSource",
+                                    "type": "LinkedServiceReference"
+                                },
+                                "folderPath": "staging/test_referencedata"
+                            },
+                            "compute": {
+                                "coreCount": 8,
+                                "computeType": "General"
+                            },
+                            "traceLevel": "Fine"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Dimensions/Static Dimensions"
+                },
+                "annotations": [],
+                "lastPublishTime": "2020-10-13T14:55:58Z"
+            },
+            "dependsOn": []
+        }
+    ]
+}

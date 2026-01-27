@@ -1,0 +1,1594 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Binary_Folder1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Binary_File1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_fully_parameterized_Year1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory_Client": {
+                        "type": "string"
+                    },
+                    "Directory_Type": {
+                        "type": "string"
+                    },
+                    "Directory_Year": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Utilities"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@concat(dataset().Directory_Client,'/',dataset().Directory_Type,'/',dataset().Directory_Year,'/')",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_PIPE_NoHeader_Folder')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_dropZone_Rewards_Custom_Demographic')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Rewards/Inbound/Demographics/Custom",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_dropZone_Rewards_Custom_Transaction')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Rewards/Inbound/Transaction/Custom",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_dropZone_Rewards_Demographic')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Rewards/Inbound/Demographics",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_dropZoneDemographics_Rewards')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone/Zelle_drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Rewards/Inbound/Demographics",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "\t",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_dropZone_Rewards_Custom_Demo')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Rewards/Inbound/Demographics/Custom",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_rawRewardsCustomDemographic')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@concat('Rewards/Inbound/Demographic/Custom/',substring(dataset().outputdirectorypath,26,8))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_rawRewardsDemographic')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@concat('Rewards/Inbound/Demographic/',substring(dataset().outputdirectorypath,24,8))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_Rewards_Custom_Demographic')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Rewards/Inbound/Demographics/Custom",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_Rewards_Custom_Transaction')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Rewards/Inbound/Transaction/Custom",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_Rewards_Demographics_Outbound')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Fixedwidth",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputfolder": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@concat('COOP_IB_Members_',dataset().outputfolder,'_',formatDateTime(utcnow(),'yyyyMMdd_HHmmss'),'')",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "Rewards/Demographics/FTP",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "quoteChar": ""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_Rewards_Inbound_Demographics')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Rewards/Inbound/Demographics",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_stage_BalanceStatus')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "ChargebacksDB"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "BalanceStatus.csv",
+                        "folderPath": "Fiserv/ReferenceFile",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "BalanceStatus_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RECORD_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PRIMARY_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SECONDARY_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ADDR_LINE_1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ADDR_LINE_2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CITY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ZIP_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SYS_BANK",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PRIN_BANK",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AGENT_BANK",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ACCT_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NUMBER_OF_PLASTICS_X",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CYCLE_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EXPIRATION_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OPEN_DATE_MMYY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NEW_CARD_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EXTERNAL_STATUS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "INTERNAL_STATUS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AUTH_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CREDIT_SCORE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TYPE_CR_LINE_CHNG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TYPE_OF_PLASTICS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SPOUSE_TYPE_PLASTIC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SPECIAL_FLAGS_5_THRU_8",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RENEWAL_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CREDIT_LINE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVAILABLE_CREDIT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CASH_ADVANCE_BALANCE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CREDIT_BUREAU_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TERMS_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HOLD_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CROSS_REF_ACCT_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CROSS_REF_ACCT_NO_1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CROSS_REF_ACCT_NO_2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISCELLANEOUS_FIELD_1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISCELLANEOUS_FIELD_2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISCELLANEOUS_FIELD_3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EXP_USER_FLAGS_1_THRU_4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FIXED_PAYMENT_AMOUNT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AUTOMATIC_PAYMENT_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ANNUAL_CHARGE_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ANNUAL_CHARGE_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DATE_OF_CR_LINE_CHNG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CREDIT_LIFE_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HOME_TELEPHONE_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BUSINESS_TELEPHONE_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SOCIAL_SECURITY_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CHECKING_ACCOUNT_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SAVINGS_ACCOUNT_NUMBER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RECOURSE_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DUALITY_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TIMES_IN_DISPUTE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TIMES_ONE_CYCLE_DELINQ",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TIMES_TWO_CYCLES_DELINQ",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TIMES_THREE_CYCLES_DELINQ",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LAST_PAYMENT_AMOUNT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "STATEMENT_BALANCE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "STATEMENT_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DATE_FIRST_ACTIVE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DATE_OF_LAST_PAYMENT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DATE_OF_LAST_MONETARY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TYPE_OF_LAST_MONETARY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HIGH_BALANCE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PAYMENT_HISTORY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DATE_OF_LAST_NON_MONETARY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TYPE_OF_LAST_NON_MONETARY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DISPUTE_AMOUNT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DISPUTE_DAYS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DATE_STATUS_CHANGE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TIMES_OVERLIMIT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TIMES_REAGED",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MINIMUM_PAYMENT_DUE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DELINQUENCY_DOLLARS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CURRENT_BALANCE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DAYS_DELINQUENT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DATE_OF_BIRTH",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SECONDARY_DATE_OF_BIRTH",
+                        "type": "String"
+                    },
+                    {
+                        "name": "WB_TRAN_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "WB_PURGE_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LIFE_4_CYCLE_DELQ_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LIFE_5_CYCLE_DELQ_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LIFE_6_CYCLE_DELQ_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LIFE_7_CYCLE_DELQ_CT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PREV_CRLINE_CHANGE_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NAME_ADDR_CHG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SOLICITATION_FLAG",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EMPL_ACCT_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ANN_RATE_CASH",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ANN_RATE_MRCH",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CURRENT_PRICING_STRATEGY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COV_STRATEGY_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SECONDARY_SOC_SEC_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CMPN_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PYMN_DUE_DT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BONUS_STRATEGY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FRAUD_SCORE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FRAUD_SCORE_CHANGE_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FRAUD_PORT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FRAUD_ASSG_STRATEGY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FRAUD_SUSPEND_STRATEGY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FRAUD_SUSP_STRATEGY_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BEHAVIOR_SCORE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CR_SCORE_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PROCESSING_LEVEL",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISCELLANEOUS_FIELD_4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISCELLANEOUS_FIELD_5",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISCELLANEOUS_FIELD_6",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISCELLANEOUS_FIELD_7",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISCELLANEOUS_FIELD_8",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISC_FIELD_9",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISC_FIELD_10",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISC_FIELD_11_TX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISC_FIELD_12_TX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MISC_FIELD_13_TX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Client",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateArchived",
+                        "type": "String"
+                    },
+                    {
+                        "name": "REISSUE_CONTROL",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EM_PD_HM_ADDR_TX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EM_PD_BS_ADDR_TX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EM_SD_HM_ADDR_TX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EM_SD_BS_ADDR_TX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SEC_CODE_NUM_1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "STATUS_REASON_CODE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MONTHS_GROSS_ACTIVE",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_Transaction_Outbound')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Fixedwidth",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputfolder": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@concat('COOP_IB_Transactions_',dataset().outputfolder,'_',formatDateTime(utcnow(),'yyyyMMdd_HHmmss'),'')",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "Rewards/Transaction/FTP",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "quoteChar": ""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Inbound_MemberTransaction_Raw')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "FileName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "DataString",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "createdate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "MemberTransaction_Raw"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_map_program_id_construct')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "RewardsProgramId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "KobieId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "StartDate",
+                        "type": "smalldatetime",
+                        "precision": 16,
+                        "scale": 0
+                    },
+                    {
+                        "name": "EndDate",
+                        "type": "smalldatetime",
+                        "precision": 16,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ClientId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "ClientNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RewardsProgramBINId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "BIN",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceCodeId",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "ProgramCode",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "map_program_id_construct"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_rewards_member_response_raw')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "filename",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Data_f",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "rewards_member_response_raw"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

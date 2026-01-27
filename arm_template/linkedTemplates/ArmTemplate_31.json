@@ -1,0 +1,4636 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/dzFISConfirmedFraud_Meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "FIS/ConfirmedFraud",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FISDebitTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Tag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Frd Desc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Institution Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FI Card Port",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Account Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Trn Dt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fraud Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Original Decision Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Decision Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Real Time",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Sic Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SIC Description",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Zip Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Country",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Country Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Trn Typ",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POS Entry Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVV Verify Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PIN Verify Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Avs Response",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CAVV UCAF Result",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Prod Case Rules Fired",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Prod Real Time Rules Fired",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Case Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Credit(C) or Debit(D)",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Usr Dat 1 Decline Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CrdAcctID Usr Dat 5",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Travel VIP Usr Ind 4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Compromise Usr Dat 3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Vaascore Usr Dat 2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "STAR Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cls Cd",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cas Cls Dt",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/drpToRawFiles_FISConfirmedFraud')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic Raw"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('FIS/ConfirmedFraud/',substring(dataset().outputdirectorypath,15,4),'/',substring(dataset().outputdirectorypath,19,2),'/',substring(dataset().outputdirectorypath,21,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "raw",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FISDebitTransactionID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Tag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Frd Desc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Institution Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FI Card Port",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Account Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Trn Dt",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Fraud Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Original Decision Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Decision Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Real Time",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Sic Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SIC Description",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant City",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Zip Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Country",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Country Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Trn Typ",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POS Entry Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CVV Verify Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PIN Verify Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Avs Response",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CAVV UCAF Result",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Prod Case Rules Fired",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Prod Real Time Rules Fired",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Case Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Credit(C) or Debit(D)",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Usr Dat 1 Decline Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CrdAcctID Usr Dat 5",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Travel VIP Usr Ind 4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Compromise Usr Dat 3",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Vaascore Usr Dat 2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "STAR Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cls Cd",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Cas Cls Dt",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/all_dzFDSpendTrend')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Fiserv/SpendTrend",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "PartyIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail1Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail2Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail3Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail4Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivatedTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardCapabilityCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CashBackIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ChargebackReasonCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CounterfeitTypeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CustomerIdentificationMethodCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DeviceIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnteredAccountIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EntryModeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExternalStatusChangeDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FirstDataIndustryTransactionIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FirstUseFraudDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudAreaCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudCompletionStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudFirstReportedTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LostStolenTypeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCategoryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantPostalCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSCardholderPresentCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSTerminalAttendanceCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PresentationInstrumentLostStolenDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SetFraudDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TerminalCapabilityCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionPostingDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionSourceIdentifierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationTimestamp",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationFraudActionNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationFraudQueueNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthCountin24Hours",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudScore",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PreviousFraudScore",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/drpToRawFiles_FDSpendTrend')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic Raw"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('Fiserv/SpendTrend/',substring(dataset().outputdirectorypath,18,4),'/',substring(dataset().outputdirectorypath,22,2),'/',substring(dataset().outputdirectorypath,24,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "raw",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "PartyIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail1Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail2Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail3Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail4Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivatedTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardCapabilityCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CashBackIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ChargebackReasonCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CounterfeitTypeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CustomerIdentificationMethodCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DeviceIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnteredAccountIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EntryModeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExternalStatusChangeDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FirstDataIndustryTransactionIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FirstUseFraudDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudAreaCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudCompletionStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudFirstReportedTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LostStolenTypeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCategoryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantPostalCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSCardholderPresentCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSTerminalAttendanceCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PresentationInstrumentLostStolenDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SetFraudDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TerminalCapabilityCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionPostingDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionSourceIdentifierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationTimestamp",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationFraudActionNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationFraudQueueNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthCountin24Hours",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudScore",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PreviousFraudScore",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dzFDSpendTrend_Meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Fiserv/SpendTrend",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "PartyIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail1Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail2Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail3Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HierarchyDetail4Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AVSResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivatedTerminalIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardCapabilityCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CashBackIndicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ChargebackReasonCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CounterfeitTypeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CustomerIdentificationMethodCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DeviceIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnteredAccountIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EntryModeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ExternalStatusChangeDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FirstDataIndustryTransactionIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FirstUseFraudDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudAreaCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudCompletionStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudFirstReportedTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LostStolenTypeCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCategoryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantCountryCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantPostalCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MerchantState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSCardholderPresentCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "POSTerminalAttendanceCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PresentationInstrumentLostStolenDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SetFraudDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TerminalCapabilityCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionAmount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionPostingDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionSourceIdentifierCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationTimestamp",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationFraudActionNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationFraudQueueNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthCountin24Hours",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudScore",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PreviousFraudScore",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Dim_Bin')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "ProcessingBIN.csv",
+                        "folderPath": "Reference/MDM/BIN",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Version_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ValidationStatusID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnterDTM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnterUserID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnterUserName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastChgDTM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastChgUserID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastChgUserName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardType.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardType.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ProcessorName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceSystem",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceSystem.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceSystem.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourcePrimaryKey",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Logo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Institution Match Group",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Group",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Member",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Member.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Member.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Strategy",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match DateTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match User",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match MultiGroup",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master-Institution",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master-Institution.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master-Institution.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Processing Institution Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Processing Institution Code.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Processing Institution Code.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master BIN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master BIN.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master BIN.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Approved Count",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Proposed Count",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RecordHashDiff",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINValidationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINValidationStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINValidationStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceDataChanged",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceDataChanged.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceDataChanged.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Status.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Status.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PublishStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PublishStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PublishStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConcurrencyFlag",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Dim_RoutingNumber_Stg')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Staging"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Version_ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ValidationStatusID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "EnterDTM",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "EnterUserID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "EnterUserName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LastChgDTM",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LastChgUserID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LastChgUserName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "IsPseudo",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "IsPseudo.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "IsPseudo.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Institution Match Group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Processing Institution Code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Processing Institution Code.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Processing Institution Code.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceSystem",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceSystem.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceSystem.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourcePrimaryKey",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match Group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match Score",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match Member",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match Member.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match Member.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match Strategy",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match DateTime",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match User",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match MultiGroup",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master-Institution",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master-Institution.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master-Institution.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Proposed Count",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Approved Count",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master RTN",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master RTN.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master RTN.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceDataChanged",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceDataChanged.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceDataChanged.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTNValidationStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTNValidationStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTNValidationStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match Status",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match Status.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RTN Match Status.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PublishStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PublishStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PublishStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ConcurrencyFlag",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RecordHashDiff",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "MDM_RTN"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Dim_Bin_Stg')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Staging"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Version_ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ValidationStatusID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "EnterDTM",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "EnterUserID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "EnterUserName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LastChgDTM",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LastChgUserID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LastChgUserName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CardType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CardType.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CardType.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ProcessorName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceSystem",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceSystem.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceSystem.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourcePrimaryKey",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Logo",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Institution Match Group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Score",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Member",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Member.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Member.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Strategy",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match DateTime",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match User",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match MultiGroup",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master-Institution",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master-Institution.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master-Institution.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Processing Institution Code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Processing Institution Code.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Processing Institution Code.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master BIN",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master BIN.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master BIN.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Approved Count",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Proposed Count",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RecordHashDiff",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "BINValidationStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "BINValidationStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "BINValidationStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceDataChanged",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceDataChanged.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceDataChanged.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Status",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Status.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Status.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PublishStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PublishStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PublishStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ConcurrencyFlag",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "MDM_BIN"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Dim_Client')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "ProcessingInstitution.csv",
+                        "folderPath": "Reference/MDM/INSTITUTION",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Version_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ValidationStatusID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnterDTM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnterUserID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnterUserName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastChgDTM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastChgUserID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastChgUserName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ParentInstitution",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ParentInstitution.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ParentInstitution.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InstitutionPreferredName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalAddressCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalAddressPostalCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InstitutionOperationalStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InstitutionOperationalStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InstitutionOperationalStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InstitutionIndustry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InstitutionIndustry.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "InstitutionIndustry.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CharterNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CharterType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CharterType.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CharterType.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SharedBranchingOneID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SalesforceRecordID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPClientNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PrimaryRouteTransitNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PrimaryTaxID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PrimaryTaxIDType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PrimaryTaxIDType.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PrimaryTaxIDType.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SalesOwner",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Shareholder",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Shareholder.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Shareholder.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CDSID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DarwinRouteTransitNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceSystem",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceSystem.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceSystem.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SalesTerritory",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalAddressLine1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalAddressLine2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailAddressLine1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailAddressLine2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailPlus4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailStateProvince",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailPostalCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailDependentLocality",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailStreetNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailStreetName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailStreetSuffix",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailPreDirection",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailPostDirection",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailSuiteNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailSuiteName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailPMBNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailPMBName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCarrierRoute",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailDeliveryPointCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailDeliveryPointCheckDigit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailAddressType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailZIPType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailAddressKey",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailVerificationResults",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailVerificationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailVerificationStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailVerificationStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalVerificationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalVerificationStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalVerificationStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailLatitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailLongitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailGeocodingResults",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailGeocodingStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailGeocodingStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailGeocodingStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalAddressStateProvince",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalAddressCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingAddressLine1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingAddressLine2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingAddressCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingAddressPostalCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingAddressStateProvince",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingAddressCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailAddressLine1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailAddressLine2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailStateProvince",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailPostalCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCountry",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailPlus4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailDependentLocality",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailStreetNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailStreetName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailStreetSuffix",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailPreDirection",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailPostDirection",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailSuiteNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailSuiteName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailPMBNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailPMBName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCarrierRoute",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailDeliveryPointCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailDeliveryPointCheckDigit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailAddressType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailZIPType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailAddressKey",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailVerificationResults",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailVerificationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailVerificationStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailVerificationStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailLatitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailLongitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCensusBlock",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCensusTract",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCountyName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCountyFIPS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailPlaceCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailPlaceName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailTimezoneCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailTimezoneName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCBSACode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCBSATitle",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCBSALevel",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCBSADivisionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCBSADivisionTitle",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCBSADivisionLevel",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailGeocodingResults",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailGeocodingStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailGeocodingStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailGeocodingStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingVerificationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingVerificationStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingVerificationStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCensusBlock",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCensusTract",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCountyName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCountyFIPS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailPlaceCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailPlaceName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailTimezoneCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailTimezoneName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCBSACode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCBSATitle",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCBSALevel",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCBSADivisionCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCBSADivisionTitle",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCBSADivisionLevel",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccuityFileKey",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterClientListID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ParentMasterClientListID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MasterClientListMatchGroupID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Status.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Status.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Member",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Member.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Member.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Strategy",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match DateTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match MultiGroup",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match User",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Match Group",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Proposed Count",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Approved Count",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TopLevelInstituion",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceLastUpdatedDTM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceLastUpdatedUser",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceCreatedDTM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceCreatedUser",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CharterNumberMatching",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PrimaryRouteTransitNumberMatching",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISKey",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccuityInstiutionIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Ranking_CLHN_AEPF_MSCL_SFDC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Ranking_CLHN_AEPF",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Ranking_CLHN_SFDC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Ranking_MSCL_CLHN_SFDC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Ranking_AEPF_CLHN_MSCL_SFDC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Ranking_SFDC_DRWN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Ranking_DRWN_SFDC_MSCL",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NameMatching",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Notepad",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPValidationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPValidationStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPValidationStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Telephone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FieldOfMembership",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NCUARegion",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CurrentMembers",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PotentialMembers",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TotalAssets",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CEO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FullTimeEmployees",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Branches",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ATMs",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreditCardProcessor",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DebitCardPINProcessor",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DebitCardSignatureProcessor",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OutsourcedCallCenter_MemberServices",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DataProcessor",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OnlineBankingProvider",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourcePrimaryKey",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceDataChanged",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceDataChanged.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceDataChanged.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RecordHashDiff",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ValidationSource",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ValidationSource.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ValidationSource.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Other_ValidationSource",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PublishStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PublishStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PublishStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Mrgr_MergerDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Mrgr_MergerStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Mrgr_MergerStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Mrgr_MergerStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Mrgr_SurvivingCharterNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HeadOfficeBranchType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HeadOfficeBranchType.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HeadOfficeBranchType.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConciergeClient",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConciergeClient.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConciergeClient.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPRelationshipStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPRelationshipStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPRelationshipStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Name.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CharterNumber.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CharterType.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPClientNumber.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailAddressLine1.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCity.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailPostalCode.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailPlus4.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailStateProvince.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailCountry.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCountry.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailStateProvince.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailPlus4.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailCity.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailAddressLine1.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailPostalCode.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LegalStdMailAddressLine2.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MailingStdMailAddressLine2.ValidationRuleClauseId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Other_ValidationSource.ValidationRuleClauseId",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Dim_ProcessingInstitution_Stg')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Staging"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Version_ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ValidationStatusID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "EnterDTM",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "EnterUserID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "EnterUserName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LastChgDTM",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LastChgUserID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LastChgUserName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ParentInstitution",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ParentInstitution.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ParentInstitution.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "InstitutionPreferredName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalAddressCity",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalAddressPostalCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "InstitutionOperationalStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "InstitutionOperationalStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "InstitutionOperationalStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "InstitutionIndustry",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "InstitutionIndustry.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "InstitutionIndustry.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CharterNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CharterType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CharterType.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CharterType.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SharedBranchingOneID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SalesforceRecordID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "COOPClientNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PrimaryRouteTransitNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PrimaryTaxID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PrimaryTaxIDType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PrimaryTaxIDType.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PrimaryTaxIDType.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SalesOwner",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Shareholder",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Shareholder.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Shareholder.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CDSID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "DarwinRouteTransitNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceSystem",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceSystem.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceSystem.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SalesTerritory",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalAddressLine1",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalAddressLine2",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailAddressLine1",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailAddressLine2",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailPlus4",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCity",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailStateProvince",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailPostalCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCountry",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailDependentLocality",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailStreetNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailStreetName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailStreetSuffix",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailPreDirection",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailPostDirection",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailSuiteNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailSuiteName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailPMBNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailPMBName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCarrierRoute",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailDeliveryPointCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailDeliveryPointCheckDigit",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailAddressType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailZIPType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailAddressKey",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailVerificationResults",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailVerificationStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailVerificationStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailVerificationStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalVerificationStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalVerificationStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalVerificationStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailLatitude",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailLongitude",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailGeocodingResults",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailGeocodingStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailGeocodingStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailGeocodingStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalAddressStateProvince",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalAddressCountry",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingAddressLine1",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingAddressLine2",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingAddressCity",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingAddressPostalCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingAddressStateProvince",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingAddressCountry",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailAddressLine1",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailAddressLine2",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCity",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailStateProvince",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailPostalCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCountry",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailPlus4",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailDependentLocality",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailStreetNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailStreetName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailStreetSuffix",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailPreDirection",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailPostDirection",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailSuiteNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailSuiteName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailPMBNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailPMBName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCarrierRoute",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailDeliveryPointCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailDeliveryPointCheckDigit",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailAddressType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailZIPType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailAddressKey",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailVerificationResults",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailVerificationStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailVerificationStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailVerificationStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailLatitude",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailLongitude",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCensusBlock",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCensusTract",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCountyName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCountyFIPS",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailPlaceCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailPlaceName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailTimezoneCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailTimezoneName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCBSACode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCBSATitle",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCBSALevel",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCBSADivisionCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCBSADivisionTitle",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCBSADivisionLevel",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailGeocodingResults",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailGeocodingStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailGeocodingStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailGeocodingStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingVerificationStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingVerificationStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingVerificationStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCensusBlock",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCensusTract",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCountyName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCountyFIPS",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailPlaceCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailPlaceName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailTimezoneCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailTimezoneName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCBSACode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCBSATitle",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCBSALevel",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCBSADivisionCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCBSADivisionTitle",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCBSADivisionLevel",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "AccuityFileKey",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MasterClientListID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ParentMasterClientListID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MasterClientListMatchGroupID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Score",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Status",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Status.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Status.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Member",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Member.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Member.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Strategy",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match DateTime",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match MultiGroup",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match User",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Match Group",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Master.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Proposed Count",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Approved Count",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "TopLevelInstituion",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceLastUpdatedDTM",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceLastUpdatedUser",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceCreatedDTM",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceCreatedUser",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CharterNumberMatching",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PrimaryRouteTransitNumberMatching",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "FISKey",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "AccuityInstiutionIdentifier",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Ranking_CLHN_AEPF_MSCL_SFDC",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Ranking_CLHN_AEPF",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Ranking_CLHN_SFDC",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Ranking_MSCL_CLHN_SFDC",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Ranking_AEPF_CLHN_MSCL_SFDC",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Ranking_SFDC_DRWN",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Ranking_DRWN_SFDC_MSCL",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "NameMatching",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Notepad",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "COOPValidationStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "COOPValidationStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "COOPValidationStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Telephone",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "FieldOfMembership",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "NCUARegion",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CurrentMembers",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PotentialMembers",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "TotalAssets",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CEO",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "FullTimeEmployees",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Branches",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ATMs",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CreditCardProcessor",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "DebitCardPINProcessor",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "DebitCardSignatureProcessor",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "OutsourcedCallCenter_MemberServices",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "DataProcessor",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "OnlineBankingProvider",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourcePrimaryKey",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceDataChanged",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceDataChanged.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "SourceDataChanged.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RecordHashDiff",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ValidationSource",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ValidationSource.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ValidationSource.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Other_ValidationSource",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PublishStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PublishStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PublishStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Mrgr_MergerDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Mrgr_MergerStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Mrgr_MergerStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Mrgr_MergerStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Mrgr_SurvivingCharterNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "HeadOfficeBranchType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "HeadOfficeBranchType.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "HeadOfficeBranchType.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ConciergeClient",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ConciergeClient.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ConciergeClient.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "COOPRelationshipStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "COOPRelationshipStatus.Name",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "COOPRelationshipStatus.ID",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Name.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CharterNumber.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "CharterType.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "COOPClientNumber.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailAddressLine1.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCity.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailPostalCode.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailPlus4.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailStateProvince.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailCountry.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCountry.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailStateProvince.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailPlus4.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailCity.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailAddressLine1.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailPostalCode.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "LegalStdMailAddressLine2.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MailingStdMailAddressLine2.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Other_ValidationSource.ValidationRuleClauseId",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "MDM_PROCESSINGINSTITUTION"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Dim_RoutingNumber')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "ProcessingRTN.csv",
+                        "folderPath": "Reference/MDM/RTN",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Version_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ValidationStatusID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnterDTM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnterUserID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "EnterUserName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastChgDTM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastChgUserID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastChgUserName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IsPseudo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IsPseudo.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IsPseudo.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Institution Match Group",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Processing Institution Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Processing Institution Code.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Processing Institution Code.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceSystem",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceSystem.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceSystem.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourcePrimaryKey",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match Group",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match Score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match Member",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match Member.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match Member.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match Strategy",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match DateTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match User",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match MultiGroup",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master-Institution",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master-Institution.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master-Institution.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Proposed Count",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Approved Count",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master RTN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master RTN.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Master RTN.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceDataChanged",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceDataChanged.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SourceDataChanged.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTNValidationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTNValidationStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTNValidationStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match Status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match Status.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RTN Match Status.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PublishStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PublishStatus.Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PublishStatus.ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ConcurrencyFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RecordHashDiff",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_vwMDMProcessing')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Staging"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "SourceLoadDateTime",
+                        "type": "datetime2",
+                        "scale": 3
+                    },
+                    {
+                        "name": "ICINumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ClientNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Code",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MatchStatus",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "FinancialInstitutionName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PreferredName",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ParentClientNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "MergerAcquisitionDate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ASSET_SIZE_KEY",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "TotalAssets",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PORTFOLIO_SIZE_KEY",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "CurrentMembers",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "AddressLine1",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "AddressLine2",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "AddressCity",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "AddressState",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "AddressPostalCode",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "AddressType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "AddressTypeDescription",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "GEOGRAPHIC_REGION_KEY",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "BINNumberType",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "RouteTransitNumber",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "IsPseudo",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "IsPrimary",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "vw_MDM_Processing"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Response_Member_Outbound_Custom_Demo')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "filename",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Data_f",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "rewards_member_custom_demographic_raw"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_dim_business_partner')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/SB"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "business_partner_client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "business_partner_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SB",
+                    "table": "dim_business_partner"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_business_partner')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [
+                    "Shared Branch"
+                ],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "business_partner.csv",
+                        "folderPath": "Reference/SharedBranch/BusinessPartner",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "client_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "business_partner_client_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "business_partner_name",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_stg_dim_business_partner')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Business Partner hierarchy stage table",
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Staging"
+                },
+                "annotations": [
+                    "Shared Branch"
+                ],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "business_partner_client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "business_partner_name",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "dim_business_partner"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_BINARY_DZ_FDChargeOff')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone/Fiserv"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Fiserv/ChargeOff",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_BINARY_DZ_FDCrossCycle')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone/Fiserv"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Fiserv/CrossCycle_Adjustments",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_BINARY_RAW_FDCycleToDate')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('Fiserv/CycleToDate_Adjustments/',substring(dataset().outputdirectorypath,23,4),'/',substring(dataset().outputdirectorypath,27,2),'/',substring(dataset().outputdirectorypath,29,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_BINARY_RAW_FDChargeOff')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('Fiserv/ChargeOff/',substring(dataset().outputdirectorypath,10,4),'/',substring(dataset().outputdirectorypath,14,2),'/',substring(dataset().outputdirectorypath,16,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    }
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

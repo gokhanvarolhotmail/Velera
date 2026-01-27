@@ -1,0 +1,1867 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/src_stgFISDemographics_CH')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "FISDebitDemographic.csv",
+                        "folderPath": "FIS/ReferenceFile",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "{",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FISDebitDemographicID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PlasticNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "GreetingName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionRouteTransit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastUsedDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationLimitGroup",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINOffset",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackTwoDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDAAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SavingsAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberFive",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberFive",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressLineOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressLineTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressZip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderFirstName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderLastName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderMiddleInitial",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalIssueDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastIssueDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MothersMaidenName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HomePhone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "WorkPhone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserValidation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VRUCounter",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BirthDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationMethod",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PreviousExpirationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PreviousCardActivationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardStatusTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HashFullRecord",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastUpdatedDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dz_TransactionsSharedBranch_meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "FIS/SBTransactions",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dz_TransactionsSharedBranch')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": "FIS/SBTransactions",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/raw_TransactionsSharedBranch')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "fileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw/Transactions"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().fileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('FIS/SBTransactions/20',substring(dataset().fileName,2,2),'/',substring(dataset().fileName,4,2),'/',substring(dataset().fileName,6,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_3DSMessageLog')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ApplicationODS",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "3DS_LongTermOTP"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "MessageLogId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "APIName",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "InvocationTimestamp",
+                        "type": "datetime2",
+                        "scale": 3
+                    },
+                    {
+                        "name": "ClientId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ClientApplication",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RequestPath",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "LogId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ProcessorId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "IssuerId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TransactionId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "StepupRequestId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "DeviceUserAgent",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "MessageVersion",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "RDXMessageVersion",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Language",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PaymentInfoCardNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PaymentInfoCardExpiryMonth",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "PaymentInfoCardExpiryYear",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "StepupType",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Status",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CredentialsId",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CredentialsType",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CredentialsText",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "VerificationToken",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ReasonCode",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ReasonDescription",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ErrorReferenceNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ErrorDescription",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ErrorMessage",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "3DS",
+                    "table": "MessageLog"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/3DS4140_Output')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "3DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "3DS/4140/Output",
+                        "fileSystem": "outbound"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_stgFISDebitDemographic_CH')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "ChargebacksDB"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "FIS/ReferenceFile",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "{",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FISDebitDemographicID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PlasticNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "GreetingName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FinancialInstitutionRouteTransit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastUsedDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthorizationLimitGroup",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PINOffset",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TrackTwoDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DDAAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SavingsAccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalDDAAccountNumberFive",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalSavingsAccountNumberFive",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalCreditAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberThree",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AdditionalOtherAccountNumberFour",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressLineOne",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressLineTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressCity",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressState",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderAddressZip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderFirstName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderLastName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardholderMiddleInitial",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationFlag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "OriginalIssueDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastIssueDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NationalIdentifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MothersMaidenName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HomePhone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "WorkPhone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UserValidation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "VRUCounter",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BirthDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationMethod",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardActivationTime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PreviousExpirationDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PreviousCardActivationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CardStatusTwo",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FISDebitImportFileName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumberIssuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HashFullRecord",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LastUpdatedDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ReportDate",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dbo_coopissuers')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "CUSCComplete",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "CUSC Complete"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "CU_Name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CU_AddressLine1",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CU_AddressLine2",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CU_City",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CU_State",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CU_Zip",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CU_Phone",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CU_Fax",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CU_URL",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CU_Email",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CU_Latitude",
+                        "type": "float",
+                        "precision": 15
+                    },
+                    {
+                        "name": "CU_Longitude",
+                        "type": "float",
+                        "precision": 15
+                    },
+                    {
+                        "name": "CU_PhoneExtension",
+                        "type": "char"
+                    },
+                    {
+                        "name": "CU_DateTimeAdded",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CU_NGNActiveDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CD_CharterNumber",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 0
+                    },
+                    {
+                        "name": "IS_Number",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 0
+                    },
+                    {
+                        "name": "Network",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "I_NetworkID",
+                        "type": "char"
+                    },
+                    {
+                        "name": "I_ABA",
+                        "type": "char"
+                    },
+                    {
+                        "name": "I_PseudoRT",
+                        "type": "char"
+                    },
+                    {
+                        "name": "I_eFundsProcValue",
+                        "type": "char"
+                    },
+                    {
+                        "name": "I_EDSLogo",
+                        "type": "char"
+                    },
+                    {
+                        "name": "I_RecordLastUpdated",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "I_Acquirer",
+                        "type": "char"
+                    },
+                    {
+                        "name": "I_ReadyForWeb",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "I_Switch",
+                        "type": "char"
+                    },
+                    {
+                        "name": "ISOInclusionDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "IncludeInISO",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "I_ActiveDatePlanned",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "I_ActiveDateReal",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "I_DeleteDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "I_HasStandIn",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "I_MobileBanking",
+                        "type": "bit"
+                    },
+                    {
+                        "name": "I_IHorSB",
+                        "type": "char"
+                    },
+                    {
+                        "name": "I_MessageFormat",
+                        "type": "char"
+                    },
+                    {
+                        "name": "I_MemServicesPhone",
+                        "type": "char"
+                    },
+                    {
+                        "name": "DP_Name",
+                        "type": "char"
+                    },
+                    {
+                        "name": "PresidentLast",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PresidentFirst",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PresidentM",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PrincipalLast",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PrincipalFirst",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "PrincipalM",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "coopIssuers"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/acquirer_creditunion')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "CUSCComplete",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "CUSC Complete"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "Pseudo_Terminal",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_branch_street",
+                        "type": "char"
+                    },
+                    {
+                        "name": "six_acquirer_branch_street",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_branch_city",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_branch_state",
+                        "type": "char"
+                    },
+                    {
+                        "name": "acquirer_branch_Country",
+                        "type": "nchar"
+                    },
+                    {
+                        "name": "acquiring_institution_rt_number",
+                        "type": "char"
+                    },
+                    {
+                        "name": "acquirer_network_id",
+                        "type": "char"
+                    },
+                    {
+                        "name": "Product_Code",
+                        "type": "char"
+                    },
+                    {
+                        "name": "product_type",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "acquirer_creditunion"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Stage_CD495DTL')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "destpath": {
+                        "type": "string"
+                    },
+                    "destfilename": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().destfilename",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().destpath",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "stage/CD495DTL"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Raw_CD495DTL')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "*.csv",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "\"CD495DTLID\"|\"INDX\"|\"ID\"|\"DESCR\"|\"BSYS\"|\"BPRN\"|\"BAGT\"|\"TERMID\"|\"OPCODE\"|\"ACCTNO\"|\"CUSTFG\"|\"TRANTP\"|\"TRDESC\"|\"TDDATE\"|\"TDYR\"|\"TDMO\"|\"TDDY\"|\"TDTIME\"|\"TDINPT\"|\"DateProcessed\"|\"RPTDT\"",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/staging_digital_card_issuance_transaction_volume_report')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "settlement_date_key",
+                        "type": "date"
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "char"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bintype",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_issued_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "origin_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "merchant_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_city",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_state",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "interchange_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "digital_card_issuance_transaction_volume_report"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dw_digital_card_issuance_report')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "Calendar_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "Client_ID",
+                        "type": "char"
+                    },
+                    {
+                        "name": "Client_Name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Account_Number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Account_Issued_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BINType",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Account_Activation_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "OriginalPostingAccount",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "digital_card_issuance_report"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/staging_digital_card_issuance_report')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Consolidation",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "Calendar_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "Client_ID",
+                        "type": "char"
+                    },
+                    {
+                        "name": "Client_Name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Account_Number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Account_Issued_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "source_system_key",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "BINNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "BINType",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Account_Activation_Date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "OriginalPostingAccount",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "staging",
+                    "table": "digital_card_issuance_report"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dw_digital_card_issuance_transaction_volume_report')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "settlement_date_key",
+                        "type": "date"
+                    },
+                    {
+                        "name": "client_id",
+                        "type": "char"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "binnumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "bintype",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_issued_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "origin_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "merchant_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "merchant_group",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_city",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "terminal_state",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "settlement_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "interchange_amount",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "digital_card_issuance_transaction_volume_report"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_drpClientBin_meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Coop/ClientBin",
+                        "fileSystem": "drop-zone"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/snk_ClientBin')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw/Reference"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Core",
+                        "fileSystem": "source-coop"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ASDW_vw_shared_branch_summary_daily')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "calendar_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "calendar_num_date",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "Issuer_ISO",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "account_qualifier",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "processing_code",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "processing_code_desc",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "processing_code_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "product_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "product_type",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "issuer_client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_client_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "issuer_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquiring_institution_rt_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "authorizing_institution_rt_number",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "issuer_network_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_network_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "network",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_branch_street",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_branch_city",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_branch_state",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_branch_country",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "branch_address",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "approved_amt",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_approved",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "rejected_amt",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_rejected",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "transaction_amt",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 2
+                    },
+                    {
+                        "name": "cnt_transactions",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "interchange_fee_amt",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 5
+                    },
+                    {
+                        "name": "acq_switch_fee_amt",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 5
+                    },
+                    {
+                        "name": "iss_switch_fee_amt",
+                        "type": "decimal",
+                        "precision": 38,
+                        "scale": 5
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_shared_branch_summary_daily"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ASQL_acquirer_CU')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "CUSCComplete",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "CUSC Complete"
+                },
+                "annotations": [],
+                "type": "AzureSqlTable",
+                "schema": [
+                    {
+                        "name": "Pseudo_Terminal",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CUI_Index",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "acquirer_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_branch_street",
+                        "type": "char"
+                    },
+                    {
+                        "name": "six_acquirer_branch_street",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_branch_city",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "acquirer_branch_state",
+                        "type": "char"
+                    },
+                    {
+                        "name": "acquirer_branch_Country",
+                        "type": "nchar"
+                    },
+                    {
+                        "name": "acquiring_institution_rt_number",
+                        "type": "char"
+                    },
+                    {
+                        "name": "acquirer_network_id",
+                        "type": "char"
+                    },
+                    {
+                        "name": "Product_Code",
+                        "type": "char"
+                    },
+                    {
+                        "name": "product_type",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "closing_date",
+                        "type": "date"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "dbo",
+                    "table": "acquirer_CU"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ASDW_CUSC_issuer')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/SB"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "ISO_Issuer",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CU_Institution_Index",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "I_CU_Name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "I_Network_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "I_ABA_RT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "I_PseudoRT",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "I_Status",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ISO_Network",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "load_date",
+                        "type": "date"
+                    },
+                    {
+                        "name": "loaded_by",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "CUSC_issuer_stg"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

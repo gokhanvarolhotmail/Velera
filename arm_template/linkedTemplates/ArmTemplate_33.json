@@ -1,0 +1,2114 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Binary_ZIP_File')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "compression": {
+                        "type": "ZipDeflate",
+                        "level": "Optimal"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_PIPE_Header_File')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_CSV_Header_File')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoCardUsagePreagg')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TIMEPERIOD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 27,
+                        "scale": 7
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "CARDUSAGE_ANALYSIS_PREAGG"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoTxnSpendMonthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "SPEND_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "TRANSACTION_SPEND_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoTxnDaily')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TRANSACTION_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 208,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 208,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARD_ENTRY_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RECURRING_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOKEN_REQUEST_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDPRESENCE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "TRANSACTION_ANALYSIS_DAILY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoTxnMonthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TRANSACTION_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARD_ENTRY_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RECURRING_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOKEN_REQUEST_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDPRESENCE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "TRANSACTION_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoATMTermMonthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TERMINAL_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ON_US_DESC",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TERMINAL_KEY",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TERMINAL_CITY",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TERMINAL_STATE",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TERMINAL_ZIPCODE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TERMINAL_COUNTRY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INCOME_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "ATM_TERMINAL_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoTxnMonthlyNoAccount')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TRANSACTION_ANALYSIS_MONTHLY_NO_ACCOUNT_KEY",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_YEAR",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_MONTH",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 208,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 208,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARD_ENTRY_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RECURRING_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOKEN_REQUEST_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDPRESENCE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "TRANSACTION_ANALYSIS_MONTHLY_NO_ACCOUNT"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoTxnVolumeMonthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "VOLUME_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "TRANSACTION_VOLUME_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoATMTxnMonthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TERMINAL_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ON_US_DESC",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TERMINAL_KEY",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INCOME_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "ATM_TRANSACTION_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoCardUsageMonthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TIMEPERIOD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 27,
+                        "scale": 7
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOTAL_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVE_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NON_TRANSACTING_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NOT_ACTIVATED_CARDS_PREV",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "CARDUSAGE_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoMerchCatMonthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "MERCHANT_ANALYSIS_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SETTLEMENT_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANT_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANT_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_TRANSACTION_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "SUM_INTERCHANGE_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DIGITAL_CARD_ISSUED_IND",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "MERCHANT_CATEGORY_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoCardDeclineMonthly')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTION_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "NETWORK_CD",
+                        "type": "VARCHAR",
+                        "precision": 50,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ORIGIN_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TOKEN_REQUEST_DESC",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARD_ENTRY_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CARDPRESENCE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RECURRING_DESC",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RESPONSE_CODE_DESC",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "RESPONSE_CODE_OUTCOME_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANT_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "MERCHANT_GROUP",
+                        "type": "VARCHAR",
+                        "precision": 75,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SUM_SETTLEMENT_AMOUNT",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 3
+                    },
+                    {
+                        "name": "CNT_TRANSACTIONS",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "CARDHOLDER_DECLINE_ANALYSIS_MONTHLY"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoOnboarding')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "BINNUMBER",
+                        "type": "VARCHAR",
+                        "precision": 12,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BIN_TYPE",
+                        "type": "VARCHAR",
+                        "precision": 7,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_ID",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENT_NAME",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACCOUNT_NUMBER",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ISSUE_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "ACTIVATION_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "EXPIRATION_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "FIRST_TXN_DATE",
+                        "type": "DATE",
+                        "precision": 10,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "ONBOARDING_ANALYSIS"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_DemoATMXref')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/Consolidate/Demo"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "TERMINAL_KEY",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DEMO_TERMINAL_KEY",
+                        "type": "VARCHAR",
+                        "precision": 20,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DEMO_TERMINAL_CITY",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DEMO_TERMINAL_STATE",
+                        "type": "VARCHAR",
+                        "precision": 25,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DEMO_TERMINAL_ZIPCODE",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    },
+                    {
+                        "name": "DEMO_TERMINAL_COUNTRY",
+                        "type": "VARCHAR",
+                        "precision": 10,
+                        "scale": 0
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "DEMO",
+                    "table": "DEMO_ATM_XREF"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dropZoneTransactions_ZellePMTREQ_delete')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This data set is created for the activity to delete all files from drop zone",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone/Zelle_drop"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "FIS/Zelle/PMTREQ",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "BR_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MEM_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PAE_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_NOTIFICATION",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RECIPIENT_STATUS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PM_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PAYOPT_SHORT_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_STATUS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_COMPLETE_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_MODIFIED_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FORCE_WF_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_START_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "XPPMTMAP_RLT_PMT_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_CONFIRM_NO",
+                        "type": "String"
+                    },
+                    {
+                        "name": "NOTIFICATION_DELVRY_METHD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_DELVRY_METHD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PMT_EXTERNAL_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PMT_REQUEST_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SENDER_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "REQUESTOR_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DM_PROV_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RECIPIENT_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ORIGINATING_ORG_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ORIGINATING_ORG_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RECEIVING_ORG_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RECEIVING_ORG_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CLIENT_APP_NAME",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SESSION_DEVICE_ID",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_Sem_DetectionRate')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Populates Snowflake table for Detection Rate",
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [
+                    "Cooper"
+                ],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "CLIENTNUM",
+                        "type": "VARCHAR",
+                        "precision": 4,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENTNAME",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "DETECTIONRATEDATE",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "REASONCODEDISTRIBUTION",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "CORRECTLYDETECTEDFRAUD",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "MONEYDETECTIONRATE",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "FALSEPOSITIVERATE",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "FRAUDDOLLARSAVED",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "TOTALFRAUDDOLLARSAVED",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "COUNTOFFRAUD",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "TOTALFRAUDCOUNT",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "CREATEDATE",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "DETECTIONRATE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Vw_DetectionRate')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This is the view for detection rate from Consolidated DW in Azure",
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [
+                    "Cooper"
+                ],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "Detectiondate",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "ClientNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Reason Code Distribution",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Correctly Detected Fraud",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Money Detection Rate",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 4
+                    },
+                    {
+                        "name": "False Positive Rate",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 4
+                    },
+                    {
+                        "name": "FraudDollarSaved",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "TotalFraudDollarSaved",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "CountofFraudAboveThreshhold",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "TotalCountofFraud",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "source_id",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Create_dte",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_DetectionRate"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Vw_Scorebands')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "ClientNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TransactionYearMonth",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "Band0",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Band1",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Band2",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Band3",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Band4",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Band5",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Band6",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Band7",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Band8",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "Band9",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_ScoreBands"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

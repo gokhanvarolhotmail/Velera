@@ -1,0 +1,1735 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_Stage_Wbe')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "File from stage",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [
+                    "Cooper"
+                ],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "updatedwbe.csv",
+                        "folderPath": "wbe",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "\t",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "CARD_NUM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ACCOUNT_NUM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_DTM",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TRANSACTION_AMT",
+                        "type": "String"
+                    },
+                    {
+                        "name": "COOPER_SCORE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FRAUD_WBE_CD",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SOURCE_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FALCONFADID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HASH_KEY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LOAD_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "BATCH_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LOAD_TYPE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CREATED_USER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UPDATED_USER",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CREATE_DATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "UPDATE_DATE",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_Application_DB')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_Application_DB",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Schema_Name": {
+                        "type": "string"
+                    },
+                    "Table_Name": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "EP_PLAN_ID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "EP_OFFER_ID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "PREFERRED_PLAN_NM",
+                        "type": "VARCHAR",
+                        "precision": 200,
+                        "scale": 0
+                    },
+                    {
+                        "name": "PLAN_IDENTIFIER_TXT",
+                        "type": "VARCHAR",
+                        "precision": 18,
+                        "scale": 0
+                    },
+                    {
+                        "name": "REVERSAL_TRANSACTION_ID",
+                        "type": "VARCHAR",
+                        "precision": 18,
+                        "scale": 0
+                    },
+                    {
+                        "name": "REVERSAL_TRANSACTION_DTM",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "REVERSAL_TRANSACTION_AMT",
+                        "type": "NUMBER",
+                        "precision": 19,
+                        "scale": 2
+                    },
+                    {
+                        "name": "REPOST_TRANSACTION_ID",
+                        "type": "VARCHAR",
+                        "precision": 18,
+                        "scale": 0
+                    },
+                    {
+                        "name": "REPOST_TRANSACTION_DTM",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "REPOST_TRANSACTION_AMT",
+                        "type": "NUMBER",
+                        "precision": 19,
+                        "scale": 2
+                    },
+                    {
+                        "name": "PAYMENT_AMT",
+                        "type": "NUMBER",
+                        "precision": 19,
+                        "scale": 2
+                    },
+                    {
+                        "name": "FEE_AMT",
+                        "type": "NUMBER",
+                        "precision": 19,
+                        "scale": 2
+                    },
+                    {
+                        "name": "CALCULATED_INTEREST_AMT",
+                        "type": "NUMBER",
+                        "precision": 19,
+                        "scale": 2
+                    },
+                    {
+                        "name": "SELECTED_PAYMENT_TERMS_ID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "EP_LOAN_STATUS_DSC",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREDIT_LIMIT_AMT",
+                        "type": "NUMBER",
+                        "precision": 19,
+                        "scale": 2
+                    },
+                    {
+                        "name": "AVAILABLE_CREDIT_AMT",
+                        "type": "NUMBER",
+                        "precision": 19,
+                        "scale": 2
+                    },
+                    {
+                        "name": "CURRENT_BALANCE_AMT",
+                        "type": "NUMBER",
+                        "precision": 19,
+                        "scale": 2
+                    },
+                    {
+                        "name": "CREDIT_SCORE_TXT",
+                        "type": "VARCHAR",
+                        "precision": 3,
+                        "scale": 0
+                    },
+                    {
+                        "name": "LOAN_CLOSED_DTM",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "LOAN_CREATE_DTM",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "LOAN_UPDATE_DTM",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "TERM_DESCRIPTION",
+                        "type": "VARCHAR",
+                        "precision": 0,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TERM_MONTHS_NBR",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "TERM_INTEREST_RTE",
+                        "type": "NUMBER",
+                        "precision": 6,
+                        "scale": 3
+                    },
+                    {
+                        "name": "OMAHA_PAYMENT_TERM_ID",
+                        "type": "VARCHAR",
+                        "precision": 18,
+                        "scale": 0
+                    },
+                    {
+                        "name": "PAYMENT_TERMS_FEE_TYPE_CD",
+                        "type": "VARCHAR",
+                        "precision": 18,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATE_DTM",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "UPDATE_DTM",
+                        "type": "TIMESTAMP_NTZ",
+                        "precision": 29,
+                        "scale": 9
+                    },
+                    {
+                        "name": "FEE",
+                        "type": "NUMBER",
+                        "precision": 6,
+                        "scale": 3
+                    },
+                    {
+                        "name": "LOAN_BALANCE_AMT",
+                        "type": "NUMBER",
+                        "precision": 9,
+                        "scale": 3
+                    },
+                    {
+                        "name": "LOAN_TOTAL_FEES_PAID_AMT",
+                        "type": "NUMBER",
+                        "precision": 9,
+                        "scale": 3
+                    },
+                    {
+                        "name": "LOAN_TOTAL_INTEREST_PAID_AMT",
+                        "type": "NUMBER",
+                        "precision": 9,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().Schema_Name",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().Table_Name",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_Stage_ConfirmedFraudReport')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "updatedConfirmedFraudReport.csv",
+                            "type": "Expression"
+                        },
+                        "folderPath": "ResolutionCenter",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "ReportID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "RunDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Platform",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Credit Union Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ClientNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Card_Number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AccountNumber",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Case Opened Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "DateLostStolen",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Date of Transaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Time of transaction",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Authorization Amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AuthResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ResponseCode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Transaction Outcome",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionOutcome Desc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MCC",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Identifier",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant State",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Merchant Country",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PosEntryMode",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Electronic Commerce Outcome Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Card Type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IVR MCI IND",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Case ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Case Item",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LossType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CaseType",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Case Status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Closed Date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Closed Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "User Name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Post Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "TransactionDtm",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FraudTypeDsc",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_Application_DB_DCI_Stg')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_Application_DB",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "par_schema": {
+                        "type": "string"
+                    },
+                    "par_table": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "DCI_InsightCenter"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "DIGITALCARDISSUANCEID",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENTNUM",
+                        "type": "VARCHAR"
+                    },
+                    {
+                        "name": "CARDNUM",
+                        "type": "VARCHAR"
+                    },
+                    {
+                        "name": "CARDACCESSEDDTE",
+                        "type": "DATE"
+                    },
+                    {
+                        "name": "ISSUEDTE",
+                        "type": "DATE"
+                    },
+                    {
+                        "name": "CARDACTIVATIONDTE",
+                        "type": "DATE"
+                    },
+                    {
+                        "name": "SOURCE_SYSTEM_KEY",
+                        "type": "NUMBER",
+                        "precision": 38,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CREATEDTE",
+                        "type": "TIMESTAMP_NTZ"
+                    },
+                    {
+                        "name": "MODIFYDTE",
+                        "type": "TIMESTAMP_NTZ"
+                    },
+                    {
+                        "name": "CARDEXPIRATIONDTE",
+                        "type": "DATE"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().par_schema",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().par_table",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_APPLICATIONDB_DCI')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_Application_DB",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "par_schema": {
+                        "type": "string"
+                    },
+                    "par_table": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "DCI_InsightCenter"
+                },
+                "annotations": [],
+                "type": "SnowflakeV2Table",
+                "schema": [],
+                "typeProperties": {
+                    "schema": {
+                        "value": "@dataset().par_schema",
+                        "type": "Expression"
+                    },
+                    "table": {
+                        "value": "@dataset().par_table",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimTransactionName')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Dimensions/Static Dimensions"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "FIS_TransactionName",
+                                "type": "DatasetReference"
+                            },
+                            "name": "TransactionName"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Transaction_Name",
+                                "type": "DatasetReference"
+                            },
+                            "name": "DWDimTransactionName"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Transaction_Name",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkDimTransactionName"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "TrimSpaces"
+                        },
+                        {
+                            "name": "Cast"
+                        },
+                        {
+                            "name": "NewTransactionNames"
+                        },
+                        {
+                            "name": "CreateTransactionNameHashkey"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tsource_system_key as string,\n\t\ttransaction_name as string,\n\t\ttransaction_group as string,\n\t\tmonetary_flag as string,\n\t\tdenial_flag as string,\n\t\tproduct_type as string,\n\t\tload_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> TransactionName\nsource(output(\n\t\ttransaction_name_key as long,\n\t\tsource_system_key as integer,\n\t\tproduct_type as string,\n\t\ttransaction_group as string,\n\t\ttransaction_name as string,\n\t\tmonetary_flag as boolean,\n\t\tdenial_flag as boolean,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DWDimTransactionName\nTransactionName derive(each(match(type=='string'), $$ = trim($$))) ~> TrimSpaces\nTrimSpaces derive(source_system_key = toInteger(source_system_key),\n\t\tload_date = toDate(load_date, 'yyyy-mm-dd'),\n\t\tcreate_date = currentTimestamp()) ~> Cast\nCreateTransactionNameHashkey, DWDimTransactionName exists(TransactionNameHashkey == transaction_name_key,\n\tnegate:true,\n\tbroadcast: 'auto')~> NewTransactionNames\nCast derive(TransactionNameHashkey = crc32(iif(isNull(transaction_name),'',transaction_name)\r\n, iif(isNull(source_system_key),0,source_system_key))) ~> CreateTransactionNameHashkey\nNewTransactionNames sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\ttransaction_name_key as long,\n\t\tsource_system_key as integer,\n\t\tproduct_type as string,\n\t\ttransaction_group as string,\n\t\ttransaction_name as string,\n\t\tmonetary_flag as boolean,\n\t\tdenial_flag as boolean,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\ttransaction_name_key = TransactionNameHashkey,\n\t\tsource_system_key,\n\t\tproduct_type,\n\t\ttransaction_group,\n\t\ttransaction_name,\n\t\tmonetary_flag,\n\t\tdenial_flag,\n\t\tload_date,\n\t\tcreate_date\n\t)) ~> snkDimTransactionName"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CycleToDate_Adjustments')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "FirstData"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "dropZoneTransactions_CycleToDate",
+                                "type": "DatasetReference"
+                            },
+                            "name": "CycleToDate"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "src_stgCCUMSTR",
+                                "type": "DatasetReference"
+                            },
+                            "name": "CCUMSTR"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "FDTransactionCriteria",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FDTransactionCriteria"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "snk_cnfmFISTransactions",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sink1"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "BaseTransformations"
+                        },
+                        {
+                            "name": "Trim"
+                        },
+                        {
+                            "name": "Join1"
+                        },
+                        {
+                            "name": "Join2"
+                        },
+                        {
+                            "name": "Systemkey"
+                        },
+                        {
+                            "name": "Filter1"
+                        },
+                        {
+                            "name": "HashAndNullTxnName"
+                        },
+                        {
+                            "name": "Dedupe"
+                        },
+                        {
+                            "name": "LimitSelect"
+                        },
+                        {
+                            "name": "Join3"
+                        },
+                        {
+                            "name": "TrimCriteria"
+                        },
+                        {
+                            "name": "TrimCCUMSTR"
+                        }
+                    ],
+                    "script": "parameters{\n\tfileName as string\n}\nsource(output(\n\t\tCycleToDate_Adjustments_ID as string,\n\t\tReportDate as string,\n\t\tCreditUnion as string,\n\t\tRDT_CHD_ACCOUNT_NUMBER as string,\n\t\tRDT_DR_BATCH_TYPE as string,\n\t\tRDT_DR_OIER_JULIAN_DATE as string,\n\t\tRDT_DR_OIER_TYPE as string,\n\t\tRDT_DR_OIER_SYS_4 as string,\n\t\tRDT_DR_OIER_SYS_2 as string,\n\t\tRDT_DR_OIER_DATE as string,\n\t\tRDT_DR_OIER_2 as string,\n\t\tRDT_DR_OIER_LAST_6 as string,\n\t\tRTI_REG_INDUSTRY_TRAN_ID as string,\n\t\tRDT_DR_MTJ_NET_TRAN_AMT as string,\n\t\tRDT_DR_DATE_OF_ITEM as string,\n\t\tSQLDLOG_JobID as string,\n\t\tRDT_REC_CODE_KEY as string,\n\t\tRDT_REC_TYPE_CONTROL as string,\n\t\tRDT_NO_POST_REASON as string,\n\t\tRDT_SC_1 as string,\n\t\tRDT_SC_2 as string,\n\t\tRDT_SC_3 as string,\n\t\tRDT_SC_4 as string,\n\t\tRDT_SC_5 as string,\n\t\tRDT_SC_6 as string,\n\t\tRDT_SC_7 as string,\n\t\tRDT_SC_8 as string,\n\t\tRDT_CHD_SYSTEM_NO as string,\n\t\tRDT_CHD_PRIN_BANK as string,\n\t\tRDT_CHD_AGENT_BANK as string,\n\t\tRDT_TRANSACTION_CODE as string,\n\t\tRDT_MRCH_SYSTEM_NO as string,\n\t\tRDT_MRCH_PRIN_BANK as string,\n\t\tRDT_MRCH_AGENT_NO as string,\n\t\tRDT_DR_MERCHANT_NUMBER as string,\n\t\tRDT_DR_OLD_ITEM_AMT as string,\n\t\tRDT_DR_AUDIT_TRAIL as string,\n\t\tRDT_DR_ACC_CREDINT_CHNG as string,\n\t\tRDT_DR_NEW_ITEM_AMT as string,\n\t\tRDT_DR_TYPE as string,\n\t\tRDT_DR_SYS_1 as string,\n\t\tRDT_DR_SYS_5 as string,\n\t\tRDT_DR_DATE as string,\n\t\tRDT_DR_ADJ_ER_BATCH as string,\n\t\tRDT_DR_NET_PRIN_CHNG as string,\n\t\tRDT_DR_TOTAL_CTD_ACC_CHNG as string,\n\t\tRDT_DR_ACC_CASHINT_CHNG as string,\n\t\tRDT_DR_ACC_MRCHINT_CHNG as string,\n\t\tRDT_DR_TOTAL_BALANCE_CHNG as string,\n\t\tRDT_DR_NET_FIN_CHG_MTJ as string,\n\t\tRDT_DR_LOYALTY_MRCH_TYPE as string,\n\t\tRDT_DR_RIS_IND as string,\n\t\tRDT_DR_MRCH_RIS_IND as string,\n\t\tRDT_DR_MAIL_PHONE_IND as string,\n\t\tRDT_DR_FLOOR_LIMIT_IND as string,\n\t\tRDT_DR_CWB_CRB_IND as string,\n\t\tRDT_DR_LCS_IND as string,\n\t\tRDT_DR_OVLMT_FEE_NET as string,\n\t\tRDT_DR_NET_ITEM_CHG_CHNG as string,\n\t\tRDT_DR_MATCHING_AUTH_IND as string,\n\t\tRDT_ADDL_SEGS_NO as string,\n\t\tREG_SEGMENT_CODE as string,\n\t\tRTI_REG_TRAN_ID_SOURCE as string,\n\t\tRTI_REG_MISC_AMOUNT as string,\n\t\tRTI_REG_TICKET_AUTH_AMOUNT as string,\n\t\tRTI_REG_BNK_RFRN_ID as string,\n\t\tRTI_REG_ORIG_TRAN_ID as string,\n\t\tRTI_REG_CARD_INPUT_MODE_CD as string,\n\t\tOTI_SEGMENT_CODE as string,\n\t\tOTI_ORIGINAL_REF_NO as string,\n\t\tOTI_ORIGINAL_POST_DATE as string,\n\t\tOTI_ORIGINAL_ADJ_TRAN_DT as string,\n\t\tAPR_SEGMENT_CODE as string,\n\t\tAPR_EAPR_CASH_INT as string,\n\t\tAPR_EAPR_MRCH_INT as string,\n\t\tAPR_EAPR_CASH_ITEM_CHG as string,\n\t\tAPR_EAPR_MRCH_ITEM_CHG as string,\n\t\tAPR_EAPR_LATE_CHG as string,\n\t\tAPR_EAPR_OVLM_CHG as string,\n\t\tAPR2_SEGMENT_CODE as string,\n\t\tAPR2_EAPR_MIN_CHG as string,\n\t\tAPR2_EAPR_STMT_CHG as string,\n\t\tAPR2_EAPR_CR_LIFE_CHG as string,\n\t\tAPR2_EAPR_REBATE_AMT as string,\n\t\tAPR2_EAPR_MIN_FINC_CASH_AM as string,\n\t\tAPR2_EAPR_MXCP_CRDT_AM as string,\n\t\tDFP_SEGMENT_CODE as string,\n\t\tRDT_DFP_FEE_NM as string,\n\t\tRDT_DFP_FEE_AM as string,\n\t\tRDT_DFP_PSTN_BCKT_ID as string,\n\t\tRDT_DFP_MMB_CD as string,\n\t\tRDT_DFP_RCUR_ID as string,\n\t\tRDT_DFP_LTTR_IN as string,\n\t\tRDT_DFP_MEMO_IN as string,\n\t\tRDT_DFP_BTCH_ALPH_CD as string,\n\t\tRDT_DFP_EMBD_IN as string,\n\t\tRDT_DFP_RESN_CD as string,\n\t\tRDT_DFP_STMT_PSTN_CD as string,\n\t\tRDT_DFP_RPT_CD as string,\n\t\tRDT_DFP_DYNM_FEE_GNRC_CD as string,\n\t\tRDT_TKN_CDT as string,\n\t\tRDT_TKN_SRVC_NMBR_ID as string,\n\t\tRDT_WLLT_ID as string,\n\t\tRDT_TKN_RQST_ID as string,\n\t\tRDT_TKN_FILLER as string,\n\t\tRDT_GNRC_TRAN_FLD_SEG_CD as string,\n\t\tRDT_CARD_ACCP_TERM_ID as string,\n\t\tRDT_MRCH_FULL_ZIP_CD as string,\n\t\tRDT_GTF_FILLER as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> CycleToDate\nsource(output(\n\t\tSPAIdentifier as string,\n\t\tsys as string,\n\t\tprin as string,\n\t\tagent as string,\n\t\tcu_odindx as string,\n\t\tcardtyp as string,\n\t\tInterestRate as string,\n\t\tAnnualFee as string,\n\t\tOverlimitFee as string,\n\t\tLateFee as string,\n\t\tCwbFee as string,\n\t\tAutoDQFee as string,\n\t\tGroupNo as string,\n\t\tGroupDesc as string,\n\t\tItemizedPerAcct as string,\n\t\tPrimaryBillingSys as string,\n\t\tPlatform as string,\n\t\tSPA as string,\n\t\tDateProcessed as string,\n\t\tStatus as string,\n\t\tUniversalAddressing as string,\n\t\tSeparateEntityFlag as string,\n\t\tInternationalDateFormat as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> CCUMSTR\nsource(output(\n\t\tTransactionCriteriaID as string,\n\t\tFD_Source_System_Key as string,\n\t\tTransactionName as string,\n\t\tBINType as string,\n\t\tTransactionCode as string,\n\t\tResponseCodeOperator as string,\n\t\tResponseCode as string,\n\t\tMerchantTypeOperator as string,\n\t\tMerchantType as string,\n\t\tPOSEntryCode as string,\n\t\tNetworkID as string,\n\t\tReferenceNumberOperator as string,\n\t\tReferenceNumber as string,\n\t\tAuthorizationResponseOperator as string,\n\t\tAuthorizationResponse as string,\n\t\tAuthorizationType as string,\n\t\tReasonCodeOperator as string,\n\t\tReasonCode as string,\n\t\tCreateDate as string,\n\t\tAuthorizationTypeOperator as string,\n\t\tAcctNumMerchNumMatchInd as string,\n\t\tOperatorCodeOperator as string,\n\t\tOperatorCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FDTransactionCriteria\nTrim derive(Account_ID = RDT_CHD_ACCOUNT_NUMBER,\n\t\tAcquire_clintid = 'UNK',\n\t\tAcquire_networkid = 'UNK',\n\t\tBINISO = substring(RDT_CHD_ACCOUNT_NUMBER,1,6),\n\t\tBINEXT = RDT_CHD_ACCOUNT_NUMBER,\n\t\tCardEntryMethodCode = '000',\n\t\tCardPresenceDesc = 'UNK',\n\t\tSource = 'FD',\n\t\tInterchangeAmount = toFloat(0.00),\n\t\tIssure_clientid = 'UNK',\n\t\tIssure_network = 'UNK',\n\t\tMerchantName = 'Adjustment Transaction',\n\t\tMerchantType_src = '0000',\n\t\tTokenRequestId = iif(length(RDT_TKN_RQST_ID)==11,RDT_TKN_RQST_ID,toString(null())),\n\t\tResponseCode = '00',\n\t\tAcquirementClientID = 'UNK',\n\t\tAcquirmentNetwork = 'UNK',\n\t\tMonetary = 1,\n\t\tOnusdescription = 'UNK',\n\t\tOriginalDatatransmissiondate = toDate(defaultDate),\n\t\tOriginDate = toDate(RDT_DR_DATE_OF_ITEM,'yyMMdd'),\n\t\tRecurringDesc = case(left(RDT_CHD_ACCOUNT_NUMBER,1)=='4'&&RDT_DR_MAIL_PHONE_IND=='2','YES','NO'),\n\t\tReponseCode = '00',\n\t\tSettlementAmount = toFloat(RDT_DR_NET_PRIN_CHNG),\n\t\tSurchargeAmount = toFloat('0.00'),\n\t\tTerminalCity = 'UNK',\n\t\tTermincalState = 'UNK',\n\t\tTerminalCountry = 'UNK',\n\t\tTerminalZip = 'UNK',\n\t\tTerminalKey = 'UNK',\n\t\ttransactiontypecode = RDT_TRANSACTION_CODE,\n\t\tTransmissionDate = toDate(defaultDate),\n\t\tTransmissionTime = 'UNK',\n\t\tTimeLocalTransaction = 'UNK',\n\t\tReferenceNumberCTD = RDT_DR_OIER_TYPE + RDT_DR_OIER_SYS_4 + RDT_DR_OIER_SYS_2 + RDT_DR_OIER_DATE + RDT_DR_OIER_2 + RDT_DR_OIER_LAST_6,\n\t\tMerchantAccountNumber = RDT_DR_MERCHANT_NUMBER,\n\t\tTerminalAddress = 'UNK',\n\t\tSettlementdate = toDate(defaultDate),\n\t\tOperCode = 'UNK',\n\t\tAuthorizationNo = 'UNK',\n\t\tClientNo = 'UNK',\n\t\ttransaction_amount = toFloat(0.00),\n\t\tis_authorization = 0,\n\t\tAcquiringRTN = 'UNK',\n\t\tSettlementRTN = 'UNK',\n\t\tForwardingRTN = 'UNK',\n\t\tTraceNumber = 'UNK',\n\t\tAcqTraceNumber = 'UNK',\n\t\tVisaTransactionID = 'UNK',\n\t\tMasterCardTransactionID = 'UNK',\n\t\tISOMessageType = 'UNK') ~> BaseTransformations\nLimitSelect derive(defaultDate = '1900-01-01',\n\t\tImportFileDate = toDate(concat(substring($fileName,24,4),'-',substring($fileName,28,2),'-',substring($fileName,30,2)),'yyyy-MM-dd'),\n\t\teach(match(type=='string'), $$ = ltrim(rtrim($$)))) ~> Trim\nBaseTransformations, TrimCCUMSTR join(RDT_CHD_SYSTEM_NO == sys\n\t&& RDT_CHD_PRIN_BANK == prin\n\t&& RDT_CHD_AGENT_BANK == agent,\n\tjoinType:'inner',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> Join1\nJoin1, Systemkey join(Platform == BINType\n\t&& transactiontypecode == TransactionCode,\n\tjoinType:'inner',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> Join2\nTrimCriteria filter(FD_Source_System_Key=='2') ~> Systemkey\nJoin2 filter(isNull(BINType)||\r\n(FD_Source_System_Key=='2'\r\n&&\r\n(isNull(MerchantType)||MerchantType=='NULL'||\r\n(MerchantTypeOperator=='IN' && iifNull(locate(MerchantType_src,MerchantType),0)!=0)||\r\n(MerchantTypeOperator=='NOT IN' && iifNull(locate(MerchantType_src,MerchantType),0)==0))\r\n&&\r\n(isNull(ReferenceNumber)||ReferenceNumber=='NULL'||\r\n(ReferenceNumberOperator=='=' && substring(ReferenceNumberCTD,12,2) == ReferenceNumber)||\r\n(ReferenceNumberOperator=='<>' && substring(ReferenceNumberCTD,12,2) != ReferenceNumber))\r\n&&\r\n(isNull(AcctNumMerchNumMatchInd)||AcctNumMerchNumMatchInd=='NULL'||\r\n(AcctNumMerchNumMatchInd=='Y' && left(Account_ID,6) == left(MerchantAccountNumber,6)||\r\n(AcctNumMerchNumMatchInd=='N' && left(Account_ID,6) != left(MerchantAccountNumber,6)))))) ~> Filter1\nJoin3 derive(Transaction_Key = crc32(iif(isNull(Account_ID),'',Account_ID)\r\n, iif(isNull(OriginDate),'',toString(OriginDate))\r\n, iif(isNull(TimeLocalTransaction),'',TimeLocalTransaction)\r\n, iif(isNull(TransmissionDate),'',toString(TransmissionDate))\r\n, iif(isNull(TransmissionTime),'',TransmissionTime)\r\n, iif(isNull(SettlementAmount),0.00,SettlementAmount)\r\n, iif(isNull(transactiontypecode),'',transactiontypecode)\r\n, iif(isNull(ReferenceNumberCTD),'',ReferenceNumberCTD)\r\n, 2),\n\t\tTransactionName = iif(isNull(TransactionName),'Unknown', TransactionName)) ~> HashAndNullTxnName\nFilter1 aggregate(groupBy(CycleToDate_Adjustments_ID),\n\tTransactionName = max(TransactionName)) ~> Dedupe\nCycleToDate select(mapColumn(\n\t\tCycleToDate_Adjustments_ID,\n\t\tReportDate,\n\t\tRDT_CHD_ACCOUNT_NUMBER,\n\t\tRDT_DR_DATE_OF_ITEM,\n\t\tRDT_CHD_ACCOUNT_NUMBER,\n\t\tRDT_MRCH_SYSTEM_NO,\n\t\tRDT_DR_NET_PRIN_CHNG,\n\t\tRDT_DR_MAIL_PHONE_IND,\n\t\tRDT_TRANSACTION_CODE,\n\t\tRDT_DR_OIER_TYPE,\n\t\tRDT_DR_OIER_SYS_4,\n\t\tRDT_DR_OIER_SYS_2,\n\t\tRDT_DR_OIER_DATE,\n\t\tRDT_DR_OIER_2,\n\t\tRDT_DR_OIER_LAST_6,\n\t\tRDT_DR_MERCHANT_NUMBER,\n\t\tRDT_CHD_SYSTEM_NO,\n\t\tRDT_CHD_PRIN_BANK,\n\t\tRDT_CHD_AGENT_BANK,\n\t\tRDT_TKN_RQST_ID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LimitSelect\nJoin1, Dedupe join(Trim@CycleToDate_Adjustments_ID == Dedupe@CycleToDate_Adjustments_ID,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> Join3\nFDTransactionCriteria derive(each(match(type=='string'), $$ = trim($$))) ~> TrimCriteria\nCCUMSTR derive(each(match(type=='string'), $$ = trim($$))) ~> TrimCCUMSTR\nHashAndNullTxnName sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tAccountNumber as string,\n\t\tAcquirerAccountNumber as string,\n\t\tAcquirerNetworkCode as string,\n\t\tBin_ISO as string,\n\t\tBin_EXT as string,\n\t\tCardEntryMethodCode as string,\n\t\tCardPresenceDescription as string,\n\t\tImportFileDate as date,\n\t\tSource as string,\n\t\tInterchangeAmount as float,\n\t\tIssuerAccountNumber as string,\n\t\tIssuerNetworkCode as string,\n\t\tMerchantName as string,\n\t\tMerchantType as string,\n\t\tMonetary as integer,\n\t\tOnUsDescription as string,\n\t\tOriginalDataTransmissionDate as date,\n\t\tOriginDate as date,\n\t\tRecurringDescription as string,\n\t\tResponseCode as string,\n\t\tSettlementAmount as float,\n\t\tSettlementDate as date,\n\t\tSurchargeAmount as float,\n\t\tTerminalAddress as string,\n\t\tTerminalCity as string,\n\t\tTerminalCountry as string,\n\t\tTerminalKey as string,\n\t\tTerminalState as string,\n\t\tTerminalZipCode as string,\n\t\tTokenRequestId as string,\n\t\tTransactionName as string,\n\t\tTransactionTypeCode as string,\n\t\tTransmissionDate as date,\n\t\tTransmissionTime as string,\n\t\tTimeLocalTransaction as string,\n\t\tRetrievalReferenceNumber as string,\n\t\tTransaction_Key as long,\n\t\tAgentNo as string,\n\t\tSystemNo as string,\n\t\tOperCode as string,\n\t\tPrincipalNo as string,\n\t\tAuthorizationNo as string,\n\t\tClientNo as string,\n\t\ttransaction_amount as float,\n\t\tis_authorization as integer,\n\t\tAcquiringRTN as string,\n\t\tSettlementRTN as string,\n\t\tTraceNumber as string,\n\t\tAcqTraceNumber as string,\n\t\tVisaTransactionID as string,\n\t\tMasterCardTransactionID as string,\n\t\tMerchantAccountNumber as string,\n\t\tISOMessageType as string,\n\t\tForwardingRTN as string\n\t),\n\tformat: 'parquet',\n\tpartitionFileNames:[($fileName)],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tmapColumn(\n\t\tAccountNumber = RDT_CHD_ACCOUNT_NUMBER,\n\t\tAcquirerAccountNumber = Acquire_clintid,\n\t\tAcquirerNetworkCode = Acquire_networkid,\n\t\tBin_ISO = BINISO,\n\t\tBin_EXT = BINEXT,\n\t\tCardEntryMethodCode,\n\t\tCardPresenceDescription = CardPresenceDesc,\n\t\tImportFileDate,\n\t\tSource,\n\t\tInterchangeAmount,\n\t\tIssuerAccountNumber = Issure_clientid,\n\t\tIssuerNetworkCode = Issure_network,\n\t\tMerchantName,\n\t\tMerchantType = MerchantType_src,\n\t\tMonetary,\n\t\tOnUsDescription = Onusdescription,\n\t\tOriginalDataTransmissionDate = OriginalDatatransmissiondate,\n\t\tOriginDate,\n\t\tRecurringDescription = RecurringDesc,\n\t\tResponseCode,\n\t\tSettlementAmount,\n\t\tSettlementDate = Settlementdate,\n\t\tSurchargeAmount,\n\t\tTerminalAddress,\n\t\tTerminalCity,\n\t\tTerminalCountry,\n\t\tTerminalKey,\n\t\tTerminalState = TermincalState,\n\t\tTerminalZipCode = TerminalZip,\n\t\tTokenRequestId,\n\t\tTransactionName,\n\t\tTransactionTypeCode = transactiontypecode,\n\t\tTransmissionDate,\n\t\tTransmissionTime,\n\t\tTimeLocalTransaction,\n\t\tRetrievalReferenceNumber = ReferenceNumberCTD,\n\t\tTransaction_Key,\n\t\tAgentNo = RDT_CHD_AGENT_BANK,\n\t\tSystemNo = RDT_CHD_SYSTEM_NO,\n\t\tPrincipalNo = RDT_CHD_PRIN_BANK,\n\t\tOperCode,\n\t\tAuthorizationNo,\n\t\tClientNo,\n\t\ttransaction_amount,\n\t\tis_authorization,\n\t\tAcquiringRTN,\n\t\tSettlementRTN,\n\t\tTraceNumber,\n\t\tAcqTraceNumber,\n\t\tVisaTransactionID,\n\t\tMasterCardTransactionID,\n\t\tMerchantAccountNumber,\n\t\tISOMessageType,\n\t\tForwardingRTN\n\t),\n\tpartitionBy('hash', 1)) ~> sink1"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DeleteDuplicateMerchants')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Dimensions/Deletes"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Merchant",
+                                "type": "DatasetReference"
+                            },
+                            "name": "DWDimMerchant"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Merchant",
+                                "type": "DatasetReference"
+                            },
+                            "name": "DeleteFromDimMerchant"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "RowNumberMerchantKey"
+                        },
+                        {
+                            "name": "GetRowNumberNotEqualTo1"
+                        },
+                        {
+                            "name": "ConditionForDelete"
+                        },
+                        {
+                            "name": "GetAttributesForDelete"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tmerchant_key as long,\n\t\tsource_system_key as integer,\n\t\tmerchant_terminal_geography_key as long,\n\t\tmerchant as string,\n\t\tmerchant_name as string,\n\t\tterminal_address as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: true) ~> DWDimMerchant\nDWDimMerchant window(over(merchant_key),\n\tasc(merchant_key, true),\n\tasc(load_date, true),\n\tasc(create_date, true),\n\tmerchant_key_rownumber = rowNumber()) ~> RowNumberMerchantKey\nRowNumberMerchantKey filter(merchant_key_rownumber!=1) ~> GetRowNumberNotEqualTo1\nGetAttributesForDelete alterRow(deleteIf(merchant_key_rownumber>1)) ~> ConditionForDelete\nGetRowNumberNotEqualTo1 select(mapColumn(\n\t\tmerchant_key,\n\t\tload_date,\n\t\tcreate_date,\n\t\tmerchant_key_rownumber\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetAttributesForDelete\nConditionForDelete sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tmerchant_key as long,\n\t\tsource_system_key as integer,\n\t\tmerchant_terminal_geography_key as long,\n\t\tmerchant as string,\n\t\tmerchant_name as string,\n\t\tterminal_address as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:true,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:false,\n\tkeys:['merchant_key','load_date','create_date'],\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tmerchant_key,\n\t\tload_date,\n\t\tcreate_date\n\t)) ~> DeleteFromDimMerchant"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CardEntryMethodUpdate')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Temporary Loads"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Card_Entry_Method",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dwCardEntryMethod"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "CardEntryMethod",
+                                "type": "DatasetReference"
+                            },
+                            "name": "cardentry"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Card_Entry_Method",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dimCardEntryMethod"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "Trim"
+                        },
+                        {
+                            "name": "DoesntExist"
+                        },
+                        {
+                            "name": "MarkInserts"
+                        },
+                        {
+                            "name": "DerivedColumn1"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tcard_entry_key as long,\n\t\tsource_system_key as integer,\n\t\tcard_entry_cde as string,\n\t\tcard_entry_name as string,\n\t\tcard_entry_type as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> dwCardEntryMethod\nsource(output(\n\t\tCardEntryMethodID as string,\n\t\tCardEntryMethodCode as string,\n\t\tCardEntryMethodName as string,\n\t\tCardEntryMethodType as string,\n\t\tRecordCreated as string,\n\t\tmeta_batch_key as string,\n\t\tmeta_insert_date as string,\n\t\tsource_system_key as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> cardentry\nDerivedColumn1 derive(each(match(type=='string'), $$ = trim($$))) ~> Trim\nTrim, dwCardEntryMethod exists(DerivedColumn1@source_system_key == dwCardEntryMethod@source_system_key\n\t&& CardEntryMethodCode == card_entry_cde,\n\tnegate:false,\n\tbroadcast: 'auto')~> DoesntExist\nDoesntExist alterRow(updateIf(true())) ~> MarkInserts\ncardentry derive(source_system_key = toInteger(source_system_key)) ~> DerivedColumn1\nMarkInserts sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tcard_entry_key as long,\n\t\tsource_system_key as integer,\n\t\tcard_entry_cde as string,\n\t\tcard_entry_name as string,\n\t\tcard_entry_type as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['source_system_key','card_entry_cde'],\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tsource_system_key,\n\t\tcard_entry_cde = CardEntryMethodCode,\n\t\tcard_entry_name = CardEntryMethodName,\n\t\tcard_entry_type = CardEntryMethodType,\n\t\tload_date = RecordCreated\n\t)) ~> dimCardEntryMethod"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CardEntryMethodInsert')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Temporary Loads"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Card_Entry_Method",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dwCardEntryMethod"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "CardEntryMethod",
+                                "type": "DatasetReference"
+                            },
+                            "name": "cardentry"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Card_Entry_Method",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dimCardEntryMethod"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "Trim"
+                        },
+                        {
+                            "name": "DoesntExist"
+                        },
+                        {
+                            "name": "MarkInserts"
+                        },
+                        {
+                            "name": "DerivedColumn1"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tcard_entry_key as long,\n\t\tsource_system_key as integer,\n\t\tcard_entry_cde as string,\n\t\tcard_entry_name as string,\n\t\tcard_entry_type as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> dwCardEntryMethod\nsource(output(\n\t\tCardEntryMethodID as string,\n\t\tCardEntryMethodCode as string,\n\t\tCardEntryMethodName as string,\n\t\tCardEntryMethodType as string,\n\t\tRecordCreated as string,\n\t\tmeta_batch_key as string,\n\t\tmeta_insert_date as string,\n\t\tsource_system_key as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> cardentry\nDerivedColumn1 derive(each(match(type=='string'), $$ = trim($$))) ~> Trim\nTrim, dwCardEntryMethod exists(DerivedColumn1@source_system_key == dwCardEntryMethod@source_system_key\n\t&& CardEntryMethodCode == card_entry_cde,\n\tnegate:true,\n\tbroadcast: 'auto')~> DoesntExist\nDoesntExist alterRow(insertIf(true())) ~> MarkInserts\ncardentry derive(source_system_key = toInteger(source_system_key)) ~> DerivedColumn1\nMarkInserts sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tcard_entry_key as long,\n\t\tsource_system_key as integer,\n\t\tcard_entry_cde as string,\n\t\tcard_entry_name as string,\n\t\tcard_entry_type as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tsource_system_key,\n\t\tcard_entry_cde = CardEntryMethodCode,\n\t\tcard_entry_name = CardEntryMethodName,\n\t\tcard_entry_type = CardEntryMethodType,\n\t\tload_date = RecordCreated\n\t)) ~> dimCardEntryMethod"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_FactNewAccountArchive')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This will populate Fact New Account Archive table in the member schema in Azure SQ DW.",
+                "folder": {
+                    "name": "Facts"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "all_dzDemographics",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FISDebitDemographic"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "Fact_New_Account_Archive",
+                                "type": "DatasetReference"
+                            },
+                            "name": "DWFactNewAccountArchive"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "Fact_New_Account_Archive",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SnkFactNewAccountArchive"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "GetDimAccountAttributes"
+                        },
+                        {
+                            "name": "TrimSpaces"
+                        },
+                        {
+                            "name": "NewFactAccountArchiveRecords"
+                        },
+                        {
+                            "name": "ConvertDates"
+                        },
+                        {
+                            "name": "GetHashkey"
+                        },
+                        {
+                            "name": "GetExpirationDate"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tFISDebitDemographicID as string,\n\t\tAccountNumber as string,\n\t\tPlasticNumber as string,\n\t\tGreetingName as string,\n\t\tFinancialInstitutionRouteTransit as string,\n\t\tCardStatus as string,\n\t\tLastUsedDate as string,\n\t\tAuthorizationLimitGroup as string,\n\t\tPINOffset as string,\n\t\tTrackTwoDate as string,\n\t\tDDAAccountNumber as string,\n\t\tSavingsAccountNumber as string,\n\t\tAdditionalDDAAccountNumberOne as string,\n\t\tAdditionalDDAAccountNumberTwo as string,\n\t\tAdditionalDDAAccountNumberThree as string,\n\t\tAdditionalDDAAccountNumberFour as string,\n\t\tAdditionalDDAAccountNumberFive as string,\n\t\tAdditionalSavingsAccountNumberOne as string,\n\t\tAdditionalSavingsAccountNumberTwo as string,\n\t\tAdditionalSavingsAccountNumberThree as string,\n\t\tAdditionalSavingsAccountNumberFour as string,\n\t\tAdditionalSavingsAccountNumberFive as string,\n\t\tAdditionalCreditAccountNumberOne as string,\n\t\tAdditionalCreditAccountNumberTwo as string,\n\t\tAdditionalCreditAccountNumberThree as string,\n\t\tAdditionalCreditAccountNumberFour as string,\n\t\tAdditionalOtherAccountNumberOne as string,\n\t\tAdditionalOtherAccountNumberTwo as string,\n\t\tAdditionalOtherAccountNumberThree as string,\n\t\tAdditionalOtherAccountNumberFour as string,\n\t\tCardholderAddressLineOne as string,\n\t\tCardholderAddressLineTwo as string,\n\t\tCardholderAddressCity as string,\n\t\tCardholderAddressState as string,\n\t\tCardholderAddressZip as string,\n\t\tCardholderFirstName as string,\n\t\tCardholderLastName as string,\n\t\tCardholderMiddleInitial as string,\n\t\tCardActivationFlag as string,\n\t\tOriginalIssueDate as string,\n\t\tLastIssueDate as string,\n\t\tNationalIdentifier as string,\n\t\tMothersMaidenName as string,\n\t\tHomePhone as string,\n\t\tWorkPhone as string,\n\t\tUserValidation as string,\n\t\tVRUCounter as string,\n\t\tBirthDate as string,\n\t\tCardActivationMethod as string,\n\t\tCardActivationDate as string,\n\t\tCardActivationTime as string,\n\t\tPreviousExpirationDate as string,\n\t\tPreviousCardActivationStatus as string,\n\t\tCardStatusTwo as string,\n\t\tFISDebitImportFileName as string,\n\t\tCreateDate as string,\n\t\tBINNumber as string,\n\t\tClientNumberIssuer as string,\n\t\tHashFullRecord as string,\n\t\tLastUpdatedDate as string,\n\t\tReportDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\trowUrlColumn: 'file_name') ~> FISDebitDemographic\nsource(output(\n\t\tfact_new_account_archive_key as long,\n\t\tsource_system_key as integer,\n\t\taccount_key as long,\n\t\tactivation_date_id as date,\n\t\texpiration_date_id as date,\n\t\tissue_date_id as date,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DWFactNewAccountArchive\nFISDebitDemographic select(mapColumn(\n\t\tAccountNumber,\n\t\tNationalIdentifier,\n\t\tCardActivationDate,\n\t\tTrackTwoDate,\n\t\tOriginalIssueDate,\n\t\tReportDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetDimAccountAttributes\nGetDimAccountAttributes derive(each(match(type=='string'), $$ = trim(iif(toString($$)!='NULL',$$,toString(null())))),\n\t\tSource_System_Key = 1) ~> TrimSpaces\nGetHashkey, DWFactNewAccountArchive exists(FactNewAccountArchiveHashkey == fact_new_account_archive_key,\n\tnegate:true,\n\tbroadcast: 'auto')~> NewFactAccountArchiveRecords\nTrimSpaces derive(CreateDate = currentTimestamp(),\n\t\tActivationDateID = toDate(iif(isNull(CardActivationDate),'1900-01-01', CardActivationDate),'yyyy-mm-dd'),\n\t\tExpirationDateIDQualifer = toDate(case(\r\nTrackTwoDate == ''\r\n||TrackTwoDate == 'NULL'\r\n||TrackTwoDate == '0000'\r\n||substring(TrackTwoDate,3,2) == '0000'\r\n||toInteger(substring(TrackTwoDate,3,2)) < 01\r\n||toInteger(substring(TrackTwoDate,3,2))  > 12\r\n,'1900-01-01' , concat('20',substring(TrackTwoDate,1,2),'-',substring(TrackTwoDate,3,2),'-01')\r\n)),\n\t\tIssueDateID = toDate(iif(isNull(OriginalIssueDate), '1900-01-01', OriginalIssueDate), 'yyyy-mm-dd'),\n\t\tLoadDate = toDate(iif(isNull(ReportDate),'1900-01-01', ReportDate), 'yyyy-mm-dd')) ~> ConvertDates\nGetExpirationDate derive(AccountHashkey = crc32\r\n(\r\niif(isNull(AccountNumber),'',AccountNumber)\r\n, iif(isNull(NationalIdentifier),'',NationalIdentifier)\r\n, iif(isNull(Source_System_Key),0,Source_System_Key)\r\n),\n\t\tFactNewAccountArchiveHashkey = crc32\r\n(\r\niif(isNull(AccountNumber),'',AccountNumber)\r\n, iif(isNull(NationalIdentifier),'',NationalIdentifier)\r\n, iif(isNull(CardActivationDate),'1900-01-01',CardActivationDate)\r\n, iif(isNull(TrackTwoDate),'1900-01-01',TrackTwoDate)\r\n, iif(isNull(OriginalIssueDate),'1900-01-01',OriginalIssueDate)\r\n, iif(isNull(Source_System_Key),0,Source_System_Key)\r\n, iif(isNull(ReportDate),'1900-01-01',ReportDate)\r\n)) ~> GetHashkey\nConvertDates derive(ExpirationDateID = case(toString(ExpirationDateIDQualifer) != '1900-01-01',\r\n(addMonths(addDays(ExpirationDateIDQualifer, -1), 1))\r\n,ExpirationDateIDQualifer)) ~> GetExpirationDate\nNewFactAccountArchiveRecords sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tfact_new_account_archive_key as long,\n\t\tsource_system_key as integer,\n\t\taccount_key as long,\n\t\tactivation_date_id as date,\n\t\texpiration_date_id as date,\n\t\tissue_date_id as date,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tfact_new_account_archive_key = FactNewAccountArchiveHashkey,\n\t\tsource_system_key = Source_System_Key,\n\t\taccount_key = AccountHashkey,\n\t\tactivation_date_id = ActivationDateID,\n\t\texpiration_date_id = ExpirationDateID,\n\t\tissue_date_id = IssueDateID,\n\t\tload_date = LoadDate,\n\t\tcreate_date = CreateDate\n\t)) ~> SnkFactNewAccountArchive"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_FactAccountUsage')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Facts"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "src_Fact_Account_Usage",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ViewFactAccountUsage"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "snk_Fact_Account_Usage",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcDWFactAccountUsage"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "snk_Fact_Account_Usage",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkDWFactAccountUsage"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "GenerateHashKey"
+                        },
+                        {
+                            "name": "LoadDateExists"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tsource_system_key as integer,\n\t\timport_file_date_key as timestamp,\n\t\tclient_key as long,\n\t\tbin_key as long,\n\t\taccount_key as long,\n\t\taccount_activation_flag as string,\n\t\ttransactor as integer,\n\t\tcnt_transactions as integer,\n\t\tsum_settlement_amount as decimal(38,2),\n\t\tsum_interchange_amount as decimal(38,2)\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> ViewFactAccountUsage\nsource(output(\n\t\tfact_account_usage_key as long,\n\t\tsource_system_key as integer,\n\t\taccount_key as long,\n\t\tbin_key as long,\n\t\tclient_key as long,\n\t\taccount_activation_flag as string,\n\t\ttransactor as integer,\n\t\tcnt_transactions as integer,\n\t\tsum_settlement_amount as decimal(18,0),\n\t\tsum_interchange_amount as decimal(18,0),\n\t\tload_date as timestamp,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> srcDWFactAccountUsage\nLoadDateExists derive(fact_account_usage_key = crc32(iif(isNull(account_key),toLong(0),account_key)\r\n, iif(isNull(bin_key),toLong(0),bin_key)\r\n, iif(isNull(client_key),toLong(0),client_key)\r\n, iif(isNull(import_file_date_key),toTimestamp('1900-01-01'),import_file_date_key)\r\n, iif(isNull(source_system_key),0,source_system_key)),\n\t\tcreate_date = currentTimestamp()) ~> GenerateHashKey\nViewFactAccountUsage, srcDWFactAccountUsage exists(import_file_date_key == load_date\n\t&& ViewFactAccountUsage@bin_key == srcDWFactAccountUsage@bin_key\n\t&& ViewFactAccountUsage@account_key == srcDWFactAccountUsage@account_key\n\t&& ViewFactAccountUsage@client_key == srcDWFactAccountUsage@client_key,\n\tnegate:true,\n\tbroadcast: 'auto')~> LoadDateExists\nGenerateHashKey sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tfact_account_usage_key as long,\n\t\tsource_system_key as integer,\n\t\taccount_key as long,\n\t\tbin_key as long,\n\t\tclient_key as long,\n\t\taccount_activation_flag as string,\n\t\ttransactor as integer,\n\t\tcnt_transactions as integer,\n\t\tsum_settlement_amount as decimal(18,0),\n\t\tsum_interchange_amount as decimal(18,0),\n\t\tload_date as timestamp,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tfact_account_usage_key,\n\t\tsource_system_key,\n\t\taccount_key,\n\t\tbin_key,\n\t\tclient_key,\n\t\taccount_activation_flag,\n\t\ttransactor,\n\t\tcnt_transactions,\n\t\tsum_settlement_amount,\n\t\tsum_interchange_amount,\n\t\tload_date = import_file_date_key,\n\t\tcreate_date\n\t)) ~> snkDWFactAccountUsage"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimClient')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Dimensions/Static Dimensions"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "FIS_Client",
+                                "type": "DatasetReference"
+                            },
+                            "name": "client"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Client",
+                                "type": "DatasetReference"
+                            },
+                            "name": "DWClient"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Client",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ClientDimension"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "RemoveDuplicates"
+                        },
+                        {
+                            "name": "ProcDateAndHash"
+                        },
+                        {
+                            "name": "trim"
+                        },
+                        {
+                            "name": "Join1"
+                        },
+                        {
+                            "name": "filterNullAddress"
+                        },
+                        {
+                            "name": "RemoveDuplicates1"
+                        },
+                        {
+                            "name": "MarkUpdates"
+                        },
+                        {
+                            "name": "MarkInserts"
+                        },
+                        {
+                            "name": "Union1"
+                        },
+                        {
+                            "name": "filterNull"
+                        },
+                        {
+                            "name": "DerivedDW"
+                        },
+                        {
+                            "name": "LimitSelect"
+                        },
+                        {
+                            "name": "Inserts"
+                        },
+                        {
+                            "name": "Updates"
+                        },
+                        {
+                            "name": "Sort1"
+                        },
+                        {
+                            "name": "SelectUpdates"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tSourceSystemKey as string,\n\t\tClientNumber as string,\n\t\tFinancialInstitutionName as string,\n\t\tBINNumber as string,\n\t\tRouteTransitNumber as string,\n\t\tAddressLine1 as string,\n\t\tAddressLine2 as string,\n\t\tAddressCity as string,\n\t\tAddressState as string,\n\t\tAddressPostalCode as string,\n\t\tis_current as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> client\nsource(output(\n\t\tclient_key as long,\n\t\tir_id as integer,\n\t\tclient_name as string,\n\t\tstreet_address1 as string,\n\t\tstreet_address2 as string,\n\t\tcity as string,\n\t\tstate as string,\n\t\tzipcode as string,\n\t\tclient_number as string,\n\t\tis_current as boolean,\n\t\tbegin_effective_date as timestamp,\n\t\tend_effective_date as timestamp,\n\t\tPREFERRED_NAME as string,\n\t\tPARENT_CLIENT_KEY as long,\n\t\tMERGER_ACQUISITION_DTE as date,\n\t\tGEOGRAPHIC_REGION_KEY as integer,\n\t\tASSET_SIZE_KEY as integer,\n\t\tPORTFOLIO_SIZE_KEY as integer,\n\t\tASSET_SIZE_AMT as decimal(19,4),\n\t\tPORTFOLIO_SIZE_CNT as integer,\n\t\tBUSINESS_PARTNER_CLIENT_KEY as long,\n\t\tCREATE_DTE as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DWClient\nInserts aggregate(groupBy(ClientNumber,\n\t\tFinancialInstitutionName,\n\t\tAddressLine1,\n\t\tAddressLine2,\n\t\tAddressCity,\n\t\tAddressState,\n\t\tAddressPostalCode,\n\t\tclient_key_src,\n\t\tis_current_file,\n\t\tir_id,\n\t\tbegin_effective_date,\n\t\tend_effective_date),\n\trecordcount = count(ClientNumber)) ~> RemoveDuplicates\ntrim derive(processDate = currentUTC(),\n\t\tclient_key_src = crc32(iif(isNull(ClientNumber),'',ClientNumber)\n, iif(isNull(FinancialInstitutionName),'',FinancialInstitutionName))) ~> ProcDateAndHash\nfilterNull derive(each(match(type=='string'), $$ = trim($$)),\n\t\tis_current_file = is_current) ~> trim\nProcDateAndHash, DerivedDW join(ClientNumber == client_number,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> Join1\nUpdates filter(!isNull(AddressLine1)) ~> filterNullAddress\nfilterNullAddress aggregate(groupBy(ClientNumber,\n\t\tFinancialInstitutionName,\n\t\tAddressLine1,\n\t\tAddressLine2,\n\t\tAddressCity,\n\t\tAddressState,\n\t\tAddressPostalCode,\n\t\tis_current_file,\n\t\tclient_key,\n\t\tir_id,\n\t\tbegin_effective_date,\n\t\tend_effective_date),\n\trecordcount = count(ClientNumber)) ~> RemoveDuplicates1\nSelectUpdates alterRow(updateIf(true())) ~> MarkUpdates\nRemoveDuplicates alterRow(insertIf(true())) ~> MarkInserts\nMarkInserts, MarkUpdates union(byName: true)~> Union1\nclient filter(!isNull(ClientNumber)) ~> filterNull\nDWClient derive(is_current_dw = is_current) ~> DerivedDW\nJoin1 select(mapColumn(\n\t\tClientNumber,\n\t\tclient_key_src,\n\t\tFinancialInstitutionName,\n\t\tAddressLine1,\n\t\tAddressLine2,\n\t\tAddressCity,\n\t\tAddressState,\n\t\tAddressPostalCode,\n\t\tis_current_file,\n\t\tprocessDate,\n\t\tclient_number,\n\t\tclient_key,\n\t\tir_id,\n\t\tbegin_effective_date,\n\t\tend_effective_date\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LimitSelect\nLimitSelect filter(isNull(client_number)) ~> Inserts\nLimitSelect filter(!isNull(client_number)) ~> Updates\nUnion1 sort(asc(client_key_src, false)) ~> Sort1\nRemoveDuplicates1 select(mapColumn(\n\t\tClientNumber,\n\t\tFinancialInstitutionName,\n\t\tAddressLine1,\n\t\tAddressLine2,\n\t\tAddressCity,\n\t\tAddressState,\n\t\tAddressPostalCode,\n\t\tis_current_file,\n\t\tclient_key_src = client_key,\n\t\tir_id,\n\t\tbegin_effective_date,\n\t\tend_effective_date,\n\t\trecordcount\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> SelectUpdates\nSort1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tclient_key as long,\n\t\tir_id as integer,\n\t\tclient_name as string,\n\t\tstreet_address1 as string,\n\t\tstreet_address2 as string,\n\t\tcity as string,\n\t\tstate as string,\n\t\tzipcode as string,\n\t\tclient_number as string,\n\t\tis_current as boolean,\n\t\tbegin_effective_date as timestamp,\n\t\tend_effective_date as timestamp,\n\t\tPREFERRED_NAME as string,\n\t\tPARENT_CLIENT_KEY as long,\n\t\tMERGER_ACQUISITION_DTE as date,\n\t\tGEOGRAPHIC_REGION_KEY as integer,\n\t\tASSET_SIZE_KEY as integer,\n\t\tPORTFOLIO_SIZE_KEY as integer,\n\t\tASSET_SIZE_AMT as decimal(19,4),\n\t\tPORTFOLIO_SIZE_CNT as integer,\n\t\tBUSINESS_PARTNER_CLIENT_KEY as long,\n\t\tCREATE_DTE as date\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['client_key'],\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tpostSQLs:['ALTER INDEX ALL ON [FinancialInstitution].[dim_client]  REBUILD'],\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tclient_key = client_key_src,\n\t\tir_id,\n\t\tclient_name = FinancialInstitutionName,\n\t\tstreet_address1 = AddressLine1,\n\t\tstreet_address2 = AddressLine2,\n\t\tcity = AddressCity,\n\t\tstate = AddressState,\n\t\tzipcode = AddressPostalCode,\n\t\tclient_number = ClientNumber,\n\t\tis_current = is_current_file,\n\t\tbegin_effective_date,\n\t\tend_effective_date\n\t)) ~> ClientDimension"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_FactNewAccount')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This will populate Fact New Account Archive table in the member schema in Azure SQ DW.",
+                "folder": {
+                    "name": "Facts"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "all_dzDemographics",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FISDebitDemographic"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "Fact_New_Account_Archive",
+                                "type": "DatasetReference"
+                            },
+                            "name": "DWFactNewAccountArchive"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "fact_Transaction",
+                                "type": "DatasetReference"
+                            },
+                            "name": "QryFactTransaction"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "Fact_New_Account",
+                                "type": "DatasetReference"
+                            },
+                            "name": "DWFactNewAccount"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "Fact_New_Account",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SnkFactNewAccountArchive"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "Fact_New_Account",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkUpdatesToFactNewAccount"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "GetDimAccountAttributes"
+                        },
+                        {
+                            "name": "TrimSpaces"
+                        },
+                        {
+                            "name": "NewFactAccountRecords"
+                        },
+                        {
+                            "name": "ConvertDates"
+                        },
+                        {
+                            "name": "GetHashkey"
+                        },
+                        {
+                            "name": "GetExpirationDate"
+                        },
+                        {
+                            "name": "GetDatesDifferences"
+                        },
+                        {
+                            "name": "UpdateFactNewAccount"
+                        },
+                        {
+                            "name": "CheckToUpdate"
+                        },
+                        {
+                            "name": "GetFirstTXNDateFromDWTable"
+                        },
+                        {
+                            "name": "GetFirstTxnDate"
+                        },
+                        {
+                            "name": "checkValuesAreNotDefault"
+                        },
+                        {
+                            "name": "GetOnlyUpdatedValues"
+                        },
+                        {
+                            "name": "NotInArchiveTable"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tFISDebitDemographicID as string,\n\t\tAccountNumber as string,\n\t\tPlasticNumber as string,\n\t\tGreetingName as string,\n\t\tFinancialInstitutionRouteTransit as string,\n\t\tCardStatus as string,\n\t\tLastUsedDate as string,\n\t\tAuthorizationLimitGroup as string,\n\t\tPINOffset as string,\n\t\tTrackTwoDate as string,\n\t\tDDAAccountNumber as string,\n\t\tSavingsAccountNumber as string,\n\t\tAdditionalDDAAccountNumberOne as string,\n\t\tAdditionalDDAAccountNumberTwo as string,\n\t\tAdditionalDDAAccountNumberThree as string,\n\t\tAdditionalDDAAccountNumberFour as string,\n\t\tAdditionalDDAAccountNumberFive as string,\n\t\tAdditionalSavingsAccountNumberOne as string,\n\t\tAdditionalSavingsAccountNumberTwo as string,\n\t\tAdditionalSavingsAccountNumberThree as string,\n\t\tAdditionalSavingsAccountNumberFour as string,\n\t\tAdditionalSavingsAccountNumberFive as string,\n\t\tAdditionalCreditAccountNumberOne as string,\n\t\tAdditionalCreditAccountNumberTwo as string,\n\t\tAdditionalCreditAccountNumberThree as string,\n\t\tAdditionalCreditAccountNumberFour as string,\n\t\tAdditionalOtherAccountNumberOne as string,\n\t\tAdditionalOtherAccountNumberTwo as string,\n\t\tAdditionalOtherAccountNumberThree as string,\n\t\tAdditionalOtherAccountNumberFour as string,\n\t\tCardholderAddressLineOne as string,\n\t\tCardholderAddressLineTwo as string,\n\t\tCardholderAddressCity as string,\n\t\tCardholderAddressState as string,\n\t\tCardholderAddressZip as string,\n\t\tCardholderFirstName as string,\n\t\tCardholderLastName as string,\n\t\tCardholderMiddleInitial as string,\n\t\tCardActivationFlag as string,\n\t\tOriginalIssueDate as string,\n\t\tLastIssueDate as string,\n\t\tNationalIdentifier as string,\n\t\tMothersMaidenName as string,\n\t\tHomePhone as string,\n\t\tWorkPhone as string,\n\t\tUserValidation as string,\n\t\tVRUCounter as string,\n\t\tBirthDate as string,\n\t\tCardActivationMethod as string,\n\t\tCardActivationDate as string,\n\t\tCardActivationTime as string,\n\t\tPreviousExpirationDate as string,\n\t\tPreviousCardActivationStatus as string,\n\t\tCardStatusTwo as string,\n\t\tFISDebitImportFileName as string,\n\t\tCreateDate as string,\n\t\tBINNumber as string,\n\t\tClientNumberIssuer as string,\n\t\tHashFullRecord as string,\n\t\tLastUpdatedDate as string,\n\t\tReportDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\trowUrlColumn: 'file_name') ~> FISDebitDemographic\nsource(output(\n\t\tfact_new_account_archive_key as long,\n\t\tsource_system_key as integer,\n\t\taccount_key as long,\n\t\tactivation_date_id as date,\n\t\texpiration_date_id as date,\n\t\tissue_date_id as date,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DWFactNewAccountArchive\nsource(output(\n\t\taccount_key as string,\n\t\tsource_system_key as integer,\n\t\tFirstTxnDate as date\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'Select account_key, source_system_key,\\nmin(settlement_date_key) as [FirstTxnDate]\\nFrom [transaction].[fact_transaction]\\nGroup by account_key, source_system_key',\n\tformat: 'query',\n\tstaged: true) ~> QryFactTransaction\nsource(output(\n\t\tfact_new_account_key as long,\n\t\tsource_system_key as integer,\n\t\taccount_key as long,\n\t\tactivation_date_id as date,\n\t\tdays_to_activation as integer,\n\t\tdays_to_first_usage as integer,\n\t\tfirst_txn_date_id as date,\n\t\texpiration_date_id as date,\n\t\tissue_date_id as date,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DWFactNewAccount\nFISDebitDemographic select(mapColumn(\n\t\tAccountNumber,\n\t\tNationalIdentifier,\n\t\tCardActivationDate,\n\t\tTrackTwoDate,\n\t\tOriginalIssueDate,\n\t\tReportDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetDimAccountAttributes\nGetDimAccountAttributes derive(each(match(type=='string'), $$ = trim(iif(toString($$)!='NULL',$$,toString(null())))),\n\t\tSource_System_Key = 1) ~> TrimSpaces\nGetHashkey, DWFactNewAccount exists(AccountHashkey == DWFactNewAccount@account_key,\n\tnegate:true,\n\tbroadcast: 'auto')~> NewFactAccountRecords\nTrimSpaces derive(CreateDate = currentTimestamp(),\n\t\tActivationDateID = toDate(iif(isNull(CardActivationDate),'1900-01-01', CardActivationDate), 'yyyy-MM-dd'),\n\t\tExpirationDateIDQualifer = toDate(case(\r\nTrackTwoDate == ''\r\n||TrackTwoDate == 'NULL'\r\n||TrackTwoDate == '0000'\r\n||substring(TrackTwoDate,3,2) == '0000'\r\n||toInteger(substring(TrackTwoDate,3,2)) < 01\r\n||toInteger(substring(TrackTwoDate,3,2))  > 12\r\n,'1900-01-01' , concat('20',substring(TrackTwoDate,1,2),'-',substring(TrackTwoDate,3,2),'-01')\r\n)),\n\t\tIssueDateID = toDate(iif(isNull(OriginalIssueDate), '1900-01-01', OriginalIssueDate),'yyyy-MM-dd'),\n\t\tLoadDate = toDate(iif(isNull(ReportDate),'1900-01-01', ReportDate),'yyyy-MM-dd')) ~> ConvertDates\nGetDatesDifferences derive(AccountHashkey = crc32\r\n(\r\niif(isNull(AccountNumber),'',AccountNumber)\r\n, iif(isNull(NationalIdentifier),'',NationalIdentifier)\r\n, iif(isNull(TrimSpaces@Source_System_Key),0,TrimSpaces@Source_System_Key)\r\n),\n\t\tFactNewAccountHashkey = crc32\r\n(\r\niif(isNull(AccountNumber),'',AccountNumber)\r\n, iif(isNull(TrimSpaces@Source_System_Key),0,TrimSpaces@Source_System_Key)\r\n)) ~> GetHashkey\nConvertDates derive(ExpirationDateID = case(toString(ExpirationDateIDQualifer) != '1900-01-01',\r\n(addMonths(addDays(ExpirationDateIDQualifer, -1), 1))\r\n,ExpirationDateIDQualifer)) ~> GetExpirationDate\nGetFirstTxnDate derive(DaysToActivation = (ActivationDateID-IssueDateID),\n\t\tDaysToFirstUsage = (\r\n   iif(isNull(FirstTxnDate),toDate('1900-01-01'),FirstTxnDate)-\r\n   ActivationDateID\r\n)) ~> GetDatesDifferences\nGetOnlyUpdatedValues, DWFactNewAccount exists(AccountHashkey == DWFactNewAccount@account_key,\n\tnegate:false,\n\tbroadcast: 'auto')~> UpdateFactNewAccount\nGetFirstTXNDateFromDWTable derive(FirstTxnDate = case(\r\nisNull(first_txn_date_id)\r\n|| (first_txn_date_id > FirstTxnDate)\r\n&& !isNull(FirstTxnDate)\r\n,FirstTxnDate),\n\t\tOriginalIssueDate = case(\r\nissue_date_id == toDate('1900-01-01')\r\n|| (issue_date_id > IssueDateID)\r\n|| IssueDateID != toDate('1900-01-01')\r\n,IssueDateID),\n\t\tActivationDateID = case(\r\nactivation_date_id == toDate('1900-01-01')\r\n|| (activation_date_id > ActivationDateID)\r\n|| ActivationDateID != toDate('1900-01-01')\r\n,ActivationDateID),\n\t\tExpirationDateID = case(\r\nexpiration_date_id == toDate('1900-01-01')\r\n|| (expiration_date_id > ExpirationDateID)\r\n|| ExpirationDateID != toDate('1900-01-01')\r\n,ExpirationDateID)) ~> CheckToUpdate\nUpdateFactNewAccount, DWFactNewAccount lookup(AccountHashkey == DWFactNewAccount@account_key,\n\tmultiple: true,\n\tbroadcast: 'auto')~> GetFirstTXNDateFromDWTable\nGetExpirationDate, QryFactTransaction join(AccountNumber == account_key\n\t&& TrimSpaces@Source_System_Key == QryFactTransaction@source_system_key,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> GetFirstTxnDate\nCheckToUpdate alterRow(updateIf(ActivationDateID!=toDate('1900-01-01')||ExpirationDateID!=toDate('1900-01-01')||IssueDateID!=toDate('1900-01-01')||!isNull(FirstTxnDate))) ~> checkValuesAreNotDefault\nGetHashkey filter(ActivationDateID!=toDate('1900-01-01')\r\n||ExpirationDateID!=toDate('1900-01-01')\r\n||IssueDateID!=toDate('1900-01-01')\r\n||!isNull(FirstTxnDate)) ~> GetOnlyUpdatedValues\nNewFactAccountRecords, DWFactNewAccountArchive exists(AccountHashkey == DWFactNewAccountArchive@account_key,\n\tnegate:true,\n\tbroadcast: 'auto')~> NotInArchiveTable\nNotInArchiveTable sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tfact_new_account_key as long,\n\t\tsource_system_key as integer,\n\t\taccount_key as long,\n\t\tactivation_date_id as date,\n\t\tdays_to_activation as integer,\n\t\tdays_to_first_usage as integer,\n\t\tfirst_txn_date_id as date,\n\t\texpiration_date_id as date,\n\t\tissue_date_id as date,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tfact_new_account_key = FactNewAccountHashkey,\n\t\tsource_system_key = TrimSpaces@Source_System_Key,\n\t\taccount_key = AccountHashkey,\n\t\tactivation_date_id = ActivationDateID,\n\t\tdays_to_activation = DaysToActivation,\n\t\tdays_to_first_usage = DaysToFirstUsage,\n\t\tfirst_txn_date_id = FirstTxnDate,\n\t\texpiration_date_id = ExpirationDateID,\n\t\tissue_date_id = IssueDateID,\n\t\tload_date = LoadDate,\n\t\tcreate_date = CreateDate\n\t)) ~> SnkFactNewAccountArchive\ncheckValuesAreNotDefault sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tfact_new_account_key as long,\n\t\tsource_system_key as integer,\n\t\taccount_key as long,\n\t\tactivation_date_id as date,\n\t\tdays_to_activation as integer,\n\t\tdays_to_first_usage as integer,\n\t\tfirst_txn_date_id as date,\n\t\texpiration_date_id as date,\n\t\tissue_date_id as date,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['account_key'],\n\tskipKeyWrites:true,\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tfact_new_account_key,\n\t\taccount_key = AccountHashkey,\n\t\tactivation_date_id,\n\t\tdays_to_activation,\n\t\tdays_to_first_usage,\n\t\tfirst_txn_date_id,\n\t\texpiration_date_id,\n\t\tissue_date_id,\n\t\tload_date,\n\t\tcreate_date\n\t)) ~> snkUpdatesToFactNewAccount"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/initialLoad_Network')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Reference"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Network",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dwNetwork"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "Network",
+                                "type": "DatasetReference"
+                            },
+                            "name": "Network"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Network",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dimNetwork"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "TrimSpaces"
+                        },
+                        {
+                            "name": "DoesExist"
+                        },
+                        {
+                            "name": "MarkUpdates"
+                        },
+                        {
+                            "name": "DoesntExist"
+                        },
+                        {
+                            "name": "MarkInserts"
+                        },
+                        {
+                            "name": "Union1"
+                        },
+                        {
+                            "name": "CreateNetworkHashKey"
+                        },
+                        {
+                            "name": "cast"
+                        },
+                        {
+                            "name": "CastDates"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tnetwork_key as long,\n\t\tsource_system_key as integer,\n\t\tnetwork_id as string,\n\t\tnetwork_desc as string,\n\t\tnetwork_name_normalized as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> dwNetwork\nsource(output(\n\t\tsource_system_key as string,\n\t\tnetwork_id as string,\n\t\tnetwork_desc as string,\n\t\tnetwork_name_normalized as string,\n\t\trecord_created as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Network\nNetwork derive(each(match(type=='string'), $$ = trim($$))) ~> TrimSpaces\nCreateNetworkHashKey, dwNetwork exists(NetworkHashKey == network_key,\n\tnegate:false,\n\tbroadcast: 'auto')~> DoesExist\nDoesExist alterRow(updateIf(true())) ~> MarkUpdates\nCreateNetworkHashKey, dwNetwork exists(NetworkHashKey == network_key,\n\tnegate:true,\n\tbroadcast: 'auto')~> DoesntExist\nDoesntExist alterRow(insertIf(true())) ~> MarkInserts\nMarkUpdates, MarkInserts union(byName: true)~> Union1\ncast derive(NetworkHashKey = crc32(iif(isNull(network_id),'',network_id)\r\n, iif(isNull(source_system_key),0,source_system_key))) ~> CreateNetworkHashKey\nTrimSpaces derive(source_system_key = toInteger(\r\n    iif(\r\n        isNull(source_system_key), '0',source_system_key\r\n        \r\n        ))) ~> cast\nUnion1 derive(load_date = toDate(record_created, 'yyyy-mm-dd'),\n\t\tcreate_date = currentTimestamp()) ~> CastDates\nCastDates sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tnetwork_key as long,\n\t\tsource_system_key as integer,\n\t\tnetwork_id as string,\n\t\tnetwork_desc as string,\n\t\tnetwork_name_normalized as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['network_key'],\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tnetwork_key = NetworkHashKey,\n\t\tsource_system_key,\n\t\tnetwork_id,\n\t\tnetwork_desc,\n\t\tnetwork_name_normalized,\n\t\tload_date,\n\t\tcreate_date\n\t)) ~> dimNetwork"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_User')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "User_Source",
+                                "type": "DatasetReference"
+                            },
+                            "name": "Usercsv"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dest_User",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sink1"
+                        }
+                    ],
+                    "transformations": [],
+                    "script": "source(output(\n\t\tUserID as string,\n\t\tClientID as string,\n\t\tBINID as string,\n\t\tUserName as string,\n\t\tBIN as string,\n\t\tmeta_batch_key as string,\n\t\tmeta_insert_date as string,\n\t\tmeta_update_date as string,\n\t\tmeta_hash as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> Usercsv\nUsercsv sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tUserID as integer,\n\t\tClientID as string,\n\t\tBINID as string,\n\t\tUserName as string,\n\t\tBIN as string\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:false,\n\tupsertable:false,\n\ttruncate:true,\n\tformat: 'table',\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tClientID,\n\t\tBINID,\n\t\tUserName,\n\t\tBIN\n\t)) ~> sink1"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/initialLoad_ResponseCode')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Reference"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Response_Code",
+                                "type": "DatasetReference"
+                            },
+                            "name": "DimResponseCode"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "srcResponseCode",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ResponseCode"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Response_Code",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkDimResponseCode"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "Trim"
+                        },
+                        {
+                            "name": "DoesExist"
+                        },
+                        {
+                            "name": "MarkUpdates"
+                        },
+                        {
+                            "name": "DoesntExist"
+                        },
+                        {
+                            "name": "MarkInserts"
+                        },
+                        {
+                            "name": "Union1"
+                        },
+                        {
+                            "name": "CreateResponseCodeHashkey"
+                        },
+                        {
+                            "name": "CreateSourceSystem"
+                        },
+                        {
+                            "name": "RemoveKeyFromOnPrem"
+                        },
+                        {
+                            "name": "GetDistinctResponseCodes"
+                        },
+                        {
+                            "name": "GetCreateDate"
+                        },
+                        {
+                            "name": "RemoveNegative1"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tresponse_code_key as long,\n\t\tsource_system_key as integer,\n\t\tresponse_code_id as string,\n\t\tresponse_desc as string,\n\t\tresponse_outcome_group as string,\n\t\tresponse_detail as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> DimResponseCode\nsource(output(\n\t\tresponse_code_key as string,\n\t\tsource_system_key as string,\n\t\tresponse_code_id as string,\n\t\tresponse_desc as string,\n\t\tresponse_outcome_group as string,\n\t\tresponse_detail as string,\n\t\tload_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> ResponseCode\nRemoveKeyFromOnPrem derive(each(match(type=='string'), $$ = trim($$))) ~> Trim\nGetDistinctResponseCodes, DimResponseCode exists(ResponseCodeHashkey == response_code_key,\n\tnegate:false,\n\tbroadcast: 'auto')~> DoesExist\nDoesExist alterRow(updateIf(true())) ~> MarkUpdates\nGetDistinctResponseCodes, DimResponseCode exists(ResponseCodeHashkey == response_code_key,\n\tnegate:true,\n\tbroadcast: 'auto')~> DoesntExist\nDoesntExist alterRow(insertIf(true())) ~> MarkInserts\nMarkUpdates, MarkInserts union(byName: true)~> Union1\nCreateSourceSystem derive(ResponseCodeHashkey = crc32(iif(isNull(response_code_id),'',response_code_id)\r\n, iif(isNull(source_system_key),0,source_system_key))) ~> CreateResponseCodeHashkey\nTrim derive(source_system_key = toInteger(source_system_key),\n\t\tresponse_code_id = iif(source_system_key=='2',concat(response_code_id, response_desc),response_code_id),\n\t\tload_date = toDate(load_date, 'yyyy-mm-dd')) ~> CreateSourceSystem\nRemoveNegative1 select(mapColumn(\n\t\tsource_system_key,\n\t\tresponse_code_id,\n\t\tresponse_desc,\n\t\tresponse_outcome_group,\n\t\tresponse_detail,\n\t\tload_date\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RemoveKeyFromOnPrem\nCreateResponseCodeHashkey aggregate(groupBy(source_system_key,\n\t\tResponseCodeHashkey,\n\t\tresponse_code_id),\n\tGetMinOutComeGroup = min(response_outcome_group),\n\t\tGetMaxResponseDesc = max(response_desc),\n\t\tGetMaxLoadDate = max(load_date)) ~> GetDistinctResponseCodes\nUnion1 derive(create_date = currentTimestamp()) ~> GetCreateDate\nResponseCode filter(source_system_key!='-1') ~> RemoveNegative1\nGetCreateDate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tresponse_code_key as long,\n\t\tsource_system_key as integer,\n\t\tresponse_code_id as string,\n\t\tresponse_desc as string,\n\t\tresponse_outcome_group as string,\n\t\tresponse_detail as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:true,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['response_code_key'],\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tresponse_code_key = ResponseCodeHashkey,\n\t\tsource_system_key,\n\t\tresponse_code_id,\n\t\tresponse_desc = GetMaxResponseDesc,\n\t\tresponse_outcome_group = GetMinOutComeGroup,\n\t\tload_date = GetMaxLoadDate,\n\t\tcreate_date\n\t)) ~> snkDimResponseCode"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/FISTransactions')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "FIS"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "all_dropFISTransactions",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FISTransaction"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "FIS_Transaction_Criteria",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FISTransactionCriteria"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "FIS_TransactionName",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dimTxnName"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "dw_InterchangeLegacyRaw",
+                                "type": "DatasetReference"
+                            },
+                            "name": "refInterchange"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "snk_cnfmFISTransactions",
+                                "type": "DatasetReference"
+                            },
+                            "name": "ConformedTransactions"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "dw_AuditInterchangeLegacy",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dwAuditInterchangeLegacy"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "BaseTransformations"
+                        },
+                        {
+                            "name": "trimBlankSpace"
+                        },
+                        {
+                            "name": "joinCriteria"
+                        },
+                        {
+                            "name": "filterCustomtoFI"
+                        },
+                        {
+                            "name": "trimFISCriteria"
+                        },
+                        {
+                            "name": "WhereLogic"
+                        },
+                        {
+                            "name": "selectTransactionName"
+                        },
+                        {
+                            "name": "Dedupe"
+                        },
+                        {
+                            "name": "FinalTransactionName"
+                        },
+                        {
+                            "name": "joinTransactionName"
+                        },
+                        {
+                            "name": "selectCriteria"
+                        },
+                        {
+                            "name": "LimitSelect"
+                        },
+                        {
+                            "name": "fillMissingTxnName"
+                        },
+                        {
+                            "name": "trimTxnName"
+                        },
+                        {
+                            "name": "filterFIS"
+                        },
+                        {
+                            "name": "selectMonetary"
+                        },
+                        {
+                            "name": "joinMonetary"
+                        },
+                        {
+                            "name": "selectPreConformed"
+                        },
+                        {
+                            "name": "windowPreConformed"
+                        },
+                        {
+                            "name": "joinInterchange"
+                        },
+                        {
+                            "name": "filterInterchange"
+                        },
+                        {
+                            "name": "calcInterchange"
+                        },
+                        {
+                            "name": "windowInterchangeAmount"
+                        },
+                        {
+                            "name": "filterTopInterchange"
+                        },
+                        {
+                            "name": "selectInterchange"
+                        },
+                        {
+                            "name": "joinTransactionsInterchange"
+                        },
+                        {
+                            "name": "HashAndMissingInterchange"
+                        },
+                        {
+                            "name": "LimitData"
+                        },
+                        {
+                            "name": "TrimInterchange"
+                        },
+                        {
+                            "name": "finalInterchange"
+                        },
+                        {
+                            "name": "Upsert"
+                        },
+                        {
+                            "name": "FilterMatchedInterchange"
+                        }
+                    ],
+                    "script": "parameters{\n\tfileName as string\n}\nsource(output(\n\t\tFISDebitTransactionID as string,\n\t\tAccountNumber as string,\n\t\tProcessingCode as string,\n\t\tAmountTransaction as string,\n\t\tAmountSettlement as string,\n\t\tAmountCardholderBilling as string,\n\t\tTransmissionDate as string,\n\t\tTransmissionTime as string,\n\t\tAmountCardholderBillingFee as string,\n\t\tConversionRateSettlement as string,\n\t\tConversionRateCardholderBill as string,\n\t\tSystemTraceAuditNumber as string,\n\t\tTimeLocalTransaction as string,\n\t\tDateLocalTransaction as string,\n\t\tDateExpiration as string,\n\t\tDateSettlement as string,\n\t\tDateConversion as string,\n\t\tDateCapture as string,\n\t\tMerchantType as string,\n\t\tAcquiringInstitutionCountryCode as string,\n\t\tAccountNumberExtendedCountryCode as string,\n\t\tForwardingInstitutionCountryCode as string,\n\t\tPointOfServiceEntryMode as string,\n\t\tCardSequenceNumber as string,\n\t\tNetworkInternationalID as string,\n\t\tPointOfServiceConditionCode as string,\n\t\tPointOfServicePINCaptureCode as string,\n\t\tAmountTransactionFeeSignType as string,\n\t\tAmountTransactionFee as string,\n\t\tAmountSettlementFeeSignType as string,\n\t\tAmountSettlementFee as string,\n\t\tAmountTransactionProcessingFeeSignType as string,\n\t\tAmountTransactionProcessingFee as string,\n\t\tAmountSettlementProcessingFeeSignType as string,\n\t\tAmountSettlementProcessingFee as string,\n\t\tAcquiringInstitutionIDCode as string,\n\t\tForwardingInstitutionIDCode as string,\n\t\tAccountNumberExtended as string,\n\t\tTrackTwoData as string,\n\t\tRetrievalReferenceNumber as string,\n\t\tAuthorizationIDResponseID as string,\n\t\tResponseCode as string,\n\t\tServiceRestrictionCode as string,\n\t\tCardAcceptorTerminalIdentificationCode as string,\n\t\tCardAcceptorIdentificationCode as string,\n\t\tCardAcceptorNameLocation as string,\n\t\tCardAcceptorNameCity as string,\n\t\tCardAcceptorNameStateProvince as string,\n\t\tCardAcceptorNameCountry as string,\n\t\tAdditionalResponseData as string,\n\t\tTrackOneData as string,\n\t\tAdditionalPrivateData as string,\n\t\tCurrencyCodeTransaction as string,\n\t\tCurrencyCodeSettlement as string,\n\t\tCurrencyCodeCardholderBilling as string,\n\t\tPINData as string,\n\t\tAdditionalAmountsAccountTypeOne as string,\n\t\tAdditionalAmountsAmountTypeOne as string,\n\t\tAdditionalAmountsCurrencyCodeOne as string,\n\t\tAdditionalAmountsIndicatorOne as string,\n\t\tAdditionalAmountsAmountOne as string,\n\t\tAdditionalAmountsAccountTypeTwo as string,\n\t\tAdditionalAmountsAmountTypeTwo as string,\n\t\tAdditionalAmountsCurrencyCodeTwo as string,\n\t\tAdditionalAmountsIndicatorTwo as string,\n\t\tAdditionalAmountsAmountTwo as string,\n\t\tAdditionalAmountsAccountTypeThree as string,\n\t\tAdditionalAmountsAmountTypeThree as string,\n\t\tAdditionalAmountsCurrencyCodeThree as string,\n\t\tAdditionalAmountsIndicatorThree as string,\n\t\tAdditionalAmountsAmountThree as string,\n\t\tOriginalFeesFeeType as string,\n\t\tOriginalFeesFeeFlag as string,\n\t\tOriginalFeesDecimalization as string,\n\t\tOriginalFeesTransactionFeeSignType as string,\n\t\tOriginalFeesTransactionFee as string,\n\t\tOriginalFeesSettlementFeeSignType as string,\n\t\tOriginalFeesSettlementFee as string,\n\t\tReplacementFeesFeeType as string,\n\t\tReplacementFeesFeeFlag as string,\n\t\tReplacementFeesDecimalization as string,\n\t\tReplacementFeesTransactionFeeSignType as string,\n\t\tReplacementFeesTransactionFee as string,\n\t\tReplacementFeesSettlementFeeSignType as string,\n\t\tReplacementFeesSettlementFee as string,\n\t\tAuthorizationLifeCycle as string,\n\t\tNationalPointOfServiceConditionCode as string,\n\t\tNationalPointOfServiceGeographicDataState as string,\n\t\tNationalPointOfServiceGeographicDataCounty as string,\n\t\tNationalPointOfServiceGeographicDataZip as string,\n\t\tNationalPointOfServiceGeographicDataCountry as string,\n\t\tAdviceReversalReasonCodeByteMap as string,\n\t\tAdviceReversalReasonCodeReversal as string,\n\t\tAdviceReversalReasonCodeAdvice as string,\n\t\tAcquirerTransportData as string,\n\t\tIssuerTransportData as string,\n\t\tUserDataByteMap as string,\n\t\tUserDataTermNumber as string,\n\t\tUserDataIssuerNetworkID as string,\n\t\tUserDataAcquirerNetworkID as string,\n\t\tUserDataProc as string,\n\t\tUserDataAuthorizationTimeout as string,\n\t\tSettlementCode as string,\n\t\tExtendedPaymentCode as string,\n\t\tReceivingInstitutionCountryCode as string,\n\t\tSettlementInstitutionCountryCode as string,\n\t\tNetworkManagementInformationCode as string,\n\t\tMessageNumber as string,\n\t\tMessageNumberLast as string,\n\t\tDateAction as string,\n\t\tOriginalDataMessageID as string,\n\t\tOriginalDataTraceNumber as string,\n\t\tOriginalDataTransmissionMMDD as string,\n\t\tOriginalDataTransmissionHHMMSS as string,\n\t\tOriginalDataAcquirerInstitutionID as string,\n\t\tOriginalDataForwardingInstitutionID as string,\n\t\tFileUpdateCode as string,\n\t\tFileSecurityCode as string,\n\t\tResponseIndicator as string,\n\t\tServiceIndicator as string,\n\t\tReplacementAmountsTransactionAmount as string,\n\t\tReplacementAmountsSettlementAmount as string,\n\t\tReplacementAmountsTransactionFeeCode as string,\n\t\tReplacementAmountsTransactionFee as string,\n\t\tReplacementAmountsSettlementFeeCode as string,\n\t\tReplacementAmountsSettlementFee as string,\n\t\tPayee as string,\n\t\tSettlementInstitutionID as string,\n\t\tReceivingInstitutionID as string,\n\t\tAccountIDOne as string,\n\t\tAccountIDTwo as string,\n\t\tTransactionDescriptionReimbursementAttribute as string,\n\t\tAuthorizingAgentInstitutionID as string,\n\t\tCountryCodeAuthorizingAgentCountry as string,\n\t\tAccountQualifiersOne as string,\n\t\tAccountQualifiersTwo as string,\n\t\tSponsorBankID as string,\n\t\tAVSCheckAuthorizationFormat as string,\n\t\tAVSCheckAuthorizationData as string,\n\t\tIssuerTraceData as string,\n\t\tAcquirerTraceData as string,\n\t\tDDNameOfUserFile as string,\n\t\tISOMessageType as string,\n\t\tMileStoneZeroMMDD as string,\n\t\tMileStoneZeroHHMMSS as string,\n\t\tMileStoneOne as string,\n\t\tMileStoneTwo as string,\n\t\tMileStoneThree as string,\n\t\tMileStoneFour as string,\n\t\tMileStoneFive as string,\n\t\tMileStoneSix as string,\n\t\tAcquirerIssuerIndicator as string,\n\t\tCreditDebitIndicator as string,\n\t\tDDSITransactionCode as string,\n\t\tDDISResponseCode as string,\n\t\tDDSINationalPointOfServiceConditionCode as string,\n\t\tAcquirerReconciliationTransactionAmount as string,\n\t\tIssuerReconciliationTransactionAmount as string,\n\t\tAcquirerConversionRate as string,\n\t\tIssuerConversionRate as string,\n\t\tAcquirerCurrencyCodeReconciliation as string,\n\t\tIssuerCurrencyCodeReconciliation as string,\n\t\tAcquirerAmountReconciliationFeeSignType as string,\n\t\tAcquirerAmountReconciliationFee as string,\n\t\tIssuerAmountReconciliationFeeSignType as string,\n\t\tIssuerAmountReconciliationFee as string,\n\t\tTicketNumber as string,\n\t\tCompletionAmountCardholderBilling as string,\n\t\tAcquirerCompletionAmount as string,\n\t\tIssuerCurrencyCompletionAmount as string,\n\t\tAdjustmentTraceData as string,\n\t\tBatchDebitIndicator as string,\n\t\tBanknetReferenceDataTransactionID as string,\n\t\tChargeIndicator as string,\n\t\tCurrencyConversionFeeInCardbillCurrency as string,\n\t\tCurrencyConversionFeeInSettlementCurrency as string,\n\t\tIssuerCurrencyConversionFeeInCardbillCurrency as string,\n\t\tAcquirerCrossborderTransactionIndicator as string,\n\t\tAcquirerCrossborderCurrencyIndicator as string,\n\t\tIssuerCrossborderTransactionIndicator as string,\n\t\tIssuerCrossborderCurrencyIndicator as string,\n\t\tAuthCharacteristicIndicator as string,\n\t\tVISAAVSResponseCode as string,\n\t\tVisaCarRentalHotelExtraCharge as string,\n\t\tVisaCarRentalNoShowIndicator as string,\n\t\tVisaCarRentalHotelStartDate as string,\n\t\tVisaChargebackRightsIndicator as string,\n\t\tVisaFeeProgramIndicator as string,\n\t\tVisaMOTOEcomm as string,\n\t\tVisaMultiClearingSeq as string,\n\t\tVisaPurchaseIdentifier as string,\n\t\tVisaRequestedPaymentService as string,\n\t\tVisaRestrictedTicketIndicator as string,\n\t\tVisaSpecialConditionIndicator as string,\n\t\tVisaUnattendedAccTermIndicator as string,\n\t\tVisaCarrierCode as string,\n\t\tVisaDepartureDate as string,\n\t\tVisaDestinationCity as string,\n\t\tVisaOriginationCity as string,\n\t\tVisaPassengerName as string,\n\t\tVisaAcquiringBusinessID as string,\n\t\tVisaPointOfServiceEnvironment as string,\n\t\tVisaPointOfServiceTerminalCapability as string,\n\t\tVisaReasonCode as string,\n\t\tVisaCardholderIDMethod as string,\n\t\tVisaProcessingCode as string,\n\t\tVisaRetrievalRefNumber as string,\n\t\tVisaSystemTraceAuditNumber as string,\n\t\tVisaPointOfServiceEntryMode as string,\n\t\tVisaAcquiringInstitutionCode as string,\n\t\tVisaPointOfServiceConditionCode as string,\n\t\tVisaPINCaptureCode as string,\n\t\tVisaTransactionID as string,\n\t\tMasterCardResponseCode as string,\n\t\tMasterCardCATTerminalIndicator as string,\n\t\tMasterCardElectronicCommerceIndicator as string,\n\t\tMasterCardPINInvalidIndicator as string,\n\t\tMasterCardPointOfServiceAttendedTerminalIndicator as string,\n\t\tMasterCardPointOfServiceCardholderPresentIndicator as string,\n\t\tMasterCardPointOfServiceCardPresentIndicator as string,\n\t\tMasterCardPointOfServiceEntryMode as string,\n\t\tMasterCardPointOfServiceDataCode as string,\n\t\tMasterCardFunctionCode as string,\n\t\tMasterCardAcquirerReferenceData as string,\n\t\tMasterCardTransactionLifeCycleID as string,\n\t\tMasterCardMessageNumber as string,\n\t\tMasterCardTransactionDestinationInstitutionID as string,\n\t\tMasterCardTerminalType as string,\n\t\tMasterCardReversalIndicator as string,\n\t\tMasterCardCurrencyExponent as string,\n\t\tMasterCardTicketNumber as string,\n\t\tMasterCardCarrierCode as string,\n\t\tMasterCardTotalFare as string,\n\t\tMasterCardCityOfOriginAirportCode as string,\n\t\tMasterCardCityOfDestinationAirportCode as string,\n\t\tMasterCardRenterName as string,\n\t\tMasterCardRentalDate as string,\n\t\tMasterCardCheckInArrivalDate as string,\n\t\tMasterCardFolioNumber as string,\n\t\tMasterCardRentalAgreementNumber as string,\n\t\tMasterCardRoomRate as string,\n\t\tMasterCardTotalRoomTax as string,\n\t\tMasterCardRestrictedTicketIndicator as string,\n\t\tMasterCardProgramRegistrationID as string,\n\t\tMasterCardSettlementDate as string,\n\t\tMasterCardSettlementIndicator as string,\n\t\tMasterCardCardAcceptorPhoneNumber as string,\n\t\tMasterCardUsageCode as string,\n\t\tMasterCardPassengerName as string,\n\t\tMasterCardRentalIndicatorRate as string,\n\t\tMasterCardNoShowIndicator as string,\n\t\tMasterCardPaypassIndicatorAccountNumber as string,\n\t\tMasterCardFileTransmissionDate as string,\n\t\tMasterCardTransactionDescription as string,\n\t\tMasterCardCustomerCode as string,\n\t\tMasterCardTravelDate as string,\n\t\tMasterCardFlightNumber as string,\n\t\tMasterCardRentalReturnCity as string,\n\t\tMasterCardRentalReturnState as string,\n\t\tMasterCardRentalReturnCountry as string,\n\t\tMasterCardRentalReturnDate as string,\n\t\tMasterCardCustomerServicePhoneNumber as string,\n\t\tMasterCardDepartureDate as string,\n\t\tMasterCardPropertyPhoneNumber as string,\n\t\tMasterCardBillingAdjustment as string,\n\t\tMasterCardProgramCode as string,\n\t\tMasterCardMessageTypeIndicator as string,\n\t\tMasterCardProcessingCode as string,\n\t\tMasterCardAcquirerInstitutionID as string,\n\t\tPINExists as string,\n\t\tAdjustmentComment as string,\n\t\tAuthorizingSystemTraceAuditNumber as string,\n\t\tAuthorizingLocalTime as string,\n\t\tAuthorizingRetrievalReferenceNumber as string,\n\t\tAuthorizingCardAcceptorID as string,\n\t\tAuthorizingCardAcceptorTerminalID as string,\n\t\tMasterCardBusActivity as string,\n\t\tContactlessDoneIndicator as string,\n\t\tATCValidationResultCode as string,\n\t\tPOICurrencyCode as string,\n\t\tPOIAmount as string,\n\t\tPOISettlementCurrencyCode as string,\n\t\tPOISettlementAmount as string,\n\t\tPOISettlementAmountSign as string,\n\t\tAFTFeeAcquirer as string,\n\t\tAFTFeeIssuer as string,\n\t\tRetailIndicator as string,\n\t\tProgramIndicator as string,\n\t\tPINIndicator as string,\n\t\tEncryptionKeyID as string,\n\t\tPaymentTokenAccountNumber as string,\n\t\tPaymentTokenAssuranceLevel as string,\n\t\tPaymentTokenRequestorID as string,\n\t\tPaymentTokenAccountNumberAccountRange as string,\n\t\tPaymentTokenExpirationDate as string,\n\t\tPaymentTokenTransactionID as string,\n\t\tCardDataInputCap as string,\n\t\tCardDataInputMode as string,\n\t\tClientNumberAcquirer as string,\n\t\tRouteTransitAcquirer as string,\n\t\tFinancialInstitutionAcquirer as string,\n\t\tClientNumberIssuer as string,\n\t\tRouteTransitIssuer as string,\n\t\tFinancialInstitutionIssuer as string,\n\t\tFISDebitImportFileName as string,\n\t\tFISDebitImportFileDate as string,\n\t\tCreateDate as string,\n\t\tBINNumberIssuer as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FISTransaction\nsource(output(\n\t\tCreateDate as string,\n\t\tTransactionCriteriaID as string,\n\t\tTransactionName as string,\n\t\tMessageType as string,\n\t\tFISTransactionCode as string,\n\t\tResponseCodeOperator as string,\n\t\tResponseCode as string,\n\t\tNetworkIDOperator as string,\n\t\tNetworkID as string,\n\t\tCardEntryOperator as string,\n\t\tCardEntry as string,\n\t\tMerchTypeOperator as string,\n\t\tMerchType as string,\n\t\tCustomtoFI as string,\n\t\tIssuerNetworkIDOperator as string,\n\t\tIssuerNetworkID as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FISTransactionCriteria\nsource(output(\n\t\tsource_system_key as string,\n\t\ttransaction_name as string,\n\t\ttransaction_group as string,\n\t\tmonetary_flag as integer,\n\t\tdenial_flag as string,\n\t\tproduct_type as string,\n\t\tload_date as string\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tpreferredIntegralType: 'integer') ~> dimTxnName\nsource(output(\n\t\tROWID as long,\n\t\tInterchangeID as integer,\n\t\tInterchangeRateName as string,\n\t\tInterchangeRateNameStartDate as string,\n\t\tInterchangeRateNameEndDate as string,\n\t\tFixedAmt as string,\n\t\tRequestedAmtPcnt as string,\n\t\tCompletedAmtPcnt as string,\n\t\tExceptionAmtPcnt as string,\n\t\tMinAmt as string,\n\t\tMaxAmt as string,\n\t\tRateStartDate as string,\n\t\tRateEndDate as string,\n\t\tNetwork as string,\n\t\tTransactionName as string,\n\t\tIsOurTerminal as string,\n\t\tIsInternational as string,\n\t\tOnPremise as string,\n\t\tCardEntryOperator as string,\n\t\tCardEntry as string,\n\t\tAmountSettledOperator as string,\n\t\tAmountSettled as string,\n\t\tBINNumberOperator as string,\n\t\tBINNumber as string,\n\t\tMerchTypeOperator1 as string,\n\t\tMerchType1 as string,\n\t\tMerchTypeOperator2 as string,\n\t\tMerchType2 as string,\n\t\tMerchTypeOperator3 as string,\n\t\tMerchType3 as string,\n\t\tProcessingOrder as string,\n\t\tNumber as string,\n\t\tfile_name as string,\n\t\tcreate_date as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tquery: 'SELECT *\\n  FROM [Staging].[FIS_InterchangeLegacy_RAW] where create_date in (Select max(create_date) from [Staging].[FIS_InterchangeLegacy_RAW])',\n\tformat: 'query',\n\tstaged: false) ~> refInterchange\ntrimBlankSpace derive(ISOBin = substring(AccountNumber, 1, 6),\n\t\tFISDebitImportFileDate = toDate(FISDebitImportFileDate,'yyyy-MM-dd'),\n\t\tDateLocalTransaction = toDate(substring(DateLocalTransaction, 1, 2)+'-'+substring(DateLocalTransaction, 3, 2)+'-'+\n    iif(\n        (toDate(substring(DateLocalTransaction, 1, 2)+'-'+substring(DateLocalTransaction, 3, 2)+'-'+toString(year(addDays(toDate(FISDebitImportFileDate),1))),'MM-dd-yyyy') > addDays(toDate(FISDebitImportFileDate),1)), \n        toString(year(addDays(toDate(FISDebitImportFileDate),1))-1), \n        toString(year(addDays(toDate(FISDebitImportFileDate),1)))\n        ),'MM-dd-yyyy'\n),\n\t\tSettlementDate = toDate(substring(DateSettlement, 1, 2)+'-'+substring(DateSettlement, 3, 2)+'-'+\n    iif(\n        (toDate(substring(DateSettlement, 1, 2)+'-'+substring(DateSettlement, 3, 2)+'-'+toString(year(addDays(toDate(FISDebitImportFileDate),1))),'MM-dd-yyyy') > addDays(toDate(FISDebitImportFileDate),1)), \n        toString(year(addDays(toDate(FISDebitImportFileDate),1))-1), \n        toString(year(addDays(toDate(FISDebitImportFileDate),1)))\n        ),'MM-dd-yyyy'\n),\n\t\tOriginalDataTransmissionMMDD = toDate(substring(OriginalDataTransmissionMMDD, 1, 2)+'-'+substring(OriginalDataTransmissionMMDD, 3, 2)+'-'+\n    iif(\n        (toDate(substring(OriginalDataTransmissionMMDD, 1, 2)+'-'+substring(OriginalDataTransmissionMMDD, 3, 2)+'-'+toString(year(addDays(toDate(FISDebitImportFileDate),1))),'MM-dd-yyyy') > addDays(toDate(FISDebitImportFileDate),1)), \n        toString(year(addDays(toDate(FISDebitImportFileDate),1))-1), \n        toString(year(addDays(toDate(FISDebitImportFileDate),1)))\n        ),'MM-dd-yyyy'\n),\n\t\tIndicatorID = substring(NationalPointOfServiceConditionCode,4,1),\n\t\tSettlementAmount = toFloat(AmountSettlement),\n\t\tMerchantName = iif ((UserDataAcquirerNetworkID=='VNT' || UserDataAcquirerNetworkID=='VPD' || UserDataAcquirerNetworkID=='VCR'),CardAcceptorNameLocation,AdditionalPrivateData),\n\t\tSource = 'FIS',\n\t\tCardPrescenceDescription = case(substring(NationalPointOfServiceConditionCode,4,1)=='0', 'Card Present', case(substring(NationalPointOfServiceConditionCode,4,1)=='','Unknown','Card Not Present')),\n\t\tOnUSDescription = iif(\r\niif(\r\n    isNull(SettlementInstitutionID),'-2',iif(SettlementInstitutionID=='','-2',\r\n    iif(SettlementInstitutionID==' ','-2',\r\n    iif(lower(SettlementInstitutionID)=='null','-2',SettlementInstitutionID)))) \r\n== \r\niif(\r\n    isNull(AcquiringInstitutionIDCode),'-3',iif(AcquiringInstitutionIDCode=='','-3',\r\n    iif(AcquiringInstitutionIDCode==' ','-3',\r\n    iif(lower(AcquiringInstitutionIDCode)=='null','-3',AcquiringInstitutionIDCode))))\r\n, 'On US', 'Foreign'),\n\t\tRecurringDescription = iif(substring(NationalPointOfServiceConditionCode,4,1)=='4','Recurring','Not Recurring'),\n\t\tSurchargeAmount = case(toFloat(AmountSettlementFee)==0 && AmountTransactionFeeSignType == 'C',toFloat(AmountSettlementFee) * toFloat(-1), case(toFloat(AmountSettlementFee) > 0 && AmountSettlementFeeSignType == 'C', toFloat(AmountSettlementFee) * toFloat(-1), toFloat(AmountSettlementFee))),\n\t\tPremise = case(substring(NationalPointOfServiceConditionCode,3,1) == '0',1, 0),\n\t\tInternational = case(in(['US','USA','',toString(null())],CardAcceptorNameCountry),0,1),\n\t\tAmountTransaction = toFloat(AmountTransaction),\n\t\tExceptionAmount = toFloat(ReplacementAmountsTransactionAmount),\n\t\tAcquirerNetworkID = case(isNull(UserDataAcquirerNetworkID),'COOP',UserDataAcquirerNetworkID),\n\t\tAcquiringRTN = trim(substring(AcquiringInstitutionIDCode,2,10)),\n\t\tSettlementRTN = trim(substring(SettlementInstitutionID,2,10)),\n\t\tTransmissionDate = toDate(substring(TransmissionDate, 1, 2)+'-'+substring(TransmissionDate, 3, 2)+'-'+\r\n    iif(\r\n        (toDate(substring(TransmissionDate, 1, 2)+'-'+substring(TransmissionDate, 3, 2)+'-'+toString(year(addDays(toDate(FISDebitImportFileDate),1))),'MM-dd-yyyy') > addDays(toDate(FISDebitImportFileDate),1)), \r\n        toString(year(addDays(toDate(FISDebitImportFileDate),1))-1), \r\n        toString(year(addDays(toDate(FISDebitImportFileDate),1)))\r\n        ),'MM-dd-yyyy'\r\n),\n\t\tis_authorization = iif(ISOMessageType=='0100'\r\n    ||ISOMessageType=='0120'\r\n    ,1\r\n    ,0),\n\t\tAuthorizationNo = AuthorizationIDResponseID,\n\t\tPaymentTokenRequestorID = iif(length(PaymentTokenRequestorID)==11,PaymentTokenRequestorID,toString(null()))) ~> BaseTransformations\nLimitData derive(each(match(type=='string'), $$ = trim(iif(toString($$)!='NULL',$$,toString(null())))),\n\t\tFISDebitImportFileDate = concat(substring($fileName,21,4),'-',substring($fileName,25,2),'-',substring($fileName,27,2))) ~> trimBlankSpace\nLimitSelect, selectCriteria join(ISOMessageType == case(isNull(MessageType) || MessageType=='',ISOMessageType,MessageType)\n&&\nDDSITransactionCode == FISTransactionCode,\n\tjoinType:'cross',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> joinCriteria\ntrimFISCriteria filter(CustomtoFI=='0') ~> filterCustomtoFI\nFISTransactionCriteria derive(each(match(type=='string'), $$ = trim(iif(toString($$)!='NULL',$$,toString(null()))))) ~> trimFISCriteria\njoinCriteria filter((isNull(ResponseCode_criteria)\n    || (ResponseCodeOperator=='IN' && iifNull(locate(ResponseCode_raw,ResponseCode_criteria),0)!=0) \n    || (ResponseCodeOperator=='NOT IN' && iifNull(locate(ResponseCode_raw,ResponseCode_criteria),0)==0))\n&&\n(isNull(MerchType)\n    || (MerchTypeOperator=='IN' && iifNull(locate(MerchantType,MerchType),0)!=0) \n    || (MerchTypeOperator=='NOT IN' && iifNull(locate(MerchantType,MerchType),0)==0))\n&&\n(isNull(IssuerNetworkID)\n    || (IssuerNetworkIDOperator=='IN' && iifNull(locate(UserDataIssuerNetworkID,IssuerNetworkID),0)!=0) \n    || (IssuerNetworkIDOperator=='NOT IN' && iifNull(locate(UserDataIssuerNetworkID,IssuerNetworkID),0)==0))\n&&\n(NetworkID=='' || isNull(NetworkID)\n    || (NetworkIDOperator=='IN' && iifNull(locate(UserDataAcquirerNetworkID,NetworkID),0)!=0) \n    || (NetworkIDOperator=='NOT IN' && iifNull(locate(UserDataAcquirerNetworkID,NetworkID),0)==0))) ~> WhereLogic\nWhereLogic select(mapColumn(\n\t\tFISDebitTransactionID,\n\t\tTransactionName\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> selectTransactionName\nselectTransactionName aggregate(groupBy(FISDebitTransactionID),\n\tTransactionName = max(TransactionName)) ~> Dedupe\nDedupe select(mapColumn(\n\t\tFISDebitTransactionID_final = FISDebitTransactionID,\n\t\tTransactionName_final = TransactionName\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> FinalTransactionName\nBaseTransformations, FinalTransactionName join(FISDebitTransactionID == FISDebitTransactionID_final,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> joinTransactionName\nfilterCustomtoFI select(mapColumn(\n\t\tCreateDate,\n\t\tTransactionCriteriaID,\n\t\tTransactionName,\n\t\tMessageType,\n\t\tFISTransactionCode,\n\t\tResponseCodeOperator,\n\t\tResponseCode_criteria = ResponseCode,\n\t\tNetworkIDOperator,\n\t\tNetworkID,\n\t\tCardEntryOperator,\n\t\tCardEntry,\n\t\tMerchTypeOperator,\n\t\tMerchType,\n\t\tCustomtoFI,\n\t\tIssuerNetworkIDOperator,\n\t\tIssuerNetworkID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> selectCriteria\nBaseTransformations select(mapColumn(\n\t\tFISDebitTransactionID,\n\t\tISOMessageType,\n\t\tDDSITransactionCode,\n\t\tResponseCode_raw = ResponseCode,\n\t\tMerchantType,\n\t\tUserDataIssuerNetworkID,\n\t\tUserDataAcquirerNetworkID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LimitSelect\njoinTransactionName derive(TransactionName_final = iif(isNull(TransactionName_final),'Unknown', TransactionName_final)) ~> fillMissingTxnName\ndimTxnName derive(each(match(type=='string'), $$ = trim(iif(toString($$)!='NULL',$$,toString(null()))))) ~> trimTxnName\ntrimTxnName filter(source_system_key == '1') ~> filterFIS\nfilterFIS select(mapColumn(\n\t\ttransaction_name,\n\t\tmonetary_flag\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> selectMonetary\nfillMissingTxnName, selectMonetary join(TransactionName_final == transaction_name,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> joinMonetary\njoinMonetary select(mapColumn(\n\t\tAccountNumber,\n\t\tClientNumberAcquirer,\n\t\tUserDataAcquirerNetworkID,\n\t\tISOBin,\n\t\tBINNumberIssuer,\n\t\tPointOfServiceEntryMode,\n\t\tCardPrescenceDescription,\n\t\tFISDebitImportFileDate,\n\t\tSource,\n\t\tClientNumberIssuer,\n\t\tUserDataIssuerNetworkID,\n\t\tMerchantName,\n\t\tMerchantType,\n\t\tOnUSDescription,\n\t\tOriginalDataTransmissionMMDD,\n\t\tDateLocalTransaction,\n\t\tRecurringDescription,\n\t\tResponseCode,\n\t\tSettlementAmount,\n\t\tSurchargeAmount,\n\t\tCardAcceptorNameLocation,\n\t\tCardAcceptorNameCity,\n\t\tCardAcceptorNameCountry,\n\t\tCardAcceptorTerminalIdentificationCode,\n\t\tCardAcceptorNameStateProvince,\n\t\tNationalPointOfServiceGeographicDataZip,\n\t\tPaymentTokenRequestorID,\n\t\tDDSITransactionCode,\n\t\tTransactionName_final,\n\t\tmonetary_flag,\n\t\tSettlementDate,\n\t\tPremise,\n\t\tInternational,\n\t\tAmountTransaction,\n\t\tExceptionAmount,\n\t\tFISDebitTransactionID_raw = FISDebitTransactionID,\n\t\tAcquirerNetworkID,\n\t\tAcquiringRTN,\n\t\tSettlementRTN,\n\t\tTransmissionDate,\n\t\tTransmissionTime,\n\t\tTimeLocalTransaction,\n\t\tRetrievalReferenceNumber,\n\t\tAuthorizationNo,\n\t\tis_authorization,\n\t\tSystemTraceAuditNumber,\n\t\tAcquirerTraceData,\n\t\tVisaTransactionID,\n\t\tMasterCardTransactionLifeCycleID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> selectPreConformed\nselectPreConformed window(over(FISDebitImportFileDate),\n\tasc(AccountNumber, true),\n\tIDNumber = rowNumber(),\n\tpartitionBy('roundRobin', 200)) ~> windowPreConformed\nwindowPreConformed, finalInterchange join(AcquirerNetworkID == Network\n&&\nTransactionName_final == TransactionName\n&&\nFISDebitImportFileDate >= InterchangeRateNameStartDate && FISDebitImportFileDate<=InterchangeRateNameEndDate\n&&\n(isNull(IsOurTerminal) || IsOurTerminal == toString(case(iifNull(locate(AcquiringRTN,SettlementRTN),0)!=0,1,0)))\n&&\n(isNull(IsInternational) || IsInternational == toString(International))\n&&\n(isNull(OnPremise) || OnPremise == toString(Premise)),\n\tjoinType:'cross',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tpartitionBy('roundRobin', 200),\n\tbroadcast: 'auto')~> joinInterchange\njoinInterchange filter((isNull(CardEntry) || (CardEntryOperator == '=' && PointOfServiceEntryMode == CardEntry) || (CardEntryOperator == '!=' && PointOfServiceEntryMode != CardEntry))\n&&\n((isNull(MerchTypeOperator1) && isNull(MerchTypeOperator2) && isNull(MerchTypeOperator3)) \n    || (MerchTypeOperator1 == 'IN' && iifNull(locate(MerchantType, MerchType1),0)!=0 && isNull(MerchTypeOperator2)  && isNull(MerchTypeOperator3))\n    || (MerchTypeOperator1 == 'NOT IN' && iifNull(locate(MerchantType , MerchType1),0)==0 && isNull(MerchTypeOperator2)  && isNull(MerchTypeOperator3))\n\t|| (MerchTypeOperator1 == '>=' && MerchantType >= MerchType1 && MerchTypeOperator2 == '<=' && MerchantType <= MerchType2 && isNull(MerchTypeOperator3))\n\t|| ((MerchTypeOperator1 == '>=' && MerchantType >= MerchType1 && MerchTypeOperator2 == '<=' && MerchantType <= MerchType2) || (MerchTypeOperator3 == 'IN' && iifNull(locate(MerchantType , MerchType3), 0) != 0))\n\t|| ((MerchTypeOperator1 == '>=' && MerchantType >= MerchType1 && MerchTypeOperator2 == '<=' && MerchantType <= MerchType2) || (MerchTypeOperator3 == 'NOT IN' && iifNull(locate(MerchantType , MerchType3), 0) == 0))\n\t|| ((MerchTypeOperator1 == '<=' && MerchantType <= MerchType1) || (MerchTypeOperator2 == 'IN' && iifNull(locate(MerchantType , MerchType2), 0) != 0 && isNull(MerchTypeOperator3)))\n\t|| ((MerchTypeOperator1 == '<=' && MerchantType <= MerchType1) || (MerchTypeOperator2 == 'NOT IN' && iifNull(locate(MerchantType , MerchType2), 0) == 0 && isNull(MerchTypeOperator3)))\n\t|| ((MerchTypeOperator1 == '<' && MerchantType < MerchType1) || (MerchTypeOperator2 == '>' && MerchantType > MerchType2 && MerchTypeOperator3 == 'NOT IN' && iifNull(locate(MerchantType , MerchType3), 0) == 0))\n\t|| ((MerchTypeOperator1 == '<' && MerchantType < MerchType1) || (MerchTypeOperator2 == '>' && MerchantType > MerchType2 && isNull(MerchTypeOperator3))))\n&& (isNull(AmountSettled)\n    || (AmountSettledOperator  == '<=' && SettlementAmount <= toFloat(AmountSettled))\n    || (AmountSettledOperator  == '>' && SettlementAmount > toFloat(AmountSettled))\n    || (AmountSettledOperator  =='>=' && SettlementAmount >= toFloat(AmountSettled))\n    || (AmountSettledOperator  == '<' && SettlementAmount < toFloat(AmountSettled)))\n&& (isNull(BINNumber)\n    || (BINNumber  == '=' && BINNumberIssuer == BINNumber))) ~> filterInterchange\nfilterInterchange derive(Interchange = case(((iifNull(SettlementAmount,0) * iifNull(toFloat(CompletedAmtPcnt),0)) + (iifNull(AmountTransaction,0) * iifNull(toFloat(RequestedAmtPcnt),0)) + (iifNull(ExceptionAmount,0) * iifNull(toFloat(ExceptionAmtPcnt),0)) + (iifNull(toFloat(FixedAmt),0))) >  iifNull(toFloat(MaxAmt),0) && !isNull(MaxAmt)\n, iifNull(toFloat(MaxAmt),0)\n, case(((iifNull(SettlementAmount,0) * iifNull(toFloat(CompletedAmtPcnt),0)) + \n\t\t\t\t\t (iifNull(AmountTransaction,0) * iifNull(toFloat(RequestedAmtPcnt),0)) + \n\t\t\t\t\t (iifNull(ExceptionAmount,0) * iifNull(toFloat(ExceptionAmtPcnt),0)) + \n\t\t\t\t\t (iifNull(toFloat(FixedAmt),0))) < iifNull(toFloat(MinAmt),0) && !isNull(MinAmt)\n\t, iifNull(toFloat(MinAmt),0)\n\t, ((iifNull(SettlementAmount,0) * iifNull(toFloat(CompletedAmtPcnt),0)) + \n\t\t\t\t\t (iifNull(AmountTransaction,0) * iifNull(toFloat(RequestedAmtPcnt),0)) + \n\t\t\t\t\t (iifNull(ExceptionAmount,0) * iifNull(toFloat(ExceptionAmtPcnt),0)) + \n\t\t\t\t\t (iifNull(toFloat(FixedAmt),0)))\n\t\t)\n\t)) ~> calcInterchange\ncalcInterchange window(over(IDNumber),\n\tasc(Number, true),\n\tasc(ProcessingOrder, true),\n\trowNumber = rowNumber()) ~> windowInterchangeAmount\nwindowInterchangeAmount filter(rowNumber == 1) ~> filterTopInterchange\nfilterTopInterchange select(mapColumn(\n\t\tFISDebitTransactionID_interchange = FISDebitTransactionID_raw,\n\t\tInterchange,\n\t\tInterchangeRAW_RowID = ROWID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> selectInterchange\nselectPreConformed, selectInterchange join(FISDebitTransactionID_raw == FISDebitTransactionID_interchange,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> joinTransactionsInterchange\njoinTransactionsInterchange derive(Interchange = iif(isNull(Interchange),0.00,Interchange),\n\t\tTransaction_Key = crc32(iif(isNull(AccountNumber),'',AccountNumber)\r\n, iif(isNull(DateLocalTransaction),'',toString(DateLocalTransaction))\r\n, iif(isNull(TimeLocalTransaction),'',TimeLocalTransaction)\r\n, iif(isNull(TransmissionDate),'',toString(TransmissionDate))\r\n, iif(isNull(TransmissionTime),'',TransmissionTime)\r\n, iif(isNull(SettlementAmount),0.00,SettlementAmount)\r\n, iif(isNull(DDSITransactionCode),'',DDSITransactionCode)\r\n, iif(isNull(RetrievalReferenceNumber),'',RetrievalReferenceNumber)\r\n, 1),\n\t\tAgentNo = 'UNK',\n\t\tAgentBank = 'UNK',\n\t\tSystemNo = 'UNK',\n\t\tOperCode = 'UNK',\n\t\tClientNo = 'UNK',\n\t\tPrincipalNo = 'UNK',\n\t\tMerchantAccountNumber = 'UNK',\n\t\tcreate_date = currentTimestamp()) ~> HashAndMissingInterchange\nFISTransaction select(mapColumn(\n\t\tFISDebitTransactionID,\n\t\tAccountNumber,\n\t\tClientNumberAcquirer,\n\t\tUserDataAcquirerNetworkID,\n\t\tBINNumberIssuer,\n\t\tPointOfServiceEntryMode,\n\t\tNationalPointOfServiceConditionCode,\n\t\tClientNumberIssuer,\n\t\tUserDataIssuerNetworkID,\n\t\tAdditionalPrivateData,\n\t\tMerchantType,\n\t\tOriginalDataTransmissionMMDD,\n\t\tDateLocalTransaction,\n\t\tResponseCode,\n\t\tCardAcceptorNameLocation,\n\t\tCardAcceptorNameCity,\n\t\tCardAcceptorNameCountry,\n\t\tCardAcceptorTerminalIdentificationCode,\n\t\tCardAcceptorNameStateProvince,\n\t\tNationalPointOfServiceGeographicDataZip,\n\t\tPaymentTokenRequestorID,\n\t\tDDSITransactionCode,\n\t\tAmountTransaction,\n\t\tDateSettlement,\n\t\tAmountSettlement,\n\t\tSettlementInstitutionID,\n\t\tAcquiringInstitutionIDCode,\n\t\tAmountSettlementFee,\n\t\tAmountSettlementFeeSignType,\n\t\tAmountTransactionFeeSignType,\n\t\tReplacementAmountsTransactionAmount,\n\t\tISOMessageType,\n\t\tTransmissionDate,\n\t\tTransmissionTime,\n\t\tTimeLocalTransaction,\n\t\tRetrievalReferenceNumber,\n\t\tAuthorizationIDResponseID,\n\t\tAdviceReversalReasonCodeByteMap,\n\t\tAdviceReversalReasonCodeAdvice,\n\t\tSystemTraceAuditNumber,\n\t\tAcquirerTraceData,\n\t\tVisaTransactionID,\n\t\tMasterCardTransactionLifeCycleID\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LimitData\nrefInterchange derive(each(match(type=='string'), $$ = trim(iif($$=='',toString(null()),$$)))) ~> TrimInterchange\nTrimInterchange derive(InterchangeRateNameStartDate = toDate(iif(InterchangeRateNameStartDate == '' || isNull(InterchangeRateNameStartDate),'1900-01-01', InterchangeRateNameStartDate),'yyyy-MM-dd'),\n\t\tInterchangeRateNameEndDate = toDate(iif(InterchangeRateNameEndDate == '' || isNull(InterchangeRateNameEndDate),'9999-12-31', InterchangeRateNameEndDate),'yyyy-MM-dd')) ~> finalInterchange\nFilterMatchedInterchange alterRow(upsertIf(true())) ~> Upsert\nHashAndMissingInterchange filter(!isNull(InterchangeRAW_RowID)) ~> FilterMatchedInterchange\nHashAndMissingInterchange sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tAccountNumber as string,\n\t\tAcquirerAccountNumber as string,\n\t\tAcquirerNetworkCode as string,\n\t\tBin_ISO as string,\n\t\tBin_EXT as string,\n\t\tCardEntryMethodCode as string,\n\t\tCardPresenceDescription as string,\n\t\tImportFileDate as date,\n\t\tSource as string,\n\t\tInterchangeAmount as float,\n\t\tIssuerAccountNumber as string,\n\t\tIssuerNetworkCode as string,\n\t\tMerchantName as string,\n\t\tMerchantType as string,\n\t\tMonetary as integer,\n\t\tOnUsDescription as string,\n\t\tOriginalDataTransmissionDate as date,\n\t\tOriginDate as date,\n\t\tRecurringDescription as string,\n\t\tResponseCode as string,\n\t\tSettlementAmount as float,\n\t\tSettlementDate as date,\n\t\tSurchargeAmount as float,\n\t\tTerminalAddress as string,\n\t\tTerminalCity as string,\n\t\tTerminalCountry as string,\n\t\tTerminalKey as string,\n\t\tTerminalState as string,\n\t\tTerminalZipCode as string,\n\t\tTokenRequestId as string,\n\t\tTransactionName as string,\n\t\tTransactionTypeCode as string,\n\t\tTransmissionDate as date,\n\t\tTransmissionTime as string,\n\t\tTimeLocalTransaction as string,\n\t\tRetrievalReferenceNumber as string,\n\t\tTransaction_Key as long,\n\t\tAgentNo as string,\n\t\tSystemNo as string,\n\t\tOperCode as string,\n\t\tPrincipalNo as string,\n\t\tAuthorizationNo as string,\n\t\tClientNo as string,\n\t\ttransaction_amount as float,\n\t\tis_authorization as integer,\n\t\tAcquiringRTN as string,\n\t\tSettlementRTN as string,\n\t\tTraceNumber as string,\n\t\tAcqTraceNumber as string,\n\t\tVisaTransactionID as string,\n\t\tMasterCardTransactionID as string,\n\t\tMerchantAccountNumber as string,\n\t\tISOMessageType as string,\n\t\tForwardingRTN as string\n\t),\n\tformat: 'parquet',\n\tfilePattern:($fileName),\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tsaveOrder: 1,\n\tmapColumn(\n\t\tAccountNumber,\n\t\tAcquirerAccountNumber = ClientNumberAcquirer,\n\t\tAcquirerNetworkCode = UserDataAcquirerNetworkID,\n\t\tBin_ISO = ISOBin,\n\t\tBin_EXT = BINNumberIssuer,\n\t\tCardEntryMethodCode = PointOfServiceEntryMode,\n\t\tCardPresenceDescription = CardPrescenceDescription,\n\t\tImportFileDate = FISDebitImportFileDate,\n\t\tSource,\n\t\tInterchangeAmount = Interchange,\n\t\tIssuerAccountNumber = ClientNumberIssuer,\n\t\tIssuerNetworkCode = UserDataIssuerNetworkID,\n\t\tMerchantName,\n\t\tMerchantType,\n\t\tMonetary = monetary_flag,\n\t\tOnUsDescription = OnUSDescription,\n\t\tOriginalDataTransmissionDate = OriginalDataTransmissionMMDD,\n\t\tOriginDate = DateLocalTransaction,\n\t\tRecurringDescription,\n\t\tResponseCode,\n\t\tSettlementAmount,\n\t\tSettlementDate,\n\t\tSurchargeAmount,\n\t\tTerminalAddress = CardAcceptorNameLocation,\n\t\tTerminalCity = CardAcceptorNameCity,\n\t\tTerminalCountry = CardAcceptorNameCountry,\n\t\tTerminalKey = CardAcceptorTerminalIdentificationCode,\n\t\tTerminalState = CardAcceptorNameStateProvince,\n\t\tTerminalZipCode = NationalPointOfServiceGeographicDataZip,\n\t\tTokenRequestId = PaymentTokenRequestorID,\n\t\tTransactionName = TransactionName_final,\n\t\tTransactionTypeCode = DDSITransactionCode,\n\t\tTransmissionDate,\n\t\tTransmissionTime,\n\t\tTimeLocalTransaction,\n\t\tRetrievalReferenceNumber,\n\t\tTransaction_Key,\n\t\tAgentNo,\n\t\tSystemNo,\n\t\tOperCode,\n\t\tPrincipalNo,\n\t\tAuthorizationNo,\n\t\tClientNo,\n\t\ttransaction_amount = AmountTransaction,\n\t\tis_authorization,\n\t\tAcquiringRTN,\n\t\tSettlementRTN,\n\t\tTraceNumber = SystemTraceAuditNumber,\n\t\tAcqTraceNumber = AcquirerTraceData,\n\t\tVisaTransactionID,\n\t\tMasterCardTransactionID = MasterCardTransactionLifeCycleID,\n\t\tMerchantAccountNumber\n\t),\n\tpartitionBy('hash', 1)) ~> ConformedTransactions\nUpsert sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tInterchangeRAW_RowID as long,\n\t\ttransaction_key as long,\n\t\taccount_number as string,\n\t\ttransaction_name as string,\n\t\tacquirer_network as string,\n\t\tinternational as string,\n\t\tacquirer_rtn as string,\n\t\tsettlement_rtn as string,\n\t\tpremise as string,\n\t\tcard_entry as string,\n\t\tmerchant_type as string,\n\t\tsettlement_amount as decimal(25,2),\n\t\ttransaction_amount as decimal(25,2),\n\t\texception_amount as decimal(25,2),\n\t\tinterchange_amount as decimal(25,2),\n\t\timport_file_date_key as date,\n\t\tcreate_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['account_number','transaction_key','import_file_date_key'],\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 2,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tInterchangeRAW_RowID,\n\t\ttransaction_key = Transaction_Key,\n\t\taccount_number = AccountNumber,\n\t\ttransaction_name = TransactionName_final,\n\t\tacquirer_network = AcquirerNetworkID,\n\t\tinternational = International,\n\t\tacquirer_rtn = AcquiringRTN,\n\t\tsettlement_rtn = SettlementRTN,\n\t\tpremise = Premise,\n\t\tcard_entry = PointOfServiceEntryMode,\n\t\tmerchant_type = MerchantType,\n\t\tsettlement_amount = SettlementAmount,\n\t\ttransaction_amount = AmountTransaction,\n\t\texception_amount = ExceptionAmount,\n\t\tinterchange_amount = Interchange,\n\t\timport_file_date_key = FISDebitImportFileDate,\n\t\tcreate_date\n\t)) ~> dwAuditInterchangeLegacy"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/populate_DimAccountGeography')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This will populate DimAccountGeograpy in the member schema in Azure SQ DW.",
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "src_stgFISDemographics",
+                                "type": "DatasetReference"
+                            },
+                            "name": "FISDebitDemographic"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Account_Geography",
+                                "type": "DatasetReference"
+                            },
+                            "name": "dimAccountGeography"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "AccountRegionReference",
+                                "type": "DatasetReference"
+                            },
+                            "name": "RefAccountRegionReference"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_Account_Geography",
+                                "type": "DatasetReference"
+                            },
+                            "name": "SnkdimAccountGeography"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "GetDimAccountAttributes"
+                        },
+                        {
+                            "name": "GetDistinctAccountGeography"
+                        },
+                        {
+                            "name": "TrimSpaces"
+                        },
+                        {
+                            "name": "GetRegionDivisionLabels"
+                        },
+                        {
+                            "name": "FormatAttributes"
+                        },
+                        {
+                            "name": "GetHashkey"
+                        },
+                        {
+                            "name": "LowerAttributesForLookup"
+                        },
+                        {
+                            "name": "JoinDimAccountGeography"
+                        },
+                        {
+                            "name": "AlterRow1"
+                        },
+                        {
+                            "name": "FilterHeader"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tFISDebitDemographicID as string,\n\t\tAccountNumber as string,\n\t\tPlasticNumber as string,\n\t\tGreetingName as string,\n\t\tFinancialInstitutionRouteTransit as string,\n\t\tCardStatus as string,\n\t\tLastUsedDate as string,\n\t\tAuthorizationLimitGroup as string,\n\t\tPINOffset as string,\n\t\tTrackTwoDate as string,\n\t\tDDAAccountNumber as string,\n\t\tSavingsAccountNumber as string,\n\t\tAdditionalDDAAccountNumberOne as string,\n\t\tAdditionalDDAAccountNumberTwo as string,\n\t\tAdditionalDDAAccountNumberThree as string,\n\t\tAdditionalDDAAccountNumberFour as string,\n\t\tAdditionalDDAAccountNumberFive as string,\n\t\tAdditionalSavingsAccountNumberOne as string,\n\t\tAdditionalSavingsAccountNumberTwo as string,\n\t\tAdditionalSavingsAccountNumberThree as string,\n\t\tAdditionalSavingsAccountNumberFour as string,\n\t\tAdditionalSavingsAccountNumberFive as string,\n\t\tAdditionalCreditAccountNumberOne as string,\n\t\tAdditionalCreditAccountNumberTwo as string,\n\t\tAdditionalCreditAccountNumberThree as string,\n\t\tAdditionalCreditAccountNumberFour as string,\n\t\tAdditionalOtherAccountNumberOne as string,\n\t\tAdditionalOtherAccountNumberTwo as string,\n\t\tAdditionalOtherAccountNumberThree as string,\n\t\tAdditionalOtherAccountNumberFour as string,\n\t\tCardholderAddressLineOne as string,\n\t\tCardholderAddressLineTwo as string,\n\t\tCardholderAddressCity as string,\n\t\tCardholderAddressState as string,\n\t\tCardholderAddressZip as string,\n\t\tCardholderFirstName as string,\n\t\tCardholderLastName as string,\n\t\tCardholderMiddleInitial as string,\n\t\tCardActivationFlag as string,\n\t\tOriginalIssueDate as string,\n\t\tLastIssueDate as string,\n\t\tNationalIdentifier as string,\n\t\tMothersMaidenName as string,\n\t\tHomePhone as string,\n\t\tWorkPhone as string,\n\t\tUserValidation as string,\n\t\tVRUCounter as string,\n\t\tBirthDate as string,\n\t\tCardActivationMethod as string,\n\t\tCardActivationDate as string,\n\t\tCardActivationTime as string,\n\t\tPreviousExpirationDate as string,\n\t\tPreviousCardActivationStatus as string,\n\t\tCardStatusTwo as string,\n\t\tFISDebitImportFileName as string,\n\t\tCreateDate as string,\n\t\tBINNumber as string,\n\t\tClientNumberIssuer as string,\n\t\tHashFullRecord as string,\n\t\tLastUpdatedDate as string,\n\t\tReportDate as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> FISDebitDemographic\nsource(output(\n\t\taccount_geography_key as string,\n\t\tsource_system_key as integer,\n\t\tregion as string,\n\t\tdivision as string,\n\t\taccount_address_line_one as string,\n\t\taccount_address_line_two as string,\n\t\taccount_city as string,\n\t\taccount_state_province_code as string,\n\t\taccount_postal_code as string,\n\t\taccount_country_code as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp,\n\t\tmodified_date as timestamp\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false,\n\tpartitionColumn: 'account_geography_key',\n\tpartitionBy('external', 30)) ~> dimAccountGeography\nsource(output(\n\t\tRegion as string,\n\t\tRegionName as string,\n\t\tDivision as string,\n\t\tDivisionName as string,\n\t\tState as string,\n\t\tStateCode as string,\n\t\tCountryCode as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> RefAccountRegionReference\nFilterHeader select(mapColumn(\n\t\tCardholderAddressLineOne,\n\t\tCardholderAddressLineTwo,\n\t\tCardholderAddressState,\n\t\tCardholderAddressCity,\n\t\tCardholderAddressZip,\n\t\tReportDate\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> GetDimAccountAttributes\nLowerAttributesForLookup aggregate(groupBy(lower_account_city,\n\t\tlower_account_state,\n\t\tSource_System_Key_FIS,\n\t\tCardholderAddressZip,\n\t\tlower_addresslineOne,\n\t\tlower_addresslineTwo),\n\tReportDate = max(ReportDate)) ~> GetDistinctAccountGeography\nGetDimAccountAttributes derive(each(match(type=='string'), $$ = trim(iif(toString($$)!='NULL',$$,toString(null())))),\n\t\tSource_System_Key_FIS = 1) ~> TrimSpaces\nGetHashkey, RefAccountRegionReference lookup(lower_account_state == lower(StateCode),\n\tmultiple: false,\n\tpickup: 'any',\n\tbroadcast: 'auto')~> GetRegionDivisionLabels\nJoinDimAccountGeography derive(CreateDate = coalesce(create_date, currentTimestamp()),\n\t\tmodify_date = currentTimestamp(),\n\t\tTitle_account_addresslineOne = initCap(lower_addresslineOne),\n\t\tTitle_account_addresslineTwo = initCap(lower_addresslineTwo),\n\t\tTitle_account_city = initCap(lower_account_city),\n\t\tReportDate = toDate(ReportDate, 'yyyy-mm-dd')) ~> FormatAttributes\nGetDistinctAccountGeography derive(AccountGeographyHashkey = md5\r\n(\r\n  iif(isNull(lower_addresslineOne),'',lower_addresslineOne)\r\n, iif(isNull(lower_addresslineTwo),'',lower_addresslineTwo)\r\n, iif(isNull(lower_account_city),'',lower_account_city)\r\n, iif(isNull(lower_account_state),'',lower_account_state)\r\n, iif(isNull(CardholderAddressZip),'',CardholderAddressZip)\r\n, iif(isNull(Source_System_Key_FIS),0,Source_System_Key_FIS)\r\n)) ~> GetHashkey\nTrimSpaces derive(lower_account_city = lower(CardholderAddressCity),\n\t\tlower_account_state = lower(CardholderAddressState),\n\t\tlower_addresslineOne = lower(CardholderAddressLineOne),\n\t\tlower_addresslineTwo = lower(CardholderAddressLineTwo)) ~> LowerAttributesForLookup\nGetRegionDivisionLabels, dimAccountGeography join(AccountGeographyHashkey == account_geography_key,\n\tjoinType:'left',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> JoinDimAccountGeography\nFormatAttributes alterRow(upsertIf(true())) ~> AlterRow1\nFISDebitDemographic filter(FISDebitDemographicID!='FISDebitDemographicID') ~> FilterHeader\nAlterRow1 sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\taccount_geography_key as string,\n\t\tsource_system_key as integer,\n\t\tregion as string,\n\t\tdivision as string,\n\t\taccount_address_line_one as string,\n\t\taccount_address_line_two as string,\n\t\taccount_city as string,\n\t\taccount_state_province_code as string,\n\t\taccount_postal_code as string,\n\t\taccount_country_code as string,\n\t\tload_date as date,\n\t\tcreate_date as timestamp,\n\t\tmodified_date as timestamp\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:false,\n\tupsertable:true,\n\tkeys:['account_geography_key'],\n\tformat: 'table',\n\tstaged: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\taccount_geography_key = AccountGeographyHashkey,\n\t\tsource_system_key = Source_System_Key_FIS,\n\t\tregion = RegionName,\n\t\tdivision = DivisionName,\n\t\taccount_address_line_one = Title_account_addresslineOne,\n\t\taccount_address_line_two = Title_account_addresslineTwo,\n\t\taccount_city = Title_account_city,\n\t\taccount_state_province_code = StateCode,\n\t\taccount_postal_code = CardholderAddressZip,\n\t\taccount_country_code = CountryCode,\n\t\tload_date = ReportDate,\n\t\tcreate_date = CreateDate,\n\t\tmodified_date = modify_date\n\t)) ~> SnkdimAccountGeography"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/update_BinType')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "folder": {
+                    "name": "Dimensions"
+                },
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_BIN",
+                                "type": "DatasetReference"
+                            },
+                            "name": "srcDWBin"
+                        },
+                        {
+                            "dataset": {
+                                "referenceName": "src_rawBinType",
+                                "type": "DatasetReference"
+                            },
+                            "name": "BinType"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "dim_BIN",
+                                "type": "DatasetReference"
+                            },
+                            "name": "snkDWBIN"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "TrimandClean"
+                        },
+                        {
+                            "name": "Join"
+                        },
+                        {
+                            "name": "derivedBinType"
+                        },
+                        {
+                            "name": "LimitSelect"
+                        },
+                        {
+                            "name": "RankBinType"
+                        },
+                        {
+                            "name": "Dedupe"
+                        },
+                        {
+                            "name": "MarkUpdate"
+                        }
+                    ],
+                    "script": "source(output(\n\t\tbin_key as long,\n\t\tsource_system_key as integer,\n\t\tsource_system_id as string,\n\t\tbankIdentificationNumberISO as string,\n\t\tbankIdentificationNumberEXT as string,\n\t\tbin_type as string,\n\t\tclient_key as long\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tisolationLevel: 'READ_UNCOMMITTED',\n\tformat: 'table',\n\tstaged: false) ~> srcDWBin\nsource(output(\n\t\tPROC_ID as string,\n\t\t{PROC_NAME } as string,\n\t\tINSTITUTION_ID as string,\n\t\tINSTITUTION_NAME as string,\n\t\tADDRESS_LINE_1 as string,\n\t\tADDRESS_LINE_2 as string,\n\t\tCITY_TOWN as string,\n\t\tSTATE_ZIPCODE as string,\n\t\tBIN_NUMBER as string,\n\t\tLOGO as string,\n\t\tFILLER_1 as string\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tmoveFiles: ['Reference/BinType/current','Reference/BinType/processed'],\n\twildcardPaths:['Reference/BinType/current/**/*.TXT']) ~> BinType\nBinType derive(each(match(type=='string'), $$ = trim(iif(toString($$)!='NULL',$$,toString(null())))),\n\t\tBIN = replace(BIN_NUMBER,'~','')) ~> TrimandClean\nsrcDWBin, Dedupe join(iif(length(BIN)==9, BIN==bankIdentificationNumberEXT,left(BIN,6)==bankIdentificationNumberISO),\n\tjoinType:'cross',\n\tmatchType:'exact',\n\tignoreSpaces: false,\n\tbroadcast: 'auto')~> Join\nTrimandClean derive(BinType = iif(LOGO=='COOPCRDT' || LOGO=='COOPCRVC', 'Credit', 'Debit')) ~> derivedBinType\nderivedBinType select(mapColumn(\n\t\tBIN,\n\t\tBinType\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> LimitSelect\nLimitSelect window(over(BIN),\n\tasc(BinType, false),\n\tranking = rowNumber()) ~> RankBinType\nRankBinType filter(ranking==1) ~> Dedupe\nJoin alterRow(updateIf(true())) ~> MarkUpdate\nMarkUpdate sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tinput(\n\t\tbin_key as long,\n\t\tsource_system_key as integer,\n\t\tsource_system_id as string,\n\t\tbankIdentificationNumberISO as string,\n\t\tbankIdentificationNumberEXT as string,\n\t\tbin_type as string,\n\t\tclient_key as long\n\t),\n\tdeletable:false,\n\tinsertable:false,\n\tupdateable:true,\n\tupsertable:false,\n\tkeys:['bin_key'],\n\tformat: 'table',\n\tstaged: true,\n\tallowCopyCommand: true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tbin_key,\n\t\tsource_system_key,\n\t\tsource_system_id,\n\t\tbankIdentificationNumberISO,\n\t\tbankIdentificationNumberEXT,\n\t\tbin_type = BinType,\n\t\tclient_key\n\t)) ~> snkDWBIN"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}

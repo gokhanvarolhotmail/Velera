@@ -1,0 +1,3999 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "EnterpriseDataSourceProdDF"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_Sem_Scorebands')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Populates Snowflake table for Scorebands",
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [
+                    "Cooper"
+                ],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "CLIENTNUM",
+                        "type": "VARCHAR",
+                        "precision": 4,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENTNAME",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTIONYEARMONTH",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "BAND0",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "BAND1",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "BAND2",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "BAND3",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "BAND4",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "BAND5",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "BAND6",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "BAND7",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "BAND8",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "BAND9",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "SCOREBANDS"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Stg_FraudTransactionScore')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "FRAUD_TRANSACTION_SCORE_ID",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "CARD_NUM",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "ACCOUNT_NUM",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "TRANSACTION_DTM",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    },
+                    {
+                        "name": "TRANSACTION_AMT",
+                        "type": "money",
+                        "precision": 19,
+                        "scale": 4
+                    },
+                    {
+                        "name": "COOPER_SCORE",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FRAUD_WBE_CD",
+                        "type": "char"
+                    },
+                    {
+                        "name": "SOURCE_ID",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CREATE_DTE",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "transaction",
+                    "table": "STG_FRAUD_TRANSACTION_SCORE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_Stage_FISFeedzai')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "File from stage",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [
+                    "Cooper"
+                ],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "UpdatedFeedzai.csv",
+                        "folderPath": "Coop/COOPER/CardTransaction/Currentcsv",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FDZ_SOURCE_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_PARTITION_INDEX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_TENANT_KEY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_WKFL_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_INTERNAL_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_DIFFS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_RESULTS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_OUTCOMES",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_TRIGGERED_ACTIONS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_FEEDBACKS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_UUID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_timestamp",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZTimeStampDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_SCHEMA_UID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mti",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_pan",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ttc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "atc1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "atc2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "currency_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "currency_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_currency_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_currency_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_conv_rate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transmission_datetime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_conv_rate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "stan",
+                        "type": "String"
+                    },
+                    {
+                        "name": "local_datetime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_effective_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_expiration_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "lifecycle_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_card_read_method",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_ver_method",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_environment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_security_characteristics",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_seq_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "function_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reason_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mcc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_read_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_ver_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_approval_code_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_rec_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_acceptor_rec_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_disp_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_acceptor_disp_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_icc_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track3_rw",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_card_capture_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_pin_len_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_indicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "original_amount_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "forwarding_institution_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "account_digital_signature",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_certificate_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_certificate_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "xid",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track2_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track3_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "retrieval_reference_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "approval_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "action_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_url",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_email",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track1_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "amount_fees",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_compress_bill_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_add_id_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_add_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "avs_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_category_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_presence_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_presence_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "receiving_institution_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_timezone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "secure_3d_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_bin",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_brand",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_issuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_last4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_credit_score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_transaction_amount_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_credit_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_available_balance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_number_of_cardholders",
+                        "type": "String"
+                    },
+                    {
+                        "name": "account_iban",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_email",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_phone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_phone_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_citizen_id_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_passport_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_driver_license",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_ssn",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_tax_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_registration_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_dob",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_number_of_accounts",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_total_balance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_total_credit_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_kyc_lvl",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_occupation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_cards",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_poc_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_risky_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_visa_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_mastercard_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_phone_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_external_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "alert_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "device_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_occurred_at",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_subtype",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_status_reason",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_start_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_comm_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_end_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_response_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_feedback_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_start_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_reason",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_submitted_by",
+                        "type": "String"
+                    },
+                    {
+                        "name": "feedback_end_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_refunded",
+                        "type": "String"
+                    },
+                    {
+                        "name": "feedback_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "fraud_label",
+                        "type": "String"
+                    },
+                    {
+                        "name": "lists_state",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mc_merchant_fraud_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_received_at",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_number_of_cards",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_currency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cap_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_ind",
+                        "type": "String"
+                    },
+                    {
+                        "name": "inst_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_state",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_county",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_country",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pinexists",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_ins_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "trans_descript",
+                        "type": "String"
+                    },
+                    {
+                        "name": "retry_ind",
+                        "type": "String"
+                    },
+                    {
+                        "name": "info_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_id",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_Stage_FISERVFalconFad')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "File from stage",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Stage"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "UpdatedFalconFad.csv",
+                        "folderPath": "Fiserv/FalconFad/Current",
+                        "fileSystem": "stage"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_drpToRawFiles_Feedzai')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('Coop/COOPER/CardTransaction/',substring(dataset().outputdirectorypath,17,4),'/',substring(dataset().outputdirectorypath,21,2),'/',substring(dataset().outputdirectorypath,23,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FDZ_SOURCE_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_PARTITION_INDEX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_TENANT_KEY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_WKFL_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_INTERNAL_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_DIFFS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_RESULTS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_OUTCOMES",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_TRIGGERED_ACTIONS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_FEEDBACKS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_UUID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_timestamp",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZTimeStampDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_SCHEMA_UID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mti",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_pan",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ttc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "atc1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "atc2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "currency_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "currency_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_currency_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_currency_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_conv_rate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transmission_datetime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_conv_rate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "stan",
+                        "type": "String"
+                    },
+                    {
+                        "name": "local_datetime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_effective_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_expiration_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "lifecycle_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_card_read_method",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_ver_method",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_environment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_security_characteristics",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_seq_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "function_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reason_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mcc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_read_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_ver_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_approval_code_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_rec_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_acceptor_rec_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_disp_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_acceptor_disp_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_icc_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track3_rw",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_card_capture_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_pin_len_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_indicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "original_amount_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "forwarding_institution_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "account_digital_signature",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_certificate_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_certificate_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "xid",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track2_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track3_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "retrieval_reference_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "approval_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "action_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_url",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_email",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track1_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "amount_fees",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_compress_bill_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_add_id_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_add_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "avs_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_category_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_presence_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_presence_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "receiving_institution_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_timezone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "secure_3d_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_bin",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_brand",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_issuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_last4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_credit_score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_transaction_amount_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_credit_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_available_balance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_number_of_cardholders",
+                        "type": "String"
+                    },
+                    {
+                        "name": "account_iban",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_email",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_phone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_phone_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_citizen_id_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_passport_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_driver_license",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_ssn",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_tax_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_registration_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_dob",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_number_of_accounts",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_total_balance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_total_credit_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_kyc_lvl",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_occupation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_cards",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_poc_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_risky_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_visa_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_mastercard_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_phone_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_external_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "alert_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "device_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_occurred_at",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_subtype",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_status_reason",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_start_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_comm_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_end_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_response_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_feedback_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_start_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_reason",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_submitted_by",
+                        "type": "String"
+                    },
+                    {
+                        "name": "feedback_end_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_refunded",
+                        "type": "String"
+                    },
+                    {
+                        "name": "feedback_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "fraud_label",
+                        "type": "String"
+                    },
+                    {
+                        "name": "lists_state",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mc_merchant_fraud_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_received_at",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_number_of_cards",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_currency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cap_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_ind",
+                        "type": "String"
+                    },
+                    {
+                        "name": "inst_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_state",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_county",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_country",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pinexists",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_ins_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "trans_descript",
+                        "type": "String"
+                    },
+                    {
+                        "name": "retry_ind",
+                        "type": "String"
+                    },
+                    {
+                        "name": "info_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_id",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_Feedzai_meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "This is the file from Dropzone for Feedzai - to load into [transaction].[FRAUD_TRANSACTION_SCORE] for Detection Rate Dashboard ",
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [
+                    "Cooper"
+                ],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Coop/COOPER/CardTransaction",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FDZ_SOURCE_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_PARTITION_INDEX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_TENANT_KEY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_WKFL_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_INTERNAL_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_DIFFS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_RESULTS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_OUTCOMES",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_TRIGGERED_ACTIONS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_FEEDBACKS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_UUID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_timestamp",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZTimeStampDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_SCHEMA_UID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mti",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_pan",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ttc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "atc1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "atc2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "currency_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "currency_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_currency_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_currency_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_conv_rate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transmission_datetime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_conv_rate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "stan",
+                        "type": "String"
+                    },
+                    {
+                        "name": "local_datetime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_effective_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_expiration_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "lifecycle_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_card_read_method",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_ver_method",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_environment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_security_characteristics",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_seq_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "function_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reason_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mcc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_read_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_ver_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_approval_code_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_rec_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_acceptor_rec_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_disp_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_acceptor_disp_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_icc_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track3_rw",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_card_capture_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_pin_len_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_indicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "original_amount_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "forwarding_institution_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "account_digital_signature",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_certificate_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_certificate_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "xid",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track2_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track3_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "retrieval_reference_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "approval_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "action_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_url",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_email",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track1_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "amount_fees",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_compress_bill_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_add_id_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_add_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "avs_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_category_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_presence_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_presence_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "receiving_institution_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_timezone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "secure_3d_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_bin",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_brand",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_issuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_last4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_credit_score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_transaction_amount_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_credit_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_available_balance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_number_of_cardholders",
+                        "type": "String"
+                    },
+                    {
+                        "name": "account_iban",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_email",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_phone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_phone_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_citizen_id_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_passport_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_driver_license",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_ssn",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_tax_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_registration_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_dob",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_number_of_accounts",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_total_balance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_total_credit_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_kyc_lvl",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_occupation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_cards",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_poc_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_risky_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_visa_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_mastercard_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_phone_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_external_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "alert_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "device_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_occurred_at",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_subtype",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_status_reason",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_start_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_comm_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_end_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_response_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_feedback_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_start_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_reason",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_submitted_by",
+                        "type": "String"
+                    },
+                    {
+                        "name": "feedback_end_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_refunded",
+                        "type": "String"
+                    },
+                    {
+                        "name": "feedback_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "fraud_label",
+                        "type": "String"
+                    },
+                    {
+                        "name": "lists_state",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mc_merchant_fraud_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_received_at",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_number_of_cards",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_currency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cap_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_ind",
+                        "type": "String"
+                    },
+                    {
+                        "name": "inst_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_state",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_county",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_country",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pinexists",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_ins_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "trans_descript",
+                        "type": "String"
+                    },
+                    {
+                        "name": "retry_ind",
+                        "type": "String"
+                    },
+                    {
+                        "name": "info_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_id",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ADLS_all_dzFeedzai')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Coop/COOPER/CardTransaction",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "FDZ_SOURCE_ID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_PARTITION_INDEX",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_TENANT_KEY",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_WKFL_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_INTERNAL_STATE",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_DIFFS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_RESULTS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_OUTCOMES",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_TRIGGERED_ACTIONS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_FEEDBACKS",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_UUID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_timestamp",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZTimeStampDate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "FDZ_SCHEMA_UID",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mti",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_pan",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ttc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "atc1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "atc2",
+                        "type": "String"
+                    },
+                    {
+                        "name": "currency_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "currency_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_currency_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_currency_unit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_amount",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_conv_rate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transmission_datetime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_conv_rate",
+                        "type": "String"
+                    },
+                    {
+                        "name": "stan",
+                        "type": "String"
+                    },
+                    {
+                        "name": "local_datetime",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_effective_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_expiration_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "lifecycle_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_card_read_method",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_ver_method",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_environment",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_security_characteristics",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_seq_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "function_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reason_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mcc",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_read_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_ver_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_approval_code_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_rec_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_acceptor_rec_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cardholder_disp_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_acceptor_disp_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_icc_data_len",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track3_rw",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_card_capture_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_pin_len_cap",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "reconciliation_indicator",
+                        "type": "String"
+                    },
+                    {
+                        "name": "original_amount_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "forwarding_institution_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "account_digital_signature",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_certificate_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_certificate_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "xid",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track2_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track3_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "retrieval_reference_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "approval_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "action_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_url",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_email",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_track1_data",
+                        "type": "String"
+                    },
+                    {
+                        "name": "amount_fees",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_bill_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_compress_bill_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_add_id_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_add_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "avs_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_category_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_presence_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_presence_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "receiving_institution_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_timezone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "secure_3d_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_bin",
+                        "type": "String"
+                    },
+                    {
+                        "name": "cardholder_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_brand",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_issuer",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_last4",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_credit_score",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_transaction_amount_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_credit_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_available_balance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_number_of_cardholders",
+                        "type": "String"
+                    },
+                    {
+                        "name": "account_iban",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_email",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_phone",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_phone_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_citizen_id_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_passport_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_driver_license",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_ssn",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_tax_number",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_registration_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_dob",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_number_of_accounts",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_total_balance",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_total_credit_limit",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_kyc_lvl",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_occupation",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_cards",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_street_addr",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_zip",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_city",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_region",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_ip_country_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "terminal_poc_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_risky_flag",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_visa_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_mastercard_risk",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_phone_val_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_latitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acceptor_longitude",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_external_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "alert_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "device_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_occurred_at",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_subtype",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_status",
+                        "type": "String"
+                    },
+                    {
+                        "name": "transaction_status_reason",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_start_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_comm_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_end_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_response_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "oob_feedback_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_start_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_reason",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_submitted_by",
+                        "type": "String"
+                    },
+                    {
+                        "name": "feedback_end_date",
+                        "type": "String"
+                    },
+                    {
+                        "name": "dispute_refunded",
+                        "type": "String"
+                    },
+                    {
+                        "name": "feedback_notes",
+                        "type": "String"
+                    },
+                    {
+                        "name": "fraud_label",
+                        "type": "String"
+                    },
+                    {
+                        "name": "lists_state",
+                        "type": "String"
+                    },
+                    {
+                        "name": "mc_merchant_fraud_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "event_received_at",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_number_of_cards",
+                        "type": "String"
+                    },
+                    {
+                        "name": "customer_currency",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pos_cap_code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_ind",
+                        "type": "String"
+                    },
+                    {
+                        "name": "inst_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_state",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_county",
+                        "type": "String"
+                    },
+                    {
+                        "name": "nationalpos_country",
+                        "type": "String"
+                    },
+                    {
+                        "name": "pinexists",
+                        "type": "String"
+                    },
+                    {
+                        "name": "acquirer_ins_id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "trans_descript",
+                        "type": "String"
+                    },
+                    {
+                        "name": "retry_ind",
+                        "type": "String"
+                    },
+                    {
+                        "name": "info_type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "card_id",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Vw_wbescore')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Views"
+                },
+                "annotations": [
+                    "cooper"
+                ],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "ClientNumber",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "client_name",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "CooperscoeReasonCode",
+                        "type": "char"
+                    },
+                    {
+                        "name": "ReasonCodeDescription",
+                        "type": "char"
+                    },
+                    {
+                        "name": "TransactionYearMonth",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "WBECount",
+                        "type": "int",
+                        "precision": 10
+                    },
+                    {
+                        "name": "WBEPercentage",
+                        "type": "decimal",
+                        "precision": 18,
+                        "scale": 2
+                    },
+                    {
+                        "name": "CreateDate",
+                        "type": "datetime",
+                        "precision": 23,
+                        "scale": 3
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "sem",
+                    "table": "vw_WBEScore"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_SF_Sem_WBEscore')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "Populates Snowflake table for wbe",
+                "linkedServiceName": {
+                    "referenceName": "LS_SF_CONSOLIDATE",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "SnowFlake/SEM"
+                },
+                "annotations": [
+                    "Cooper"
+                ],
+                "type": "SnowflakeV2Table",
+                "schema": [
+                    {
+                        "name": "CLIENTNUM",
+                        "type": "VARCHAR",
+                        "precision": 4,
+                        "scale": 0
+                    },
+                    {
+                        "name": "CLIENTNAME",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "COOPERSCOREREASONCODE",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "REASONCODEDESCRIPTION",
+                        "type": "VARCHAR",
+                        "scale": 0
+                    },
+                    {
+                        "name": "TRANSACTIONYEARMONTH",
+                        "type": "VARCHAR",
+                        "precision": 6,
+                        "scale": 0
+                    },
+                    {
+                        "name": "WBECOUNT",
+                        "type": "VARCHAR",
+                        "precision": 100,
+                        "scale": 0
+                    },
+                    {
+                        "name": "WBEPERCENTAGE",
+                        "type": "NUMBER",
+                        "precision": 18,
+                        "scale": 2
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "SEM",
+                    "table": "WBESCORE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_dzWBE_Meta')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "Reference/WBE",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Reason Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Short Description",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Long Description",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_all_dzWBE')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Drop Zone"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "Reference/WBE",
+                        "fileSystem": "drop-zone"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Reason Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Short Description",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Long Description",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_drpToRawFiles_WBE')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "outputdirectorypath": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().outputdirectorypath",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@concat('WBE/',substring(dataset().outputdirectorypath,10,4),'/',substring(dataset().outputdirectorypath,14,2),'/',substring(dataset().outputdirectorypath,16,2))",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Reason Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Short Description",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Long Description",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_WBE')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "FRAUD_WBE_CD",
+                        "type": "char"
+                    },
+                    {
+                        "name": "WBE_SHORT_DSC",
+                        "type": "char"
+                    },
+                    {
+                        "name": "WBE_LONG_DSC",
+                        "type": "char"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "transaction",
+                    "table": "Stg_FRAUD_WBE"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_WBE')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Data Lake Storage/Raw"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "FRAUD_WBE_20210621.csv",
+                        "folderPath": "WBE/2021/06/21",
+                        "fileSystem": "raw"
+                    },
+                    "columnDelimiter": "|",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Reason Code",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Short Description",
+                        "type": "String"
+                    },
+                    {
+                        "name": "Long Description",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Raw_Interchange_PULS')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Staging"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "RowId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "message",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FileName",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "FIS_Interchange_PULS_RAW"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ABLB_FIXED_File')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "EnterpriseDataSource",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "Directory": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Dynamic"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Directory",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "\u0001",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": false,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "Column",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Raw_Interchange_IPM')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Staging"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "RowId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "message",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FileName",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "FIS_Interchange_IPM_RAW"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Raw_Interchange_VISA')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Staging"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "RowId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "message",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FileName",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "FIS_Interchange_VISA_RAW"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Raw_Interchange_CIRV')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Azure SQL DW/Staging"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "RowId",
+                        "type": "bigint",
+                        "precision": 19
+                    },
+                    {
+                        "name": "message",
+                        "type": "varchar"
+                    },
+                    {
+                        "name": "FileName",
+                        "type": "varchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "FIS_Interchange_CIRV_RAW"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DS_ASDW_Account_Misc_Outbound')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "DataWarehouse",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Rewards"
+                },
+                "annotations": [],
+                "type": "AzureSqlDWTable",
+                "schema": [
+                    {
+                        "name": "filename",
+                        "type": "nvarchar"
+                    },
+                    {
+                        "name": "Data_f",
+                        "type": "nvarchar"
+                    }
+                ],
+                "typeProperties": {
+                    "schema": "Staging",
+                    "table": "AccountMisc"
+                }
+            },
+            "dependsOn": []
+        }
+    ]
+}
