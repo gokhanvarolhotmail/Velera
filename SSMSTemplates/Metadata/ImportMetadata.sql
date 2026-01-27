@@ -16,12 +16,12 @@ EXEC dbo.sp_ImportToTableFromCSV
   , @ThrowError = 1
   , @IsLinux = 1
   , @Create_Primary_Key = 0
-  , @CreateClusteredColumnstoreIndex = 1
+  , @CreateClusteredColumnstoreIndex = 0
   , @UseRealInsteadOfNumeric = 0
   , @DateTimeMilliSecondPrecision = 1
   , @IncludeFileRowId = 0 ;
 
-CREATE UNIQUE INDEX ORDINAL_POSITION ON dbo.SnowflakeTables( TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION ) ;
+CREATE UNIQUE CLUSTERED INDEX ORDINAL_POSITION ON dbo.SnowflakeTables( TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, ORDINAL_POSITION ) ;
 
 CREATE UNIQUE INDEX COLUMN_NAME ON dbo.SnowflakeTables( TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME ) ;
 GO
