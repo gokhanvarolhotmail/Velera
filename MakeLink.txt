@@ -45,3 +45,5 @@ mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio
 C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\22.0\Templates\Sql\_Velera\
 
 mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\22.0\Templates\Sql\_Velera\" "C:\Users\gokha\GitHub\Velera\SSMSTemplates\"
+
+mklink /J "C:\Users\GokhanVarol\AppData\Roaming\Microsoft\SQL Server Management Studio\22.0\Templates\Sql\_Velera\" "C:\Users\GokhanVarol\GitHub\Velera\SSMSTemplates\"
