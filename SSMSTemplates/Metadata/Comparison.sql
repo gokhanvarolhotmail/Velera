@@ -1,61 +1,70 @@
 USE Velera ;
 GO
 DROP TABLE IF EXISTS #Comparison ;
+DROP TABLE IF EXISTS #Snowflake ;
+DROP TABLE IF EXISTS #SQL ;
 
-WITH Snowflake
-AS ( SELECT
-         t.TABLE_CATALOG
-       , t.TABLE_SCHEMA
-       , t.TABLE_NAME
-       , t.TABLE_OWNER
-       , t.TABLE_TYPE
-       , t.IS_TRANSIENT
-       , t.ROW_COUNT
-       , t.BYTES
-       , t.RETENTION_TIME
-       , t.CREATED
-       , t.LAST_ALTERED
-       , t.LAST_DDL
-       , t.LAST_DDL_BY
-       , t.COMMENT
-       , t.IS_TEMPORARY
-       , t.IS_ICEBERG
-       , t.IS_DYNAMIC
-       , c.ColumnCnt
-       , c.ColumnList
-     FROM dbo.SnowflakeTables t
-     LEFT JOIN( SELECT
-                    TABLE_CATALOG
+SELECT
+    t.TABLE_CATALOG
+  , t.TABLE_SCHEMA
+  , t.TABLE_NAME
+  , t.TABLE_TYPE
+  , t.ROW_COUNT
+  , t.CREATED
+  , t.LAST_ALTERED
+  , c.ColumnCnt
+  , c.ColumnList
+  , t.BYTES
+  , CAST(t.BYTES / 1024.0 / 1024.0 AS NUMERIC(20, 3)) AS MBYTES
+  , t.RETENTION_TIME
+  , t.TABLE_OWNER
+  , t.IS_TRANSIENT
+  , t.LAST_DDL
+  , t.LAST_DDL_BY
+  , t.COMMENT
+  , t.IS_TEMPORARY
+  , t.IS_ICEBERG
+  , t.IS_DYNAMIC
+INTO #Snowflake
+FROM dbo.SnowflakeTables t
+LEFT JOIN( SELECT
+               TABLE_CATALOG
+             , TABLE_SCHEMA
+             , TABLE_NAME
+             , COUNT(1) AS ColumnCnt
+             , STRING_AGG(CAST(COLUMN_NAME AS VARCHAR(MAX)), ', ') WITHIN GROUP(ORDER BY COLUMN_NAME) AS ColumnList
+           FROM dbo.SnowflakeColumns
+           GROUP BY TABLE_CATALOG
                   , TABLE_SCHEMA
-                  , TABLE_NAME
-                  , COUNT(1) AS ColumnCnt
-                  , STRING_AGG(CAST(COLUMN_NAME AS VARCHAR(MAX)), ', ') WITHIN GROUP(ORDER BY COLUMN_NAME) AS ColumnList
-                FROM dbo.SnowflakeColumns
-                GROUP BY TABLE_CATALOG
-                       , TABLE_SCHEMA
-                       , TABLE_NAME ) c ON t.TABLE_CATALOG = c.TABLE_CATALOG AND t.TABLE_SCHEMA = c.TABLE_SCHEMA AND t.TABLE_NAME = c.TABLE_NAME )
-   , sql
-AS ( SELECT
-         'ConsolidatedDW' AS TABLE_CATALOG
-       , t.schema_name AS TABLE_SCHEMA
-       , t.object_name AS TABLE_NAME
-       , t.type_desc AS TABLE_TYPE
-       , t.rows AS ROW_COUNT
-       , t.create_date AS CREATED
-       , t.modify_date AS LAST_ALTERED
-       , c.ColumnCnt
-       , c.ColumnList
-     FROM dbo.SQLTables t
-     LEFT JOIN( SELECT
-                    TABLE_CATALOG
+                  , TABLE_NAME ) c ON t.TABLE_CATALOG = c.TABLE_CATALOG AND t.TABLE_SCHEMA = c.TABLE_SCHEMA AND t.TABLE_NAME = c.TABLE_NAME ;
+
+CREATE UNIQUE CLUSTERED INDEX table_name ON #Snowflake( TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME ) ;
+
+SELECT
+    'ConsolidatedDW' AS TABLE_CATALOG
+  , t.schema_name AS TABLE_SCHEMA
+  , t.object_name AS TABLE_NAME
+  , t.type_desc AS TABLE_TYPE
+  , t.rows AS ROW_COUNT
+  , t.create_date AS CREATED
+  , t.modify_date AS LAST_ALTERED
+  , c.ColumnCnt
+  , c.ColumnList
+INTO #SQL
+FROM dbo.SQLTables t
+LEFT JOIN( SELECT
+               TABLE_CATALOG
+             , TABLE_SCHEMA
+             , TABLE_NAME
+             , COUNT(1) AS ColumnCnt
+             , STRING_AGG(CAST(COLUMN_NAME AS VARCHAR(MAX)), ', ') WITHIN GROUP(ORDER BY COLUMN_NAME) AS ColumnList
+           FROM dbo.SQLColumns
+           GROUP BY TABLE_CATALOG
                   , TABLE_SCHEMA
-                  , TABLE_NAME
-                  , COUNT(1) AS ColumnCnt
-                  , STRING_AGG(CAST(COLUMN_NAME AS VARCHAR(MAX)), ', ') WITHIN GROUP(ORDER BY COLUMN_NAME) AS ColumnList
-                FROM dbo.SQLColumns
-                GROUP BY TABLE_CATALOG
-                       , TABLE_SCHEMA
-                       , TABLE_NAME ) c ON t.schema_name = c.TABLE_SCHEMA AND t.object_name = c.TABLE_NAME )
+                  , TABLE_NAME ) c ON t.schema_name = c.TABLE_SCHEMA AND t.object_name = c.TABLE_NAME ;
+
+CREATE UNIQUE CLUSTERED INDEX table_name ON #SQL( TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME ) ;
+
 SELECT
     ISNULL(a.TABLE_CATALOG, b.TABLE_CATALOG) AS TABLE_CATALOG
   , ISNULL(a.TABLE_SCHEMA, b.TABLE_SCHEMA) AS TABLE_SCHEMA
@@ -74,8 +83,8 @@ SELECT
   , a.LAST_ALTERED AS SF_LAST_ALTERED
   , b.LAST_ALTERED AS SQL_LAST_ALTERED
 INTO #Comparison
-FROM Snowflake a
-LEFT JOIN sql b ON a.TABLE_SCHEMA = b.TABLE_SCHEMA AND a.TABLE_NAME = b.TABLE_NAME ;
+FROM #Snowflake a
+LEFT JOIN #SQL b ON a.TABLE_SCHEMA = b.TABLE_SCHEMA AND a.TABLE_NAME = b.TABLE_NAME ;
 
 CREATE UNIQUE CLUSTERED INDEX table_name ON #Comparison( TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME ) ;
 
@@ -97,3 +106,11 @@ SELECT
   , c.SF_LAST_ALTERED
   , c.SQL_LAST_ALTERED
 FROM #Comparison c ;
+
+RETURN ;
+
+SELECT *
+FROM #Snowflake ;
+
+SELECT *
+FROM #SQL ;
