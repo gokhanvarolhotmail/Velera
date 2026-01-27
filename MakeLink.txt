@@ -1,0 +1,41 @@
+https://www.howtogeek.com/howto/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/
+
+C:\Users\gvarol\AppData\Roaming\Microsoft\SQL Server Management Studio\18.0\Templates\Sql\_SSMS
+mklink /J "C:\Users\gvarol\AppData\Roaming\Microsoft\SQL Server Management Studio\18.0\Templates\Sql\_SSMS_Test\" "C:\Users\gvarol\AppData\Roaming\Microsoft\SQL Server Management Studio\18.0\Templates\Sql\_SSMS"
+
+
+mklink /J "C:\Users\gvarol\AppData\Roaming\Microsoft\SQL Server Management Studio\18.0\Templates\Sql\_SSMS\" "C:\Github\edg-diabloplus-diablodb\SSMSTemplates\"
+mklink /J "C:\Users\gvarol\AppData\Roaming\Microsoft\SQL Server Management Studio\18.0\Templates\Sql\_SSMS\" "D:\Users\gvarol\Documents\Github\edg-diabloplus-diablodb\SSMSTemplates\"
+mklink /J "C:\Users\gokhan.varol\AppData\Roaming\Microsoft\SQL Server Management Studio\18.0\Templates\Sql\_SSMS\" "C:\Users\gokhan.varol\GitHub\gvarol\SSMSTemplates\"
+
+
+mklink /J "C:\Users\GokhanVarol\AppData\Roaming\Microsoft\SQL Server Management Studio\18.0\Templates\Sql\_SSMS\" "C:\Users\GokhanVarol\GitHub\gvarol\SSMSTemplates\"
+mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\18.0\Templates\Sql\_SSMS\" "C:\Users\gokha\GitHub\gvarol\SSMSTemplates\"
+
+mklink /J "C:\Users\gokhan.varol\AppData\Roaming\Microsoft\SQL Server Management Studio\18.0\Templates\Sql\_SSMS\" "C:\Users\gokhan.varol\GitHub\gvarol\SSMSTemplates\"
+
+mklink /J "C:\Users\GokhanVarol\AppData\Roaming\Microsoft\SQL Server Management Studio\18.0\Templates\Sql\_SSMS\" "C:\Users\GokhanVarol\Github\gvarol\SSMSTemplates\"
+
+mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\19.0\Templates\Sql\_SSMS\" "C:\Users\gokha\Github\gvarol\SSMSTemplates\"
+
+mklink /J "C:\Users\gvarol\AppData\Roaming\Microsoft\SQL Server Management Studio\19.0\Templates\Sql\_SSMS\" "C:\Users\gvarol\GitHub\gvarol\SSMSTemplates\"
+mklink /J "C:\Users\GokhanVarol\AppData\Roaming\Microsoft\SQL Server Management Studio\19.0\Templates\Sql\_SSMS\" "C:\Users\GokhanVarol\GitHub\gvarol\SSMSTemplates\"
+
+
+
+
+mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\20.0\Templates\Sql\_SSMS\" "C:\Users\gokha\GitHub\gvarol\SSMSTemplates\"
+mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\20.0\Templates\Sql\_Evolv\" "C:\Users\gokha\Github\Evolv\SSMSTemplates"
+mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\20.0\Templates\Sql\_Evan\" "C:\Users\gokha\Github\Evan\SSMSTemplates"
+
+
+
+mklink /J "C:\Users\GokhanVarol\AppData\Roaming\Microsoft\SQL Server Management Studio\20.0\Templates\Sql\_SSMS\" "C:\Users\GokhanVarol\GitHub\gvarol\SSMSTemplates\"
+mklink /J "C:\Users\GokhanVarol\AppData\Roaming\Microsoft\SQL Server Management Studio\20.0\Templates\Sql\_Evolv\" "C:\Users\GokhanVarol\Github\Evolv\SSMSTemplates"
+
+
+mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\19.0\Templates\Sql\_SSMS\" "C:\Users\gokha\Github\gvarol\SSMSTemplates\"
+
+mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\21.0\Templates\Sql\_SSMS\" "C:\Users\gokha\GitHub\gvarol\SSMSTemplates\"
+mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\21.0\Templates\Sql\_Evolv\" "C:\Users\gokha\GitHub\Evolv\SSMSTemplates\"
+

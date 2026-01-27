@@ -1,0 +1,16 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+
+# Declare files that will always have CRLF line endings on checkout.
+*.sln text eol=crlf
+*.ps1 text eol=crlf
+*.sql text eol=crlf
+*.txt text eol=crlf
+*.dtsx text eol=crlf
+*.bat text eol=crlf
+*.dtproj text eol=crlf
+*.param text eol=crlf
+
+# Denote all files that are truly binary and should not be modified.
+*.jpeg binary
+*.zip binary
+*.ispac binary
