@@ -39,8 +39,7 @@ AS ( SELECT
          'ConsolidatedDW' AS TABLE_CATALOG
        , t.schema_name AS TABLE_SCHEMA
        , t.object_name AS TABLE_NAME
-       , t.type AS TABLE_TYPE
-       , t.type_desc
+       , t.type_desc AS TABLE_TYPE
        , t.rows AS ROW_COUNT
        , t.create_date AS CREATED
        , t.modify_date AS LAST_ALTERED
