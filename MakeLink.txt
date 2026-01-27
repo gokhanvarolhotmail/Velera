@@ -24,7 +24,9 @@ mklink /J "C:\Users\GokhanVarol\AppData\Roaming\Microsoft\SQL Server Management 
 
 
 
+
 mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\20.0\Templates\Sql\_SSMS\" "C:\Users\gokha\GitHub\gvarol\SSMSTemplates\"
+
 mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\20.0\Templates\Sql\_Evolv\" "C:\Users\gokha\Github\Evolv\SSMSTemplates"
 mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\20.0\Templates\Sql\_Evan\" "C:\Users\gokha\Github\Evan\SSMSTemplates"
 
@@ -39,3 +41,7 @@ mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio
 mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\21.0\Templates\Sql\_SSMS\" "C:\Users\gokha\GitHub\gvarol\SSMSTemplates\"
 mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\21.0\Templates\Sql\_Evolv\" "C:\Users\gokha\GitHub\Evolv\SSMSTemplates\"
 
+
+C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\22.0\Templates\Sql\_Velera\
+
+mklink /J "C:\Users\gokha\AppData\Roaming\Microsoft\SQL Server Management Studio\22.0\Templates\Sql\_Velera\" "C:\Users\gokha\GitHub\Velera\SSMSTemplates\"
