@@ -1,4 +1,17 @@
 SELECT
+	'CREATE TABLE #TEMP ( [schema_name] VARCHAR(256), [table_name] VARCHAR(256), [row_count] BIGINT );
+' +
+  STRING_AGG(CONCAT(CAST(NULL AS VARCHAR(MAX)), 'INSERT INTO #TEMP SELECT ''', [s].[name], ''' AS [schema_name], ''', [o].[name], ''' AS [table_name], (SELECT COUNT_big(1) FROM ', QUOTENAME([s].[name]), '.', QUOTENAME([o].[name]), ') AS [row_count];') , '
+ 
+') + '
+SELECT * FROM #TEMP'
+FROM [sys].[tables] [o]
+INNER JOIN [sys].[schemas] [s] ON [s].[schema_id] = [o].[schema_id]
+WHERE s.name <>'dbo';
+
+GO
+
+SELECT
 	TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, TABLE_OWNER, TABLE_TYPE, IS_TRANSIENT, ROW_COUNT, BYTES, RETENTION_TIME, CREATED, LAST_ALTERED, LAST_DDL, LAST_DDL_BY, COMMENT, IS_TEMPORARY, IS_ICEBERG, IS_DYNAMIC
 FROM CONSOLIDATE.INFORMATION_SCHEMA.TABLES
 UNION ALL
