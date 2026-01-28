@@ -94,9 +94,9 @@ LEFT JOIN [#SQL] [b] ON [a].[TABLE_NAME] = [b].[TABLE_NAME] ;
 CREATE UNIQUE CLUSTERED INDEX [table_name] ON [##Comparison_2]( [SF_TABLE_CATALOG], [SQL_TABLE_CATALOG], [SF_TABLE_SCHEMA], [SQL_TABLE_SCHEMA], [TABLE_NAME] ) ;
 
 SELECT *
-FROM [##Comparison_2] [c]
-WHERE [c].[Missing] IS NULL ;
+FROM [##Comparison_2] [c] ;
 
+--WHERE [c].[Missing] IS NULL ;
 RETURN ;
 
 SELECT *
