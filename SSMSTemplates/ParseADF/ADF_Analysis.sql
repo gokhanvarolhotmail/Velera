@@ -21,6 +21,9 @@ WHERE type LIKE 'Snowflake%';
 
 SELECT
     [s].[DataflowName]
+  ,[td].[TriggerName]
+  , [td].[TriggerType]
+
   , [s].[StepType]
   , [s].[StepOrder]
   , [s].[StepName]
@@ -45,15 +48,24 @@ SELECT
   , [ds].[FileName]
 FROM [ADF].[DataFlowSteps] [s]
 LEFT JOIN [ADF].[DataSets] AS [ds] ON [s].[DatasetReference] = [ds].[Dataset]
+
 WHERE [s].[DataflowName] IN( SELECT [s].[DataflowName]
                              FROM [ADF].[DataFlowSteps] [s]
                              WHERE [s].[LinkedServiceName] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev')) ;
 
 DROP TABLE IF EXISTS [##CopyActivities] ;
 
+
 SELECT
     [ca].[PipelineName]
   , [ca].[ActivityName] AS [CopyActivityName]
+
+  ,[td].[TriggerName]
+  , [td].[TriggerType]
+  , [td].[RuntimeState] AS TriggerRuntimeState
+  , [td].[Frequency] AS [TriggerFrequency]
+  , [td].[StartTime] AS [TriggerStartTime]
+  , [td].[TimeZone] AS [TriggerTimeZone]
   , [ca].[dependsOn]
   , [ca].[description]
   , [ca].[inputs]
@@ -188,13 +200,24 @@ OUTER APPLY OPENJSON([ip].[value])
             WITH( [parameters] VARCHAR(MAX), [referenceName] VARCHAR(128), [type] VARCHAR(128)) AS [ip2]
 LEFT JOIN [ADF].[DataSets] AS [ids] ON [ip2].[referenceName] = [ids].[Dataset]
 LEFT JOIN [ADF].[DataSets] AS [ods] ON [op2].[referenceName] = [ods].[Dataset]
+LEFT JOIN [ADF].[TriggersDetailed] [td] ON [td].[PipelineName] = [ca].[PipelineName]
 WHERE [ods].[LinkedService] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev') ;
 
 CREATE UNIQUE CLUSTERED INDEX [CCI] ON [##CopyActivities]( [PipelineName], [CopyActivityName] ) ;
+
+
+
 GO
 SELECT
     [c].[PipelineName]
   , [c].[CopyActivityName]
+
+  ,[TriggerName]
+  , [TriggerType]
+  , TriggerRuntimeState
+  , [TriggerFrequency]
+  , [TriggerStartTime]
+  , [TriggerTimeZone]
   , [InputDatasetTargetSchema]
   , [InputDatasetTargetTable]
   , [OutputDatasetTargetSchema]
