@@ -233,6 +233,29 @@ SELECT
 FROM [ADF].[PipeLineDependenciesGrouped] AS [pdg] ;
 
 SELECT
+    [td].[TriggerName]
+  , [td].[PipelineSequence]
+  , [td].[PipelineName]
+  , [td].[PipelineType]
+  , [td].[ApiVersion]
+  , [td].[TriggerType]
+  , [td].[RuntimeState]
+  , [td].[Description]
+  , [td].[Frequency]
+  , [td].[Interval]
+  , [td].[StartTime]
+  , [td].[TimeZone]
+  , [td].[BlobPathBeginsWith]
+  , [td].[BlobPathEndsWith]
+  , [td].[TypeProperties]
+  , [td].[ScheduleDetails]
+  , [td].[Scope]
+  , [td].[Events]
+  , [td].[PipelineParameters]
+  , [td].[DependsOn]
+FROM [ADF].[TriggersDetailed] [td] ;
+
+SELECT
     [t].[TriggerName]
   , [t].[RunTimeState]
   , [t].[PipeLineCnt]

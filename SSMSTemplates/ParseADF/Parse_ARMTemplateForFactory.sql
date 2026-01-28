@@ -479,6 +479,7 @@ CREATE UNIQUE CLUSTERED INDEX [L2] ON [#L3]( [Pipeline], [L1_Id], [L2_Id], [L3_I
         DROP TABLE IF EXISTS [ADF].[PipeLineDependenciesGrouped] ;
         DROP TABLE IF EXISTS [ADF].[PipeLineParameters] ;
         DROP TABLE IF EXISTS [ADF].[Triggers] ;
+        DROP TABLE IF EXISTS [ADF].[TriggersDetailed] ;
         DROP TABLE IF EXISTS [ADF].[TriggerTimes] ;
         DROP TABLE IF EXISTS [ADF].[TriggerParameters] ;
         DROP TABLE IF EXISTS [ADF].[TriggerPipeLines] ;
@@ -550,7 +551,7 @@ CREATE UNIQUE CLUSTERED INDEX [L2] ON [#L3]( [Pipeline], [L1_Id], [L2_Id], [L3_I
         -------------------------------------------------------------------------------
         -- This finds all unique attribute paths found across ALL activities (e.g., "typeProperties.source.queryTimeout")
         SELECT @cols = STRING_AGG(CAST(QUOTENAME([DistinctCols].[Attribute]) AS VARCHAR(MAX)), ',') WITHIN GROUP(ORDER BY [DistinctCols].[Attribute])
-        FROM( SELECT DISTINCT [#ActivityAttributes].[Attribute] FROM [#ActivityAttributes] ) AS [DistinctCols] ;
+        FROM( SELECT DISTINCT [Attribute] FROM [#ActivityAttributes] ) AS [DistinctCols] ;
 
         -------------------------------------------------------------------------------
         -- 3. Construct and Execute the Pivot Query
@@ -1110,7 +1111,7 @@ CREATE UNIQUE CLUSTERED INDEX [L2] ON [#L3]( [Pipeline], [L1_Id], [L2_Id], [L3_I
           , CAST(JSON_VALUE([value], '$.properties.typeProperties.location.folderPath') COLLATE SQL_Latin1_General_CP1_CI_AS AS VARCHAR(8000)) AS [FolderPath]
           , CAST(JSON_VALUE([value], '$.properties.typeProperties.location.fileName') COLLATE SQL_Latin1_General_CP1_CI_AS AS VARCHAR(8000)) AS [FileName]
         INTO [ADF].[DataSets]
-        FROM( SELECT TOP 1 [ARMTemplateForFactory].[JSON] FROM [ADF].[ARMTemplateForFactory] ORDER BY [ARMTemplateForFactoryId] DESC ) AS [a]
+        FROM( SELECT TOP 1 [JSON] FROM [ADF].[ARMTemplateForFactory] ORDER BY [ARMTemplateForFactoryId] DESC ) AS [a]
         CROSS APPLY OPENJSON([a].[JSON], '$.resources')
         WHERE JSON_VALUE([value], '$.type') = 'Microsoft.DataFactory/factories/datasets' ;
 
@@ -1147,7 +1148,7 @@ CREATE UNIQUE CLUSTERED INDEX [L2] ON [#L3]( [Pipeline], [L1_Id], [L2_Id], [L3_I
           , ISNULL(CAST([z].[DependsOnType] AS VARCHAR(128)), '') AS [DependsOnType]
           , ISNULL(CAST([z].[DependsOnName] AS VARCHAR(128)), '') AS [DependsOnName]
         INTO [ADF].[PipeLineDependencies]
-        FROM( SELECT DISTINCT [#temp_yyy].[Pipeline], [#temp_yyy].[dependsOn] FROM [#temp_yyy] ) AS [k]
+        FROM( SELECT DISTINCT [Pipeline], [dependsOn] FROM [#temp_yyy] ) AS [k]
         CROSS APPLY OPENJSON([k].[dependsOn]) AS [b]
         CROSS APPLY( SELECT
                          MAX(CASE WHEN [ordinal] = 1 THEN [z].[value] END) AS [DependsOnType]
@@ -1157,14 +1158,14 @@ CREATE UNIQUE CLUSTERED INDEX [L2] ON [#L3]( [Pipeline], [L1_Id], [L2_Id], [L3_I
         ALTER TABLE [ADF].[PipeLineDependencies] ADD CONSTRAINT [PipeLineDependencies_PKC] PRIMARY KEY CLUSTERED( [Pipeline], [DependsOnType], [DependsOnName] ) ;
 
         SELECT
-            [PipeLineDependencies].[Pipeline]
-          , [PipeLineDependencies].[DependsOnType]
+            [Pipeline]
+          , [DependsOnType]
           , COUNT(1) AS [DependsOnCnt]
-          , STRING_AGG(CAST('' AS VARCHAR(MAX)) + [PipeLineDependencies].[DependsOnName], ', ') WITHIN GROUP(ORDER BY [PipeLineDependencies].[DependsOnName]) AS [DependsOnList]
+          , STRING_AGG(CAST('' AS VARCHAR(MAX)) + [DependsOnName], ', ') WITHIN GROUP(ORDER BY [DependsOnName]) AS [DependsOnList]
         INTO [ADF].[PipeLineDependenciesGrouped]
         FROM [ADF].[PipeLineDependencies]
-        GROUP BY [PipeLineDependencies].[Pipeline]
-               , [PipeLineDependencies].[DependsOnType] ;
+        GROUP BY [Pipeline]
+               , [DependsOnType] ;
 
         ALTER TABLE [ADF].[PipeLineDependenciesGrouped] ADD CONSTRAINT [PipeLineDependenciesGrouped_PKC] PRIMARY KEY CLUSTERED( [Pipeline], [DependsOnType] ) ;
 
@@ -1181,17 +1182,55 @@ CREATE UNIQUE CLUSTERED INDEX [L2] ON [#L3]( [Pipeline], [L1_Id], [L2_Id], [L3_I
         ALTER TABLE [ADF].[PipeLines] ADD CONSTRAINT [PipeLines_PKC] PRIMARY KEY CLUSTERED( [Pipeline] ) ;
 
         SELECT
-            [#temp_yyy].[Pipeline]
-          , COUNT([#temp_yyy].[ParameterName]) OVER ( PARTITION BY [#temp_yyy].[Pipeline] ) AS [ParameterCnt]
-          , COUNT([#temp_yyy].[ParameterDefaultValue]) OVER ( PARTITION BY [#temp_yyy].[Pipeline] ) AS [ParameterWithValueCnt]
-          , ISNULL([#temp_yyy].[ParameterName], '') AS [ParameterName]
-          , [#temp_yyy].[ParameterType]
-          , [#temp_yyy].[ParameterDefaultValue]
+            [Pipeline]
+          , COUNT([ParameterName]) OVER ( PARTITION BY [Pipeline] ) AS [ParameterCnt]
+          , COUNT([ParameterDefaultValue]) OVER ( PARTITION BY [Pipeline] ) AS [ParameterWithValueCnt]
+          , ISNULL([ParameterName], '') AS [ParameterName]
+          , [ParameterType]
+          , [ParameterDefaultValue]
         INTO [ADF].[PipeLineParameters]
         FROM [#temp_yyy]
         WHERE [ParameterName] IS NOT NULL ;
 
         ALTER TABLE [ADF].[PipeLineParameters] ADD CONSTRAINT [PipeLineParameters_PKC] PRIMARY KEY CLUSTERED( [Pipeline], [ParameterName] ) ;
+
+		SELECT
+			ISNULL(CAST(REPLACE(REPLACE(JSON_VALUE([triggers].[value], '$.name'), '[concat(parameters(''factoryName''), ''/', ''), ''')]', '') AS [VARCHAR](128)) COLLATE SQL_Latin1_General_CP1_CI_AS, '') AS [TriggerName]
+		  , ISNULL(CAST([pipelines].[key] AS INT),0)AS [PipelineSequence]
+		  , CAST(JSON_VALUE([pipelines].[value], '$.pipelineReference.referenceName') COLLATE SQL_Latin1_General_CP1_CI_AS AS [varchar](128)) AS [PipelineName]
+		  , ISNULL(CAST(JSON_VALUE([pipelines].[value], '$.pipelineReference.type') COLLATE SQL_Latin1_General_CP1_CI_AS AS [varchar](128)),'')AS [PipelineType]
+		  , ISNULL(CAST(JSON_VALUE([triggers].[value], '$.apiVersion')COLLATE SQL_Latin1_General_CP1_CI_AS AS [varchar](128)),'') AS [ApiVersion]
+		  -- Core Trigger Properties
+		  , ISNULL(CAST(JSON_VALUE([triggers].[value], '$.properties.type') COLLATE SQL_Latin1_General_CP1_CI_AS AS [varchar](128)),'')AS [TriggerType]
+		  , ISNULL(CAST(JSON_VALUE([triggers].[value], '$.properties.runtimeState') COLLATE SQL_Latin1_General_CP1_CI_AS AS [varchar](128)),'') AS [RuntimeState]
+		  , CAST(JSON_VALUE([triggers].[value], '$.properties.description') COLLATE SQL_Latin1_General_CP1_CI_AS AS [varchar]([max])) AS [Description]
+		  , CAST(JSON_VALUE([triggers].[value], '$.properties.typeProperties.recurrence.frequency') COLLATE SQL_Latin1_General_CP1_CI_AS AS [varchar](128))AS [Frequency]
+		  , JSON_VALUE([triggers].[value], '$.properties.typeProperties.recurrence.interval') AS [Interval]
+		  , TRY_CAST(JSON_VALUE([triggers].[value], '$.properties.typeProperties.recurrence.startTime') AS [datetime2](3)) AS [StartTime]
+		  , CAST(JSON_VALUE([triggers].[value], '$.properties.typeProperties.recurrence.timeZone') COLLATE SQL_Latin1_General_CP1_CI_AS AS [varchar](128))AS [TimeZone]
+		  , JSON_VALUE([triggers].[value], '$.properties.typeProperties.blobPathBeginsWith') COLLATE SQL_Latin1_General_CP1_CI_AS AS [BlobPathBeginsWith]
+		  , JSON_VALUE([triggers].[value], '$.properties.typeProperties.blobPathEndsWith') COLLATE SQL_Latin1_General_CP1_CI_AS AS [BlobPathEndsWith]
+		  -- Specific Type Properties (Extracted as raw JSON Objects/Arrays)
+		  , JSON_QUERY([triggers].[value], '$.properties.typeProperties') AS [TypeProperties]
+		  -- Recurrence Details (Common in Schedule Triggers)
+		  , NULLIF(NULLIF(JSON_QUERY([triggers].[value], '$.properties.typeProperties.recurrence.schedule'), '[]'), '{}') AS [ScheduleDetails]
+		  -- Blob Event Details (Common in Event Triggers)
+		  , JSON_VALUE([triggers].[value], '$.properties.typeProperties.scope') AS [Scope]
+		  , JSON_QUERY([triggers].[value], '$.properties.typeProperties.events') AS [Events]
+
+		  -- Parsing attributes inside the pipelineReference object
+
+		  -- Parsing associated parameters for this specific pipeline reference
+		  -- We keep this as a JSON array/object as requested for complex children
+		  , NULLIF(NULLIF(JSON_QUERY([pipelines].[value], '$.parameters'), '[]'), '{}') AS [PipelineParameters]
+		  -- Dependencies (Kept as Array)
+		  , NULLIF(JSON_QUERY([triggers].[value], '$.dependsOn') ,'[]')AS [DependsOn]
+		  INTO [ADF].[TriggersDetailed]
+		FROM OPENJSON(@ARMTemplateForFactory, '$.resources') AS [triggers]
+		OUTER APPLY OPENJSON([triggers].[value], '$.properties.pipelines') AS [pipelines]
+		WHERE JSON_VALUE([triggers].[value], '$.type') = 'Microsoft.DataFactory/factories/triggers' ;
+
+		ALTER TABLE [ADF].[TriggersDetailed] ADD CONSTRAINT [TriggersDetailed_PKC] PRIMARY KEY CLUSTERED( [TriggerName],[PipelineSequence] ) ;
 
         SELECT
             [k].[TriggerName]
@@ -1205,14 +1244,14 @@ CREATE UNIQUE CLUSTERED INDEX [L2] ON [#L3]( [Pipeline], [L1_Id], [L2_Id], [L3_I
           , MAX([k].[TimeZone]) AS [TimeZone]
         INTO [ADF].[Triggers]
         FROM( SELECT DISTINCT
-                     [#temp_xxx].[TriggerName]
-                   , [#temp_xxx].[RunTimeState]
-                   , [#temp_xxx].[PipeLine]
-                   , [#temp_xxx].[TriggerType]
-                   , [#temp_xxx].[Frequency]
-                   , [#temp_xxx].[Interval]
-                   , [#temp_xxx].[StartTime]
-                   , [#temp_xxx].[TimeZone]
+                     [TriggerName]
+                   , [RunTimeState]
+                   , [PipeLine]
+                   , [TriggerType]
+                   , [Frequency]
+                   , [Interval]
+                   , [StartTime]
+                   , [TimeZone]
               FROM [#temp_xxx] ) AS [k]
         GROUP BY [k].[TriggerName] ;
 
@@ -1250,13 +1289,13 @@ CREATE UNIQUE CLUSTERED INDEX [L2] ON [#L3]( [Pipeline], [L1_Id], [L2_Id], [L3_I
           , [k].[ParameterDefaultValue]
         INTO [ADF].[TriggerParameters]
         FROM( SELECT DISTINCT
-                     [#temp_xxx].[TriggerName]
-                   , [#temp_xxx].[RunTimeState]
-                   , [#temp_xxx].[ParameterName]
-                   , [#temp_xxx].[ParameterType]
-                   , [#temp_xxx].[ParameterDefaultValue]
+                     [TriggerName]
+                   , [RunTimeState]
+                   , [ParameterName]
+                   , [ParameterType]
+                   , [ParameterDefaultValue]
               FROM [#temp_xxx]
-              WHERE [#temp_xxx].[ParameterName] IS NOT NULL ) AS [k] ;
+              WHERE [ParameterName] IS NOT NULL ) AS [k] ;
 
         ALTER TABLE [ADF].[TriggerParameters] ADD CONSTRAINT [TriggerParameters_PKC] PRIMARY KEY CLUSTERED( [TriggerName], [ParameterName] ) ;
 
@@ -1266,7 +1305,7 @@ CREATE UNIQUE CLUSTERED INDEX [L2] ON [#L3]( [Pipeline], [L1_Id], [L2_Id], [L3_I
           , COUNT([k].[PipeLine]) OVER ( PARTITION BY [k].[TriggerName] ) AS [PipeLineCnt]
           , ISNULL([k].[PipeLine], '') AS [PipeLine]
         INTO [ADF].[TriggerPipeLines]
-        FROM( SELECT DISTINCT [#temp_xxx].[TriggerName], [#temp_xxx].[RunTimeState], [#temp_xxx].[PipeLine] FROM [#temp_xxx] WHERE [#temp_xxx].[PipeLine] <> '' ) AS [k] ;
+        FROM( SELECT DISTINCT [TriggerName], [RunTimeState], [PipeLine] FROM [#temp_xxx] WHERE [PipeLine] <> '' ) AS [k] ;
 
         ALTER TABLE [ADF].[TriggerPipeLines] ADD CONSTRAINT [TriggerPipeLines_PKC] PRIMARY KEY CLUSTERED( [TriggerName], [PipeLine] ) ;
 
@@ -1604,18 +1643,18 @@ CREATE UNIQUE CLUSTERED INDEX [L2] ON [#L3]( [Pipeline], [L1_Id], [L2_Id], [L3_I
 ')          WITHIN GROUP(ORDER BY [K].[SchemaName]
                                 , [ObjectName])
         FROM( SELECT
-                  [##Columns].[SchemaName]
-                , [##Columns].[ObjectName]
+                  [SchemaName]
+                , [ObjectName]
                 , CONCAT(
-                      CAST('' AS VARCHAR(MAX)), 'DROP TABLE IF EXISTS ADF_HISTORY.', [##Columns].[ObjectName], '_', @ARMTemplateForFactoryId, ';
+                      CAST('' AS VARCHAR(MAX)), 'DROP TABLE IF EXISTS ADF_HISTORY.', [ObjectName], '_', @ARMTemplateForFactoryId, ';
 
-SELECT * INTO ADF_HISTORY.', [##Columns].[ObjectName], '_', @ARMTemplateForFactoryId, ' FROM ADF.', [##Columns].[ObjectName]
+SELECT * INTO ADF_HISTORY.', [ObjectName], '_', @ARMTemplateForFactoryId, ' FROM ADF.', [ObjectName]
                     , '
-ALTER TABLE ADF_HISTORY.' + [##Columns].[ObjectName] + '_' + CAST(@ARMTemplateForFactoryId AS VARCHAR) + ' ADD UNIQUE CLUSTERED('
-                      + STRING_AGG(CAST('' AS VARCHAR(MAX)) + CASE WHEN [##Columns].[PKOrdinal] IS NOT NULL THEN [##Columns].[ColumnName] END, ', ') WITHIN GROUP(ORDER BY [##Columns].[PKOrdinal]) + ');') AS [SQL]
+ALTER TABLE ADF_HISTORY.' + [ObjectName] + '_' + CAST(@ARMTemplateForFactoryId AS VARCHAR) + ' ADD UNIQUE CLUSTERED('
+                      + STRING_AGG(CAST('' AS VARCHAR(MAX)) + CASE WHEN [PKOrdinal] IS NOT NULL THEN [ColumnName] END, ', ') WITHIN GROUP(ORDER BY [PKOrdinal]) + ');') AS [SQL]
               FROM [##Columns]
-              GROUP BY [##Columns].[SchemaName]
-                     , [##Columns].[ObjectName] ) AS [K] ;
+              GROUP BY [SchemaName]
+                     , [ObjectName] ) AS [K] ;
 
         EXEC( @SQL ) ;
     END TRY
