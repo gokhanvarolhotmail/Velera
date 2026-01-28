@@ -3,7 +3,7 @@ GO
 RETURN ;
 
 EXEC [dbo].[sp_ImportToTableFromCSV]
-    @CSVFile = 'c:\temp\sysschemas.csv'
+    @CSVFile = 'c:\temp\TABLE AND COUNTS.csv'
   , @DatabaseName = 'Velera'
   , @CreateTypedTable = 1
   , @ColumnDelimiter = ','
