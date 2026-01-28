@@ -188,7 +188,8 @@ OUTER APPLY OPENJSON([ca].[inputs]) [ip]
 OUTER APPLY OPENJSON([ip].[value])
             WITH( [parameters] VARCHAR(MAX), [referenceName] VARCHAR(128), [type] VARCHAR(128)) AS [ip2]
 LEFT JOIN [ADF].[DataSets] AS [ids] ON [ip2].[referenceName] = [ids].[Dataset]
-LEFT JOIN [ADF].[DataSets] AS [ods] ON [op2].[referenceName] = [ods].[Dataset] ;
+LEFT JOIN [ADF].[DataSets] AS [ods] ON [op2].[referenceName] = [ods].[Dataset]
+WHERE [ods].[LinkedService] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev') ;
 
 
 
