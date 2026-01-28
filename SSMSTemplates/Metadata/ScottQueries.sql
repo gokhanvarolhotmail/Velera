@@ -35,7 +35,7 @@ SELECT
   , o.modify_date
 FROM sys.objects o
 INNER JOIN sys.schemas s ON s.schema_id = o.schema_id
-LEFT JOIN( SELECT p.object_id, SUM(p.rows) AS rows FROM sys.partitions p GROUP BY p.object_id ) p ON p.object_id = o.object_id ;
+LEFT JOIN( SELECT p.object_id, SUM(p.rows) AS rows FROM sys.partitions p WHERE index_id <= 1 GROUP BY p.object_id ) p ON p.object_id = o.object_id ;
 
 SELECT *
 FROM INFORMATION_SCHEMA.COLUMNS ;

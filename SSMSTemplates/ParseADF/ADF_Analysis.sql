@@ -16,14 +16,18 @@ SELECT
   , [l].[Annotations]
   , [l].[TypeProperties]
   , [l].[Value]
-FROM [ADF].[LinkedServices] AS [l] 
-WHERE type LIKE 'Snowflake%';
+FROM [ADF].[LinkedServices] AS [l]
+WHERE [l].[Type] LIKE 'Snowflake%' ;
 
 SELECT
-    [s].[DataflowName]
-  ,[td].[TriggerName]
+    [pa].[Pipeline]
+  , [s].[DataflowName]
+  , [td].[TriggerName]
   , [td].[TriggerType]
-
+  , [td].[RuntimeState] AS [TriggerRuntimeState]
+  , [td].[Frequency] AS [TriggerFrequency]
+  , [td].[StartTime] AS [TriggerStartTime]
+  , [td].[TimeZone] AS [TriggerTimeZone]
   , [s].[StepType]
   , [s].[StepOrder]
   , [s].[StepName]
@@ -48,21 +52,23 @@ SELECT
   , [ds].[FileName]
 FROM [ADF].[DataFlowSteps] [s]
 LEFT JOIN [ADF].[DataSets] AS [ds] ON [s].[DatasetReference] = [ds].[Dataset]
-
+LEFT JOIN [ADF].[PipeLineActivities] [pa] ON [pa].[ActivityType] = 'ExecuteDataFlow' AND [pa].[Activity] = [s].[DataflowName]
+LEFT JOIN [ADF].[TriggersDetailed] [td] ON [td].[PipelineName] = [pa].[Pipeline]
 WHERE [s].[DataflowName] IN( SELECT [s].[DataflowName]
                              FROM [ADF].[DataFlowSteps] [s]
-                             WHERE [s].[LinkedServiceName] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev')) ;
+                             WHERE [s].[LinkedServiceName] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev'))
+ORDER BY [s].[DataflowName]
+       , [pa].[Pipeline]
+       , [td].[TriggerName] ;
 
 DROP TABLE IF EXISTS [##CopyActivities] ;
-
 
 SELECT
     [ca].[PipelineName]
   , [ca].[ActivityName] AS [CopyActivityName]
-
-  ,[td].[TriggerName]
+  , [td].[TriggerName]
   , [td].[TriggerType]
-  , [td].[RuntimeState] AS TriggerRuntimeState
+  , [td].[RuntimeState] AS [TriggerRuntimeState]
   , [td].[Frequency] AS [TriggerFrequency]
   , [td].[StartTime] AS [TriggerStartTime]
   , [td].[TimeZone] AS [TriggerTimeZone]
@@ -204,17 +210,13 @@ LEFT JOIN [ADF].[TriggersDetailed] [td] ON [td].[PipelineName] = [ca].[PipelineN
 WHERE [ods].[LinkedService] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev') ;
 
 CREATE UNIQUE CLUSTERED INDEX [CCI] ON [##CopyActivities]( [PipelineName], [CopyActivityName] ) ;
-
-
-
 GO
 SELECT
     [c].[PipelineName]
   , [c].[CopyActivityName]
-
-  ,[TriggerName]
+  , [TriggerName]
   , [TriggerType]
-  , TriggerRuntimeState
+  , [TriggerRuntimeState]
   , [TriggerFrequency]
   , [TriggerStartTime]
   , [TriggerTimeZone]
@@ -350,9 +352,6 @@ SELECT
   , [OutputDatasetFolderPath]
   , [OutputDatasetFileName]
 FROM [##CopyActivities] [c] ;
-
-
-
 
 SELECT
     [ds].[Dataset]
