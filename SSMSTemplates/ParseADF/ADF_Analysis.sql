@@ -20,7 +20,8 @@ FROM [ADF].[LinkedServices] AS [l]
 WHERE [l].[Type] LIKE 'Snowflake%' ;
 
 SELECT
-    [pa].[Pipeline]
+    CASE WHEN [s].[DataflowName] IN( SELECT [s].[DataflowName] FROM [ADF].[DataFlowSteps] AS [s] WHERE [s].[LinkedServiceName] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev')) THEN 'Yes' ELSE 'No' END AS [IsDestinationSnowflake]
+  , [pa].[Pipeline]
   , [s].[DataflowName]
   , [td].[TriggerName]
   , [td].[TriggerType]
@@ -36,6 +37,11 @@ SELECT
   , [s].[LinkedServiceName]
   , [s].[FolderName]
   , [s].[TargetLocation]
+  , [ds].[TargetTable]
+  , [ds].[TargetSchema]
+  , [ds].[FileLocation]
+  , [ds].[FolderPath]
+  , [ds].[FileName]
   , [ds].[Dataset]
   , [ds].[DatasetType]
   , [ds].[LinkedService]
@@ -45,26 +51,23 @@ SELECT
   , [ds].[Parameters]
   --, [ds].[Annotations]
   , [ds].[TypeProperties]
-  , [ds].[TargetTable]
-  , [ds].[TargetSchema]
-  , [ds].[FileLocation]
-  , [ds].[FolderPath]
-  , [ds].[FileName]
-FROM [ADF].[DataFlowSteps] [s]
+FROM [ADF].[DataFlowSteps] AS [s]
 LEFT JOIN [ADF].[DataSets] AS [ds] ON [s].[DatasetReference] = [ds].[Dataset]
-LEFT JOIN [ADF].[PipeLineActivities] [pa] ON [pa].[ActivityType] = 'ExecuteDataFlow' AND [pa].[Activity] = [s].[DataflowName]
-LEFT JOIN [ADF].[TriggersDetailed] [td] ON [td].[PipelineName] = [pa].[Pipeline]
-WHERE [s].[DataflowName] IN( SELECT [s].[DataflowName]
-                             FROM [ADF].[DataFlowSteps] [s]
-                             WHERE [s].[LinkedServiceName] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev'))
-ORDER BY [s].[DataflowName]
+LEFT JOIN [ADF].[PipeLineActivities] AS [pa] ON [pa].[ActivityType] = 'ExecuteDataFlow' AND [pa].[Activity] = [s].[DataflowName]
+LEFT JOIN [ADF].[TriggersDetailed] AS [td] ON [td].[PipelineName] = [pa].[Pipeline]
+--WHERE [s].[DataflowName] IN( SELECT [s].[DataflowName]
+--                             FROM [ADF].[DataFlowSteps] [s]
+--                             WHERE [s].[LinkedServiceName] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev'))
+ORDER BY 1 DESC
+       , [s].[DataflowName]
        , [pa].[Pipeline]
        , [td].[TriggerName] ;
 
 DROP TABLE IF EXISTS [##CopyActivities] ;
 
 SELECT
-    [ca].[PipelineName]
+    CASE WHEN [ods].[LinkedService] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev') THEN 'Yes' ELSE 'No' END AS [IsDestinationSnowflake]
+  , [ca].[PipelineName]
   , [ca].[ActivityName] AS [CopyActivityName]
   , [td].[TriggerName]
   , [td].[TriggerType]
@@ -197,22 +200,24 @@ SELECT
   , [ods].[FolderPath] AS [OutputDatasetFolderPath]
   , [ods].[FileName] AS [OutputDatasetFileName]
 INTO [##CopyActivities]
-FROM [ADF].[CopyActivities] [ca]
-OUTER APPLY OPENJSON([ca].[outputs]) [op]
+FROM [ADF].[CopyActivities] AS [ca]
+OUTER APPLY OPENJSON([ca].[outputs]) AS [op]
 OUTER APPLY OPENJSON([op].[value])
             WITH( [parameters] VARCHAR(MAX), [referenceName] VARCHAR(128), [type] VARCHAR(128)) AS [op2]
-OUTER APPLY OPENJSON([ca].[inputs]) [ip]
+OUTER APPLY OPENJSON([ca].[inputs]) AS [ip]
 OUTER APPLY OPENJSON([ip].[value])
             WITH( [parameters] VARCHAR(MAX), [referenceName] VARCHAR(128), [type] VARCHAR(128)) AS [ip2]
 LEFT JOIN [ADF].[DataSets] AS [ids] ON [ip2].[referenceName] = [ids].[Dataset]
 LEFT JOIN [ADF].[DataSets] AS [ods] ON [op2].[referenceName] = [ods].[Dataset]
-LEFT JOIN [ADF].[TriggersDetailed] [td] ON [td].[PipelineName] = [ca].[PipelineName]
-WHERE [ods].[LinkedService] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev') ;
+LEFT JOIN [ADF].[TriggersDetailed] AS [td] ON [td].[PipelineName] = [ca].[PipelineName] ;
 
-CREATE UNIQUE CLUSTERED INDEX [CCI] ON [##CopyActivities]( [PipelineName], [CopyActivityName] ) ;
+--WHERE [ods].[LinkedService] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev') ;
+CREATE CLUSTERED INDEX [CCI] ON [##CopyActivities]( [PipelineName], [CopyActivityName] ) ;
 GO
+
 SELECT
-    [c].[PipelineName]
+    [c].[IsDestinationSnowflake]
+  , [c].[PipelineName]
   , [c].[CopyActivityName]
   , [TriggerName]
   , [TriggerType]
@@ -351,7 +356,10 @@ SELECT
   , [OutputDatasetFileLocation]
   , [OutputDatasetFolderPath]
   , [OutputDatasetFileName]
-FROM [##CopyActivities] [c] ;
+FROM [##CopyActivities] AS [c]
+ORDER BY [c].[IsDestinationSnowflake] DESC
+       , [c].[PipelineName]
+       , [c].[CopyActivityName] ;
 
 SELECT
     [ds].[Dataset]
