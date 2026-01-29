@@ -212,7 +212,7 @@ LEFT JOIN [ADF].[DataSets] AS [ods] ON [op2].[referenceName] = [ods].[Dataset]
 LEFT JOIN [ADF].[TriggersDetailed] AS [td] ON [td].[PipelineName] = [ca].[PipelineName] ;
 
 --WHERE [ods].[LinkedService] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev') ;
-CREATE CLUSTERED INDEX [CCI] ON [##CopyActivities]( [PipelineName], [CopyActivityName] ) ;
+CREATE UNIQUE CLUSTERED INDEX [CCI] ON [##CopyActivities]( [PipelineName], [CopyActivityName], TriggerName ) ;
 GO
 
 SELECT
