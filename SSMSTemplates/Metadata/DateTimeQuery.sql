@@ -21,6 +21,7 @@ DROP TABLE IF EXISTS [#ColumnMatches] ;
 
 SELECT
     [t].[schema_name] AS [SQL_TABLE_SCHEMA]
+  , [r].[SF_TABLE_CATALOG]
   , [r].[SF_TABLE_SCHEMA]
   , [t].[object_name] AS [TABLE_NAME]
   , [t].[type_desc]
@@ -97,9 +98,9 @@ SELECT 'CREATE OR REPLACE TEMPORARY TABLE TEMP(TABLE_SCHEMA VARCHAR(128), TABLE_
 '   AS [SQL]
 UNION ALL
 SELECT CONCAT('INSERT INTO TEMP
-SELECT ''', [A].[SF_TABLE_SCHEMA], ''' AS TABLE_SCHEMA, ''', [A].[TABLE_NAME], ''' AS [TABLE_NAME], ''', [A].[MatchedDateColumn], ''' AS COLUMN_NAME, ', [A].[MatchedDateColumn], ' AS COLUMN_VALUE, COUNT(1) AS ROW_COUNT
-FROM ', [A].[SF_TABLE_SCHEMA], '.', [A].[TABLE_NAME], '
-GROUP BY ', [A].[MatchedDateColumn], ';
+SELECT ''', [A].[SF_TABLE_SCHEMA], ''' AS TABLE_SCHEMA, ''', [A].[TABLE_NAME], ''' AS [TABLE_NAME], ''', [A].[MatchedDateColumn], ''' AS COLUMN_NAME, ', QUOTENAME([A].[MatchedDateColumn], '"'), ' AS COLUMN_VALUE, COUNT(1) AS ROW_COUNT
+FROM ', QUOTENAME([A].[SF_TABLE_CATALOG], '"'), '.', QUOTENAME([A].[SF_TABLE_SCHEMA], '"'), '.', QUOTENAME([A].[TABLE_NAME], '"'), '
+GROUP BY ', QUOTENAME([A].[MatchedDateColumn], '"'), ';
 
 ')  AS [SQL]
 FROM( SELECT TOP 999999 * FROM [#ColumnMatches] WHERE [MatchedDateColumn] IS NOT NULL ORDER BY [SQL_TABLE_SCHEMA], [TABLE_NAME] ) [A]
