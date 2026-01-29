@@ -17,7 +17,7 @@ SELECT
   , ABS(ISNULL([sq].[ROW_COUNT], 0) - ISNULL([sf].[ROW_COUNT], 0)) AS [ABS_ROW_COUNT_DIFF]
 INTO [DateTimeDataComparison]
 FROM [dbo].[SQLGroupedRowCounts] [sq]
-FULL OUTER JOIN [dbo].[SFGroupedRowCounts] [sf] ON [sq].[TABLE_SCHEMA] = [sf].[TABLE_SCHEMA] AND [sq].[TABLE_NAME] = [sf].[TABLE_NAME] AND [sq].[COLUMN_NAME] = [sf].[COLUMN_NAME] AND ( [sq].[COLUMN_VALUE] = [sf].[COLUMN_VALUE] OR [sq].[COLUMN_VALUE] IS NULL AND [sf].[COLUMN_VALUE] IS NULL )
+FULL OUTER JOIN [dbo].[SFGroupedRowCounts] [sf] ON [sq].[TABLE_NAME] = [sf].[TABLE_NAME] AND [sq].[COLUMN_NAME] = [sf].[COLUMN_NAME] AND ( [sq].[COLUMN_VALUE] = [sf].[COLUMN_VALUE] OR [sq].[COLUMN_VALUE] IS NULL AND [sf].[COLUMN_VALUE] IS NULL )
 WHERE ISNULL([sq].[TABLE_NAME], [sf].[TABLE_NAME])IN( SELECT [TABLE_NAME] FROM [dbo].[Comparison_2] WHERE [Missing] IS NULL )
 ORDER BY 4
        , 1
@@ -76,10 +76,7 @@ FULL OUTER JOIN( SELECT
                         , [TABLE_SCHEMA]
                         , [TABLE_NAME]
                         , [COLUMN_NAME]
-                        , CAST([COLUMN_VALUE] AS DATE)) [sf] ON [sq].[TABLE_SCHEMA] = [sf].[TABLE_SCHEMA]
-                                                            AND [sq].[TABLE_NAME] = [sf].[TABLE_NAME]
-                                                            AND [sq].[COLUMN_NAME] = [sf].[COLUMN_NAME]
-                                                            AND ( [sq].[COLUMN_VALUE] = [sf].[COLUMN_VALUE] OR [sq].[COLUMN_VALUE] IS NULL AND [sf].[COLUMN_VALUE] IS NULL )
+                        , CAST([COLUMN_VALUE] AS DATE)) [sf] ON [sq].[TABLE_NAME] = [sf].[TABLE_NAME] AND [sq].[COLUMN_NAME] = [sf].[COLUMN_NAME] AND ( [sq].[COLUMN_VALUE] = [sf].[COLUMN_VALUE] OR [sq].[COLUMN_VALUE] IS NULL AND [sf].[COLUMN_VALUE] IS NULL )
 WHERE ISNULL([sq].[TABLE_NAME], [sf].[TABLE_NAME])IN( SELECT [TABLE_NAME] FROM [dbo].[Comparison_2] WHERE [Missing] IS NULL )
 ORDER BY 4
        , 1
