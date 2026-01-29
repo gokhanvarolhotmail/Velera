@@ -7,13 +7,13 @@ SELECT
   , [t].[rows]
   , [t].[create_date]
   , [t].[modify_date]
-  , [c].[Cnt]
+  , [c].[DateColumnsCnt]
   , [c].[DateColumns]
 FROM [dbo].[SQLTables] [t]
 LEFT JOIN( SELECT
                [TABLE_SCHEMA]
              , [TABLE_NAME]
-             , COUNT(1) AS [Cnt]
+             , COUNT(1) AS [DateColumnsCnt]
              , STRING_AGG(CAST(CONCAT([COLUMN_NAME], ' ', [DATA_TYPE]) AS VARCHAR(MAX)), ', ') WITHIN GROUP(ORDER BY [COLUMN_NAME]) AS [DateColumns]
            FROM [dbo].[SQLColumns]
            WHERE [DATA_TYPE] IN ('date', 'datetime', 'datetime2')
