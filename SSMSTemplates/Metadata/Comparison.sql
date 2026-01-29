@@ -1,6 +1,6 @@
 USE [Velera] ;
 GO
-DROP TABLE IF EXISTS [##Comparison_1] ;
+DROP TABLE IF EXISTS [Comparison_1] ;
 DROP TABLE IF EXISTS [#Snowflake] ;
 DROP TABLE IF EXISTS [#SQL] ;
 
@@ -82,11 +82,11 @@ SELECT
   , [b].[CREATED] AS [SQL_CREATED]
   , [a].[LAST_ALTERED] AS [SF_LAST_ALTERED]
   , [b].[LAST_ALTERED] AS [SQL_LAST_ALTERED]
-INTO [##Comparison_1]
+INTO [Comparison_1]
 FROM [#Snowflake] [a]
 LEFT JOIN [#SQL] [b] ON [a].[TABLE_SCHEMA] = [b].[TABLE_SCHEMA] AND [a].[TABLE_NAME] = [b].[TABLE_NAME] ;
 
-CREATE UNIQUE CLUSTERED INDEX [table_name] ON [##Comparison_1]( [TABLE_CATALOG], [TABLE_SCHEMA], [TABLE_NAME] ) ;
+CREATE UNIQUE CLUSTERED INDEX [table_name] ON [Comparison_1]( [TABLE_CATALOG], [TABLE_SCHEMA], [TABLE_NAME] ) ;
 
 SELECT
     [c].[TABLE_CATALOG]
@@ -105,7 +105,7 @@ SELECT
   , [c].[SQL_CREATED]
   , [c].[SF_LAST_ALTERED]
   , [c].[SQL_LAST_ALTERED]
-FROM [##Comparison_1] [c] ;
+FROM [Comparison_1] [c] ;
 
 RETURN ;
 
