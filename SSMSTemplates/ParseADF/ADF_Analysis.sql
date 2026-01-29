@@ -64,7 +64,35 @@ LEFT JOIN [ADF].[TriggersDetailed] AS [td] ON [td].[PipelineName] = [pa].[Pipeli
 --                             WHERE [s].[LinkedServiceName] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev'))
 CREATE UNIQUE CLUSTERED INDEX [CCI] ON [dbo].[DataFlows]( [Pipeline], [DataflowName], [StepType], [StepOrder], [TriggerName] ) ;
 
-SELECT *
+SELECT
+    [d].[IsDestinationSnowflake]
+  , [d].[Pipeline]
+  , [d].[DataflowName]
+  , [d].[TriggerName]
+  , [d].[TriggerType]
+  , [d].[TriggerRuntimeState]
+  , [d].[TriggerFrequency]
+  , [d].[TriggerStartTime]
+  , [d].[TriggerTimeZone]
+  , [d].[StepType]
+  , [d].[StepOrder]
+  , [d].[StepName]
+  , [d].[DatasetReference]
+  , [d].[DatasetType]
+  , [d].[LinkedServiceName]
+  , [d].[FolderName]
+  , [d].[TargetLocation]
+  , [d].[TargetTable]
+  , [d].[TargetSchema]
+  , [d].[FileLocation]
+  , [d].[FolderPath]
+  , [d].[FileName]
+  , [d].[Dataset]
+  , [d].[LinkedService]
+  , [d].[Folder]
+  , [d].[Schema]
+  , [d].[Parameters]
+  , [d].[TypeProperties]
 FROM [dbo].[DataFlows] [d] ;
 
 DROP TABLE IF EXISTS [ADF].[CopyActivities] ;
@@ -216,23 +244,23 @@ LEFT JOIN [ADF].[DataSets] AS [ods] ON [op2].[referenceName] = [ods].[Dataset]
 LEFT JOIN [ADF].[TriggersDetailed] AS [td] ON [td].[PipelineName] = [ca].[PipelineName] ;
 
 --WHERE [ods].[LinkedService] IN ('LS_SF_Application_DB', 'LS_SF_CONSOLIDATE', 'snowflake', 'SnowflakeDev') ;
-CREATE UNIQUE CLUSTERED INDEX [CCI] ON [CopyActivities]( [PipelineName], [CopyActivityName], [TriggerName] ) ;
+CREATE UNIQUE CLUSTERED INDEX [CCI] ON [dbo].[CopyActivities]( [PipelineName], [CopyActivityName], [TriggerName] ) ;
 GO
 
 SELECT
     [c].[IsDestinationSnowflake]
   , [c].[PipelineName]
   , [c].[CopyActivityName]
-  , [TriggerName]
-  , [TriggerType]
-  , [TriggerRuntimeState]
-  , [TriggerFrequency]
-  , [TriggerStartTime]
-  , [TriggerTimeZone]
-  , [InputDatasetTargetSchema]
-  , [InputDatasetTargetTable]
-  , [OutputDatasetTargetSchema]
-  , [OutputDatasetTargetTable]
+  , [c].[TriggerName]
+  , [c].[TriggerType]
+  , [c].[TriggerRuntimeState]
+  , [c].[TriggerFrequency]
+  , [c].[TriggerStartTime]
+  , [c].[TriggerTimeZone]
+  , [c].[InputDatasetTargetSchema]
+  , [c].[InputDatasetTargetTable]
+  , [c].[OutputDatasetTargetSchema]
+  , [c].[OutputDatasetTargetTable]
 
   --, [c].[dependsOn]
   --, [c].[description]
@@ -330,11 +358,11 @@ SELECT
   --, [c].[typeProperties.validateDataConsistency]
   --, [c].[userProperties]
   --, [InputParameters]
-  , [InputReferenceName]
+  , [c].[InputReferenceName]
   --, [c].[InputType]
-  , [InputDatasetType]
-  , [InputDatasetLinkedService]
-  , [InputDatasetFolder]
+  , [c].[InputDatasetType]
+  , [c].[InputDatasetLinkedService]
+  , [c].[InputDatasetFolder]
   , [c].[InputDatasetDescription]
 
   --, [InputDatasetSchema]
@@ -343,24 +371,24 @@ SELECT
   --, [InputDatasetTypeProperties]
 
   --, [InputDatasetFileLocation]
-  , [InputDatasetFolderPath]
-  , [InputDatasetFileName]
+  , [c].[InputDatasetFolderPath]
+  , [c].[InputDatasetFileName]
   --, [OutputParameters]
   --, [OutputReferenceName]
   --, [c].[OutputType]
-  , [OutputDataset]
-  , [OutputDatasetType]
-  , [OutputDatasetLinkedService]
-  , [OutputDatasetFolder]
+  , [c].[OutputDataset]
+  , [c].[OutputDatasetType]
+  , [c].[OutputDatasetLinkedService]
+  , [c].[OutputDatasetFolder]
   , [c].[OutputDatasetDescription]
   --, [OutputDatasetSchema]
   --, [OutputDatasetParameters]
   --, [OutputDatasetAnnotations]
   --, [OutputDatasetTypeProperties]
-  , [OutputDatasetFileLocation]
-  , [OutputDatasetFolderPath]
-  , [OutputDatasetFileName]
-FROM [CopyActivities] AS [c]
+  , [c].[OutputDatasetFileLocation]
+  , [c].[OutputDatasetFolderPath]
+  , [c].[OutputDatasetFileName]
+FROM [dbo].[CopyActivities] AS [c]
 ORDER BY [c].[IsDestinationSnowflake] DESC
        , [c].[PipelineName]
        , [c].[CopyActivityName] ;
