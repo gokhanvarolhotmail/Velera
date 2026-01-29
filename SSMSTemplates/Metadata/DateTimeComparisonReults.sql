@@ -3,25 +3,36 @@ GO
 RETURN ;
 
 EXEC [dbo].[sp_ImportToTableFromCSV]
-    @CSVFile = 'C:\Temp\Untitled 13_2026-01-27-1124.csv'
+    @CSVFile = 'C:\Temp\date column table counts.csv'
   , @DatabaseName = 'Velera'
   , @CreateTypedTable = 1
   , @ColumnDelimiter = ','
   , @FieldQuote = '"'
-  , @TableName = 'SnowflakeTables'
+  , @TableName = 'SQLGroupedRowCountsTemp'
   , @TypedTableName = NULL
   , @UseVarcharMAX = 0
   , @UseNVarchar4000 = 1
   , @RowCount = NULL
   , @ThrowError = 1
-  , @IsLinux = 1
+  , @IsLinux = 0
   , @Create_Primary_Key = 0
   , @CreateClusteredColumnstoreIndex = 0
   , @UseRealInsteadOfNumeric = 0
   , @DateTimeMilliSecondPrecision = 1
   , @IncludeFileRowId = 0 ;
 
-CREATE UNIQUE CLUSTERED INDEX [COLUMN_NAME] ON [dbo].[SnowflakeTables]( [TABLE_CATALOG], [TABLE_SCHEMA], [TABLE_NAME] ) ;
+DROP TABLE IF EXISTS [SQLGroupedRowCounts] ;
+
+SELECT DISTINCT
+       [TABLE_SCHEMA]
+     , [TABLE_NAME]
+     , [COLUMN_NAME]
+     , CAST(NULLIF(NULLIF(TRIM([COLUMN_VALUE]), 'NULL'), '') AS DATETIME2(3)) AS [COLUMN_VALUE]
+     , [ROW_COUNT]
+INTO [SQLGroupedRowCounts]
+FROM [dbo].[SQLGroupedRowCountsTemp] ;
+
+CREATE UNIQUE CLUSTERED INDEX [x] ON [dbo].[SQLGroupedRowCounts]( [TABLE_SCHEMA], [TABLE_NAME], [COLUMN_NAME], [COLUMN_VALUE] ) ;
 GO
 SELECT
     [t].[TABLE_CATALOG]
