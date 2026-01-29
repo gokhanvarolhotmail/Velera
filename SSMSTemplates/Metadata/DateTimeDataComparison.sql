@@ -1,6 +1,9 @@
 USE [Velera] ;
 GO
+
 -- Original data type
+DROP TABLE IF EXISTS [DateTimeDataComparison] ;
+
 SELECT
     [sf].[TABLE_CATALOG] AS [SF_TABLE_CATALOG]
   , [sq].[TABLE_SCHEMA] AS [SQLTABLE_SCHEMA]
@@ -12,6 +15,7 @@ SELECT
   , [sq].[ROW_COUNT] AS [SQL_ROW_COUNT]
   , [sf].[ROW_COUNT] AS [SF_ROW_COUNT]
   , ABS(ISNULL([sq].[ROW_COUNT], 0) - ISNULL([sf].[ROW_COUNT], 0)) AS [ABS_ROW_COUNT_DIFF]
+INTO [DateTimeDataComparison]
 FROM [dbo].[SQLGroupedRowCounts] [sq]
 FULL OUTER JOIN [dbo].[SFGroupedRowCounts] [sf] ON [sq].[TABLE_SCHEMA] = [sf].[TABLE_SCHEMA] AND [sq].[TABLE_NAME] = [sf].[TABLE_NAME] AND [sq].[COLUMN_NAME] = [sf].[COLUMN_NAME] AND ( [sq].[COLUMN_VALUE] = [sf].[COLUMN_VALUE] OR [sq].[COLUMN_VALUE] IS NULL AND [sf].[COLUMN_VALUE] IS NULL )
 WHERE ISNULL([sq].[TABLE_NAME], [sf].[TABLE_NAME])IN( SELECT [TABLE_NAME] FROM [dbo].[Comparison_2] WHERE [Missing] IS NULL )
@@ -20,9 +24,23 @@ ORDER BY 4
        , 2
        , 3 ;
 
+CREATE UNIQUE CLUSTERED INDEX [CCI] ON [DateTimeDataComparison]( [TABLE_NAME], [SQLTABLE_SCHEMA], [SF_TABLE_SCHEMA], [COLUMN_NAME], [COLUMN_VALUE] ) ;
 
+SELECT
+    [SQLTABLE_SCHEMA]
+  , [SF_TABLE_SCHEMA]
+  , [TABLE_NAME]
+  , [MISSING]
+  , [COLUMN_NAME]
+  , [COLUMN_VALUE]
+  , [SQL_ROW_COUNT]
+  , [SF_ROW_COUNT]
+  , [ABS_ROW_COUNT_DIFF]
+FROM [DateTimeDataComparison] ;
 
 -- Date data type
+DROP TABLE IF EXISTS [DateDataComparison] ;
+
 SELECT
     [sf].[TABLE_CATALOG] AS [SF_TABLE_CATALOG]
   , [sq].[TABLE_SCHEMA] AS [SQLTABLE_SCHEMA]
@@ -34,6 +52,7 @@ SELECT
   , [sq].[ROW_COUNT] AS [SQL_ROW_COUNT]
   , [sf].[ROW_COUNT] AS [SF_ROW_COUNT]
   , ABS(ISNULL([sq].[ROW_COUNT], 0) - ISNULL([sf].[ROW_COUNT], 0)) AS [ABS_ROW_COUNT_DIFF]
+INTO [DateDataComparison]
 FROM( SELECT
           [TABLE_SCHEMA]
         , [TABLE_NAME]
@@ -66,3 +85,17 @@ ORDER BY 4
        , 1
        , 2
        , 3 ;
+
+CREATE UNIQUE CLUSTERED INDEX [CCI] ON [DateDataComparison]( [TABLE_NAME], [SQLTABLE_SCHEMA], [SF_TABLE_SCHEMA], [COLUMN_NAME], [COLUMN_VALUE] ) ;
+
+SELECT
+    [SQLTABLE_SCHEMA]
+  , [SF_TABLE_SCHEMA]
+  , [TABLE_NAME]
+  , [MISSING]
+  , [COLUMN_NAME]
+  , [COLUMN_VALUE]
+  , [SQL_ROW_COUNT]
+  , [SF_ROW_COUNT]
+  , [ABS_ROW_COUNT_DIFF]
+FROM [DateTimeDataComparison] ;
