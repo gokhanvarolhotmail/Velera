@@ -98,4 +98,4 @@ SELECT
   , [SQL_ROW_COUNT]
   , [SF_ROW_COUNT]
   , [ABS_ROW_COUNT_DIFF]
-FROM [DateTimeDataComparison] ;
+FROM [DateDataComparison] ;
