@@ -3,7 +3,7 @@ GO
 RETURN ;
 
 EXEC [dbo].[sp_ImportToTableFromCSV]
-    @CSVFile = 'C:\Temp\Untitled 15_2026-01-29-1139.csv'
+    @CSVFile = 'C:\Temp\Untitled 13_2026-01-30-1400.csv'
   , @DatabaseName = 'Velera'
   , @CreateTypedTable = 1
   , @ColumnDelimiter = ','
@@ -43,3 +43,7 @@ SELECT
   , [COLUMN_VALUE]
   , [ROW_COUNT]
 FROM [dbo].[SFGroupedRowCounts] ;
+
+SELECT COUNT(1) FROM [dbo].[SFGroupedRowCounts]
+-- 25,045
+-- 224,426

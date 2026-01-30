@@ -3,7 +3,7 @@ GO
 RETURN ;
 
 EXEC [dbo].[sp_ImportToTableFromCSV]
-    @CSVFile = 'C:\Temp\date column table counts.csv'
+    @CSVFile = 'C:\Temp\SQL output.csv'
   , @DatabaseName = 'Velera'
   , @CreateTypedTable = 1
   , @ColumnDelimiter = ','
@@ -41,3 +41,7 @@ SELECT
   , [COLUMN_VALUE]
   , [ROW_COUNT]
 FROM [dbo].[SQLGroupedRowCounts] ;
+
+SELECT COUNT(1) FROM [dbo].[SQLGroupedRowCounts]
+-- 29,223
+-- 529,832
